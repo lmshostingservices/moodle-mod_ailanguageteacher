@@ -1,0 +1,83 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/player_intro
+
+    Start screen for Study, Practice or Test: what the learner will do and what they need to achieve.
+
+    Example context (json):
+    {
+        "mode": "practice", "ispractice": true, "heading": "What to expect",
+        "items": [{"text": "Say each phrase 3 times", "key": true, "icon": {"mic": true} }],
+        "steps": [{"number": 1, "text": "Drag the phrase to the right person"}],
+        "canreset": true
+    }
+}}
+<div class="lt-shell lt-intro-shell lt-mode-{{mode}}">
+    <div class="lt-intro lt-intro-{{mode}}">
+        <div class="lt-intro-hero">
+            <div class="lt-intro-badge" aria-hidden="true">
+                {{#isstudy}}<svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>{{/isstudy}}
+                {{#ispractice}}<svg viewBox="0 0 24 24"><path d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>{{/ispractice}}
+                {{#istest}}<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>{{/istest}}
+            </div>
+            <span class="lt-modetag lt-modetag-{{mode}}">
+                {{#isstudy}}{{#str}} modestudy, mod_ailanguageteacher {{/str}}{{/isstudy}}{{#ispractice}}{{#str}} modepractice, mod_ailanguageteacher {{/str}}{{/ispractice}}{{#istest}}{{#str}} modetest, mod_ailanguageteacher {{/str}}{{/istest}}
+            </span>
+            <h3 class="lt-intro-title">
+                {{#isstudy}}{{#str}} intro_title_study, mod_ailanguageteacher {{/str}}{{/isstudy}}{{#ispractice}}{{#str}} intro_title_practice, mod_ailanguageteacher {{/str}}{{/ispractice}}{{#istest}}{{#str}} intro_title_test, mod_ailanguageteacher {{/str}}{{/istest}}
+            </h3>
+            <p class="lt-intro-sub">
+                {{#isstudy}}{{#str}} intro_sub_study, mod_ailanguageteacher {{/str}}{{/isstudy}}{{#ispractice}}{{#str}} intro_sub_practice, mod_ailanguageteacher {{/str}}{{/ispractice}}{{#istest}}{{#str}} intro_sub_test, mod_ailanguageteacher {{/str}}{{/istest}}
+            </p>
+        </div>
+        <div class="lt-intro-grid">
+            <div class="lt-intro-col">
+                <h4>{{heading}}</h4>
+                <ul class="lt-intro-list">
+                    {{#items}}
+                    <li class="{{#key}}is-key{{/key}}"><span class="lt-intro-ic">{{#icon}}{{> mod_ailanguageteacher/icon }}{{/icon}}</span><span>{{text}}</span></li>
+                    {{/items}}
+                </ul>
+            </div>
+            <div class="lt-intro-col lt-intro-how">
+                <h4>{{#str}} intro_howto, mod_ailanguageteacher {{/str}}</h4>
+                <ol class="lt-steps">
+                    {{#steps}}
+                    <li><span class="lt-steps-n" aria-hidden="true">{{number}}</span><span>{{text}}</span></li>
+                    {{/steps}}
+                </ol>
+            </div>
+        </div>
+        <div class="lt-intro-actions">
+            <button type="button" class="lt-btn lt-btn-ghost" data-action="back">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+                <span>{{#str}} intro_back, mod_ailanguageteacher {{/str}}</span>
+            </button>
+            {{#canreset}}
+            <button type="button" class="lt-btn lt-btn-ghost" data-action="reset">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6"/><path d="M4.5 15a8 8 0 102-8.5L4 10"/></svg>
+                <span>{{#str}} resetprogress, mod_ailanguageteacher {{/str}}</span>
+            </button>
+            {{/canreset}}
+            <button type="button" class="lt-btn lt-btn-primary lt-btn-lg" data-action="go">
+                <span>{{#str}} intro_go, mod_ailanguageteacher {{/str}}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+        </div>
+    </div>
+</div>

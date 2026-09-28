@@ -1,0 +1,106 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/scenes
+
+    Scene manager, grouped by situation.
+
+    Example context (json):
+    {
+        "hasscenes": true, "count": 1, "viewurl": "#", "builderurl": "#", "addform": "<form></form>",
+        "country": "Mexico", "maxphrases": 2,
+        "groups": [{"name": "Greetings", "cards": [{"id": 1, "number": 1, "title": "Arriving", "image": "", "noimage": true,
+            "phrases": 2, "placed": 0, "unplaced": 2, "ready": false, "imageprompt": "A home entrance", "canai": false,
+            "editurl": "#", "replaceurl": "#", "deleteurl": "#"}]}]
+    }
+}}
+<div id="lt-scenes" class="lt-slides">
+    <div class="lt-ed-toolbar">
+        <h2 class="h3 mb-0 lt-grow">{{#str}} managescenes, mod_ailanguageteacher {{/str}} <span class="lt-counter-pill">{{count}}</span></h2>
+        <a class="lt-btn lt-btn-ghost" href="{{builderurl}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
+            {{#str}} buildlesson, mod_ailanguageteacher {{/str}}
+        </a>
+        <a class="lt-btn lt-btn-ghost" href="{{viewurl}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            {{#str}} previewstudent, mod_ailanguageteacher {{/str}}
+        </a>
+    </div>
+    {{^hasscenes}}<p class="lt-note">{{#str}} noscenesyet, mod_ailanguageteacher {{/str}}</p>{{/hasscenes}}
+    {{#groups}}
+    <h3 class="lt-group-title">{{name}}</h3>
+    <div class="lt-slides-grid">
+        {{#cards}}
+        <div class="lt-slidecard" data-scene="{{id}}">
+            <a class="lt-slidecard-thumb" href="{{editurl}}">
+                {{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}
+                {{#noimage}}<span class="lt-slidecard-noimage">{{#str}} noimageyet, mod_ailanguageteacher {{/str}}</span>{{/noimage}}
+                <span class="lt-slidecard-no">{{#str}} scenex, mod_ailanguageteacher, {{number}} {{/str}}</span>
+            </a>
+            <div class="lt-slidecard-body">
+                <h4 class="lt-slidecard-title">{{title}}</h4>
+                <div class="lt-slidecard-meta {{^ready}}is-warn{{/ready}}">
+                    {{#str}} phrasesummary, mod_ailanguageteacher, { "phrases": {{phrases}}, "placed": {{placed}} } {{/str}}
+                </div>
+                <div class="lt-slidecard-actions">
+                    <a class="lt-btn lt-btn-primary lt-btn-sm" href="{{editurl}}">{{#str}} editphrases, mod_ailanguageteacher {{/str}}</a>
+                    {{#upurl}}<a class="lt-iconbtn" href="{{upurl}}" title="{{#str}} moveleft, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} moveleft, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>{{/upurl}}
+                    {{#downurl}}<a class="lt-iconbtn" href="{{downurl}}" title="{{#str}} moveright, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} moveright, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>{{/downurl}}
+                    <a class="lt-iconbtn" href="{{replaceurl}}" title="{{#str}} uploadimage, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} uploadimage, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 15l3-3 2 2 3-3"/></svg></a>
+                    <a class="lt-iconbtn" href="{{deleteurl}}" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></a>
+                </div>
+                <details class="lt-imagehelp">
+                    <summary>{{#str}} imagehelp, mod_ailanguageteacher {{/str}}</summary>
+                    {{#canai}}
+                    <button type="button" class="lt-btn lt-btn-primary lt-btn-sm w-100" data-action="genimage" data-scene="{{id}}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
+                        <span>{{#str}} generateimage, mod_ailanguageteacher {{/str}}</span>
+                    </button>
+                    {{/canai}}
+                    <p class="lt-mini">{{#str}} imageprompt_help, mod_ailanguageteacher {{/str}}</p>
+                    <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm lt-copy" data-target="#lt-prompt-{{id}}" data-done="{{#str}} copied, mod_ailanguageteacher {{/str}}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+                        <span>{{#str}} copyimageprompt, mod_ailanguageteacher {{/str}}</span>
+                    </button>
+                    <textarea id="lt-prompt-{{id}}" class="lt-textarea lt-prompt-text" readonly rows="6" aria-label="{{#str}} copyimageprompt, mod_ailanguageteacher {{/str}}">{{imageprompt}}</textarea>
+                </details>
+            </div>
+        </div>
+        {{/cards}}
+    </div>
+    {{/groups}}
+
+    <div class="lt-panel">
+        <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>{{#str}} addscenes, mod_ailanguageteacher {{/str}}</h4>
+        <p class="lt-mini">{{#str}} addscenes_help, mod_ailanguageteacher {{/str}}</p>
+        <div class="lt-tips">
+            <div class="lt-tips-head">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M8 5v4"/></svg>
+                <strong>{{#str}} imagetips_title, mod_ailanguageteacher {{/str}}</strong>
+            </div>
+            <ul>
+                <li>{{#str}} imagetip_size, mod_ailanguageteacher {{/str}}</li>
+                <li>{{#str}} imagetip_people, mod_ailanguageteacher {{/str}}</li>
+                <li>{{#str}} imagetip_notext, mod_ailanguageteacher {{/str}}</li>
+                <li>{{#str}} imagetip_space, mod_ailanguageteacher {{/str}}</li>
+                <li>{{#str}} imagetip_moment, mod_ailanguageteacher, {{maxphrases}} {{/str}}</li>
+                <li>{{#str}} imagetip_culture, mod_ailanguageteacher, {{country}} {{/str}}</li>
+            </ul>
+        </div>
+        {{{addform}}}
+    </div>
+</div>

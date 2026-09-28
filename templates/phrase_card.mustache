@@ -1,0 +1,121 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/phrase_card
+
+    The phrase lesson card: hear it, understand it, then say it. In Practice the learner keeps saying the phrase until
+    they reach the pass score the required number of times.
+
+    Example context (json):
+    {
+        "number": 1, "color": "#6366F1", "ink": "#4338CA", "eyebrow": "Phrase 1 of 4", "text": "Good morning!",
+        "romanisation": "", "lang": "en-AU", "supportlang": "th", "translation": "สวัสดีตอนเช้า",
+        "usagenote": "Use this until about midday.", "example": "Good morning, Maria!", "exampletrans": "",
+        "hasexample": true, "speaking": true, "goal": "Words match 80% or more, 3 times", "dots": [{"done": true}, {"done": false}],
+        "dotslabel": "Successful tries: 1 of 3",
+        "practice": true, "study": false, "canclose": false, "note": ""
+    }
+}}
+<div class="lt-card lt-lesson" role="dialog" aria-modal="false" tabindex="-1" style="--c: {{color}}; --ink: {{ink}};">
+    <div class="lt-card-accent"></div>
+    <button type="button" class="lt-iconbtn lt-card-close" data-action="close" aria-label="{{#str}} close, mod_ailanguageteacher {{/str}}" {{^canclose}}hidden{{/canclose}}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <div class="lt-card-head">
+        <span class="lt-card-num">{{number}}</span>
+        <div class="lt-card-titles">
+            <span class="lt-card-eyebrow">{{eyebrow}}</span>
+            <h4 class="lt-card-title lt-phrase" dir="auto" lang="{{lang}}">{{text}}</h4>
+            {{#romanisation}}<p class="lt-phrase-rom">{{.}}</p>{{/romanisation}}
+        </div>
+    </div>
+    <div class="lt-listen">
+        <button type="button" class="lt-btn lt-btn-listen" data-action="listen">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11"/></svg>
+            <span>{{#str}} listen, mod_ailanguageteacher {{/str}}</span>
+        </button>
+        <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="slow">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15c0-4 3.6-7 8-7s8 3 8 7z"/><path d="M20 15l1.5-1.5M4 15l-1 2M8 15v2M16 15v2"/></svg>
+            <span>{{#str}} listenslow, mod_ailanguageteacher {{/str}}</span>
+        </button>
+    </div>
+    <div class="lt-card-body">
+        {{#translation}}
+        <div class="lt-meaning">
+            <span class="lt-mini-label">{{#str}} meaning, mod_ailanguageteacher {{/str}}</span>
+            <p dir="auto" lang="{{supportlang}}">{{translation}}</p>
+        </div>
+        {{/translation}}
+        {{#usagenote}}
+        <div class="lt-usage">
+            <span class="lt-mini-label">{{#str}} whentouse, mod_ailanguageteacher {{/str}}</span>
+            <p dir="auto" lang="{{supportlang}}">{{usagenote}}</p>
+        </div>
+        {{/usagenote}}
+        {{#hasexample}}
+        <div class="lt-example">
+            <span class="lt-mini-label">{{#str}} example, mod_ailanguageteacher {{/str}}</span>
+            <div class="lt-example-row">
+                <button type="button" class="lt-iconbtn lt-iconbtn-sm" data-action="example" aria-label="{{#str}} listenexample, mod_ailanguageteacher {{/str}}" title="{{#str}} listenexample, mod_ailanguageteacher {{/str}}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6"/></svg>
+                </button>
+                <div>
+                    <p class="lt-example-text" dir="auto" lang="{{lang}}">{{example}}</p>
+                    {{#exampletrans}}<p class="lt-example-trans" dir="auto" lang="{{supportlang}}">{{.}}</p>{{/exampletrans}}
+                </div>
+            </div>
+        </div>
+        {{/hasexample}}
+    </div>
+    {{#speaking}}
+    <div class="lt-speak" data-region="speak">
+        <div class="lt-speak-head">
+            <h5>{{#practice}}{{#str}} sayit, mod_ailanguageteacher {{/str}}{{/practice}}{{#study}}{{#str}} trysayingit, mod_ailanguageteacher {{/str}}{{/study}}</h5>
+            {{#goal}}<span class="lt-speak-goal">{{goal}}</span>{{/goal}}
+        </div>
+        {{#practice}}
+        <div class="lt-speak-dots" data-region="dots" role="img" aria-label="{{dotslabel}}">
+            {{#dots}}<span class="lt-sdot{{#done}} is-done{{/done}}"></span>{{/dots}}
+        </div>
+        {{/practice}}
+        <button type="button" class="lt-mic" data-action="speak">
+            <span class="lt-mic-ring" aria-hidden="true"></span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+            <span class="lt-mic-label" data-region="miclabel">{{#str}} tapandsay, mod_ailanguageteacher {{/str}}</span>
+        </button>
+        <div class="lt-speak-status" data-region="status" aria-live="polite"></div>
+        <div class="lt-speak-result" data-region="result"></div>
+        {{#note}}<p class="lt-speak-note">{{note}}</p>{{/note}}
+    </div>
+    {{/speaking}}
+    <div class="lt-card-foot">
+        {{#practice}}
+        <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="moveon" hidden>
+            <span>{{#str}} moveon, mod_ailanguageteacher {{/str}}</span>
+        </button>
+        <button type="button" class="lt-btn lt-btn-primary" data-action="continue" disabled>
+            <span>{{#str}} continue, mod_ailanguageteacher {{/str}}</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+        {{/practice}}
+        {{#study}}
+        <button type="button" class="lt-btn lt-btn-primary" data-action="close">
+            <span>{{#str}} gotit, mod_ailanguageteacher {{/str}}</span>
+        </button>
+        {{/study}}
+    </div>
+</div>

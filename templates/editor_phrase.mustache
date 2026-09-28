@@ -1,0 +1,86 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/editor_phrase
+
+    One phrase in the scene editor.
+
+    Example context (json):
+    {
+        "key": "k1", "number": 1, "color": "#6366F1", "selected": true, "unplaced": false, "distractor": false,
+        "text": "Good morning!", "romanisation": "", "translation": "", "usagenote": "", "example": "", "exampletrans": "",
+        "prompt": "", "alternatives": "", "anchor": "", "romanise": false, "lang": "en-AU", "hasrecording": false,
+        "palette": [{"color": "#6366F1", "on": true}], "targetname": "English", "supportname": "Thai"
+    }
+}}
+<div class="lt-lrow{{#selected}} is-sel{{/selected}}" data-key="{{key}}" style="--c: {{color}};">
+    <div class="lt-lrow-head">
+        <span class="lt-lrow-num{{#unplaced}} is-unplaced{{/unplaced}}">{{number}}</span>
+        <input type="text" class="lt-input" data-field="text" value="{{text}}" maxlength="255" dir="auto" lang="{{lang}}" aria-label="{{#str}} phrasetext, mod_ailanguageteacher, {{targetname}} {{/str}}">
+        <button type="button" class="lt-iconbtn lt-iconbtn-sm" data-action="listen" aria-label="{{#str}} listen, mod_ailanguageteacher {{/str}}" title="{{#str}} listen, mod_ailanguageteacher {{/str}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6"/></svg>
+        </button>
+        <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="createaudio">{{#str}} createaudio, mod_ailanguageteacher {{/str}}</button>
+        <button type="button" class="lt-swatch" data-action="select" aria-label="{{#str}} editthisphrase, mod_ailanguageteacher {{/str}}" title="{{#str}} editthisphrase, mod_ailanguageteacher {{/str}}"></button>
+    </div>
+    {{#unplaced}}<p class="lt-mini lt-unplaced-note">{{#str}} notplacedyet, mod_ailanguageteacher {{/str}}{{#anchor}} · {{#str}} placeon, mod_ailanguageteacher, {{anchor}} {{/str}}{{/anchor}}</p>{{/unplaced}}
+    <div class="lt-lrow-body">
+        <div class="lt-fieldgrid">
+            {{#romanise}}
+            <label><span class="lt-mini">{{#str}} romanisation, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="romanisation" value="{{romanisation}}" maxlength="255"></label>
+            {{/romanise}}
+            <label><span class="lt-mini">{{#str}} meaningin, mod_ailanguageteacher, {{supportname}} {{/str}}</span><input type="text" class="lt-input" data-field="translation" value="{{translation}}" maxlength="255" dir="auto"></label>
+            <label><span class="lt-mini">{{#str}} whentouse, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="usagenote" dir="auto">{{usagenote}}</textarea></label>
+            <label><span class="lt-mini">{{#str}} example, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="example" value="{{example}}" maxlength="255" dir="auto" lang="{{lang}}"></label>
+            <label><span class="lt-mini">{{#str}} examplemeaning, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="exampletrans" value="{{exampletrans}}" maxlength="255" dir="auto"></label>
+            <label><span class="lt-mini">{{#str}} speakingcue, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="prompt" value="{{prompt}}" maxlength="255" dir="auto" placeholder="{{#str}} speakingcue_help, mod_ailanguageteacher {{/str}}"></label>
+            <label><span class="lt-mini">{{#str}} alternatives, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="alternatives" dir="auto" lang="{{lang}}" placeholder="{{#str}} alternatives_help, mod_ailanguageteacher {{/str}}">{{alternatives}}</textarea></label>
+            <label><span class="lt-mini">{{#str}} anchor, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="anchor" value="{{anchor}}" maxlength="255"></label>
+        </div>
+        <div class="lt-recording">
+            <span class="lt-mini">{{#str}} yourrecording, mod_ailanguageteacher {{/str}}</span>
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="record">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+                    <span>{{#hasrecording}}{{#str}} recordagain, mod_ailanguageteacher {{/str}}{{/hasrecording}}{{^hasrecording}}{{#str}} recordphrase, mod_ailanguageteacher {{/str}}{{/hasrecording}}</span>
+                </button>
+                {{#hasrecording}}
+                <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="deleterecording">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                    <span>{{#str}} deleterecording, mod_ailanguageteacher {{/str}}</span>
+                </button>
+                {{/hasrecording}}
+            </div>
+        </div>
+        <div class="lt-palette">
+            {{#palette}}<button type="button" class="{{#on}}is-on{{/on}}" data-color="{{color}}" style="background: {{color}};" aria-label="{{color}}"></button>{{/palette}}
+        </div>
+        <label class="lt-check-row"><input type="checkbox" data-field="distractor" {{#distractor}}checked{{/distractor}}><span>{{#str}} distractor, mod_ailanguageteacher {{/str}}</span></label>
+        <div class="d-flex gap-2 flex-wrap">
+            {{^distractor}}
+            <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="move">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18M8 7l4-4 4 4M8 17l4 4 4-4M7 8l-4 4 4 4M17 8l4 4-4 4"/></svg>
+                <span>{{#unplaced}}{{#str}} placeonimage, mod_ailanguageteacher {{/str}}{{/unplaced}}{{^unplaced}}{{#str}} moveonimage, mod_ailanguageteacher {{/str}}{{/unplaced}}</span>
+            </button>
+            {{/distractor}}
+            <button type="button" class="lt-btn lt-btn-danger lt-btn-sm" data-action="delete">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                <span>{{#str}} deletephrase, mod_ailanguageteacher {{/str}}</span>
+            </button>
+        </div>
+    </div>
+</div>

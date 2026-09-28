@@ -1,0 +1,153 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/view
+
+    Activity home: language summary, progress and the Study, Practice and Test cards. The player is mounted into
+    the player region by JavaScript.
+
+    Example context (json):
+    {
+        "uniqid": "lt-1", "config": "{}", "ready": true, "canmanage": true, "builderurl": "#", "scenesurl": "#",
+        "reporturl": "#", "guest": false,
+        "language": {"target": "English", "locale": "English (Australia)", "support": "Thai", "level": "A1",
+            "levelname": "Beginner"},
+        "stats": {"scenes": 4, "phrases": 18, "mastered": 5, "percent": 28, "hasprogress": true},
+        "donecount": 1, "modecount": 3,
+        "modes": [{"key": "study", "isstudy": true, "enabled": true, "title": "Study", "bestfor": "See and hear",
+            "rows": [{"label": "Phrases", "text": "Shown on the picture", "yes": true}], "done": true, "status": "Studied"}]
+    }
+}}
+<div id="{{uniqid}}" class="lt-app" data-config="{{config}}">
+    <div class="lt-home" data-region="home">
+        <div class="lt-hero">
+            <div class="lt-hero-lang">
+                <span class="lt-langpill">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9s1-6.5 3.5-9z"/></svg>
+                    <strong>{{language.locale}}</strong>
+                </span>
+                <span class="lt-langmeta">{{#str}} forspeakers, mod_ailanguageteacher, {{language.support}} {{/str}}</span>
+                <span class="lt-levelpill" title="{{language.levelname}}">{{language.level}} · {{language.levelname}}</span>
+            </div>
+            <div class="lt-hero-actions">
+                {{#canmanage}}
+                <a class="lt-btn lt-btn-ghost" href="{{builderurl}}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
+                    {{#str}} buildlesson, mod_ailanguageteacher {{/str}}
+                </a>
+                <a class="lt-btn lt-btn-ghost" href="{{scenesurl}}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+                    {{#str}} managescenes, mod_ailanguageteacher {{/str}}
+                </a>
+                {{/canmanage}}
+                {{#reporturl}}
+                <a class="lt-btn lt-btn-ghost" href="{{reporturl}}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg>
+                    {{#str}} reports, mod_ailanguageteacher {{/str}}
+                </a>
+                {{/reporturl}}
+            </div>
+        </div>
+
+        {{#ready}}
+        <div class="lt-progressstrip">
+            <span class="lt-stat">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-5-5-8 8"/></svg>
+                {{#str}} scenecount, mod_ailanguageteacher, {{stats.scenes}} {{/str}}
+            </span>
+            <span class="lt-stat">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h11a2 2 0 012 2v6a2 2 0 01-2 2H9l-4 3.5V14H4a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>
+                {{#str}} phrasecount, mod_ailanguageteacher, {{stats.phrases}} {{/str}}
+            </span>
+            {{#stats.hasprogress}}
+            <div class="lt-mastery" role="img" aria-label="{{#str}} masteredof, mod_ailanguageteacher, { "done": {{stats.mastered}}, "total": {{stats.phrases}} } {{/str}}">
+                <span class="lt-mastery-label">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg>
+                    {{#str}} masteredof, mod_ailanguageteacher, { "done": {{stats.mastered}}, "total": {{stats.phrases}} } {{/str}}
+                </span>
+                <span class="lt-mastery-bar"><span style="width: {{stats.percent}}%"></span></span>
+            </div>
+            {{/stats.hasprogress}}
+            {{#donecount}}
+            <span class="lt-stat lt-stat-done">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                {{#str}} modesdone, mod_ailanguageteacher, { "done": {{donecount}}, "total": {{modecount}} } {{/str}}
+            </span>
+            {{/donecount}}
+        </div>
+        {{/ready}}
+
+        {{^ready}}
+        <div class="lt-empty">
+            <div class="lt-empty-art" aria-hidden="true">
+                <svg viewBox="0 0 120 90"><rect x="8" y="10" width="104" height="70" rx="12"/><path d="M26 30h34a6 6 0 016 6v10a6 6 0 01-6 6H40l-8 7v-7h-6a6 6 0 01-6-6V36a6 6 0 016-6z"/><path d="M8 66l30-18 22 12 18-10 34 22"/></svg>
+            </div>
+            <h3>{{#str}} notready, mod_ailanguageteacher {{/str}}</h3>
+            <p>{{#canmanage}}{{#str}} notready_manager, mod_ailanguageteacher {{/str}}{{/canmanage}}{{^canmanage}}{{#str}} notready_student, mod_ailanguageteacher {{/str}}{{/canmanage}}</p>
+            {{#canmanage}}<a class="lt-btn lt-btn-primary" href="{{builderurl}}">{{#str}} buildlesson, mod_ailanguageteacher {{/str}}</a>{{/canmanage}}
+        </div>
+        {{/ready}}
+
+        {{#ready}}
+        <ol class="lt-modes">
+            {{#modes}}
+            <li class="lt-mode lt-mode-{{key}} {{#done}}is-done{{/done}} {{#locked}}is-locked{{/locked}}">
+                <span class="lt-mode-step" aria-hidden="true">{{step}}</span>
+                {{#done}}
+                <span class="lt-badge lt-badge-done">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>{{status}}
+                </span>
+                {{/done}}
+                {{#locked}}
+                <span class="lt-badge lt-badge-locked">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>{{lockedtext}}
+                </span>
+                {{/locked}}
+                <div class="lt-mode-icon" aria-hidden="true">
+                    {{#isstudy}}<svg viewBox="0 0 24 24" class="lt-i-study"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>{{/isstudy}}
+                    {{#ispractice}}<svg viewBox="0 0 24 24" class="lt-i-practice"><path d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>{{/ispractice}}
+                    {{#istest}}<svg viewBox="0 0 24 24" class="lt-i-test"><path d="M9 4h6l1 2h3v15H5V6h3z"/><path d="M9 13l2 2 4-4"/></svg>{{/istest}}
+                </div>
+                <h3 class="lt-mode-title">{{title}}</h3>
+                <p class="lt-mode-bestfor">{{bestfor}}</p>
+                <ul class="lt-cmp">
+                    {{#rows}}
+                    <li class="{{#yes}}is-yes{{/yes}}{{^yes}}is-no{{/yes}}">
+                        <span class="lt-cmp-ic" aria-hidden="true">{{#yes}}<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>{{/yes}}{{^yes}}<svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg>{{/yes}}</span>
+                        <span class="lt-cmp-label">{{label}}</span>
+                        <span class="lt-cmp-text">{{text}}</span>
+                    </li>
+                    {{/rows}}
+                </ul>
+                {{#extra}}<p class="lt-mode-meta lt-mode-extra">{{extra}}</p>{{/extra}}
+                {{#meta}}<p class="lt-mode-meta">{{meta}}</p>{{/meta}}
+                {{^done}}{{#graded}}<span class="lt-badge">{{#str}} graded, mod_ailanguageteacher {{/str}}</span>{{/graded}}{{/done}}
+                {{#warn}}<p class="lt-mode-meta lt-warn">{{warn}}</p>{{/warn}}
+                {{#nomore}}<p class="lt-mode-meta lt-warn">{{#str}} nomoreattempts, mod_ailanguageteacher {{/str}}</p>{{/nomore}}
+                <button type="button" class="lt-btn lt-btn-primary lt-mode-start" data-action="start" data-mode="{{key}}" {{^enabled}}disabled{{/enabled}}>
+                    {{#done}}{{#str}} startagain, mod_ailanguageteacher {{/str}}{{/done}}{{^done}}{{#str}} start, mod_ailanguageteacher {{/str}}{{/done}}
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </button>
+            </li>
+            {{/modes}}
+        </ol>
+        {{#guest}}<p class="lt-note">{{#str}} guestnote, mod_ailanguageteacher {{/str}}</p>{{/guest}}
+        {{/ready}}
+    </div>
+    <div class="lt-player" data-region="player" hidden></div>
+    <div class="lt-live visually-hidden sr-only" aria-live="polite" data-region="live"></div>
+</div>

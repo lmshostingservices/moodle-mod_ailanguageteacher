@@ -1,0 +1,43 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/stage_bar
+
+    Test prompt bar for the Listen and Speak stages.
+
+    Example context (json):
+    {"listen": true, "speak": false, "step": "Listen · 1 of 4", "prompt": "", "supportlang": "th"}
+}}
+<div class="lt-stage {{#listen}}lt-stage-listen{{/listen}}{{#speak}}lt-stage-speak{{/speak}}">
+    <span class="lt-stage-step">{{step}}</span>
+    {{#listen}}
+    <button type="button" class="lt-btn lt-btn-listen" data-action="stageplay">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6M18.5 6.5a8 8 0 010 11"/></svg>
+        <span>{{#str}} playagain, mod_ailanguageteacher {{/str}}</span>
+    </button>
+    <p class="lt-stage-text">{{#str}} stage_listen_help, mod_ailanguageteacher {{/str}}</p>
+    {{/listen}}
+    {{#speak}}
+    <p class="lt-stage-text"><span class="lt-mini-label">{{#str}} stage_speak_help, mod_ailanguageteacher {{/str}}</span> <strong dir="auto" lang="{{supportlang}}">{{prompt}}</strong></p>
+    <button type="button" class="lt-mic lt-mic-sm" data-action="stagespeak">
+        <span class="lt-mic-ring" aria-hidden="true"></span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a3 3 0 00-3 3v6a3 3 0 006 0V6a3 3 0 00-3-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>
+        <span class="lt-mic-label" data-region="miclabel">{{#str}} tapandsay, mod_ailanguageteacher {{/str}}</span>
+    </button>
+    <span class="lt-speak-status" data-region="status" aria-live="polite"></span>
+    {{/speak}}
+</div>

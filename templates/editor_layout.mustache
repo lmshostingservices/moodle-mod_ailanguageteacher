@@ -1,0 +1,84 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/editor_layout
+
+    Scene editor layout: toolbar, picture, scene details, the placing queue and the phrase list.
+
+    Example context (json):
+    {
+        "backurl": "#", "title": "Arriving", "position": 1, "total": 3, "prevurl": "", "nexturl": "#", "previewurl": "#",
+        "replaceurl": "#", "image": "", "width": 1600, "height": 1000, "ratio": 1.6, "context": "", "imageprompt": "",
+        "situations": [{"id": 1, "name": "Greetings", "selected": true}], "maxphrases": 2
+    }
+}}
+<div class="lt-ed-main">
+    <div class="lt-ed-toolbar">
+        <a class="lt-iconbtn" href="{{backurl}}" title="{{#str}} backtoscenes, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} backtoscenes, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>
+        <input type="text" class="lt-ed-titleinput" data-field="title" value="{{title}}" maxlength="255" aria-label="{{#str}} scenetitle, mod_ailanguageteacher {{/str}}">
+        <span class="lt-counter-pill">{{#str}} sceneof, mod_ailanguageteacher, { "current": {{position}}, "total": {{total}} } {{/str}}</span>
+        {{#prevurl}}<a class="lt-iconbtn" href="{{prevurl}}" title="{{#str}} previousscene, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} previousscene, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>{{/prevurl}}
+        {{#nexturl}}<a class="lt-iconbtn" href="{{nexturl}}" title="{{#str}} nextscene, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} nextscene, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>{{/nexturl}}
+        <span class="lt-savestate is-saved" data-region="state" aria-live="polite">{{#str}} saved, mod_ailanguageteacher {{/str}}</span>
+        <button type="button" class="lt-btn lt-btn-primary" data-action="save">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v6h8V3M8 21v-7h8v7"/></svg>
+            <span>{{#str}} save, mod_ailanguageteacher {{/str}}</span>
+        </button>
+    </div>
+    <div class="lt-ed-canvas">
+        <div class="lt-queue-banner" data-region="banner" hidden aria-live="polite"></div>
+        <div class="lt-ed-figure" data-region="figure" style="--ar: {{width}} / {{height}}; --arn: {{ratio}};">
+            <img class="lt-image" src="{{image}}" alt="" draggable="false">
+            <div class="lt-ed-cursor" data-region="cursor"></div>
+        </div>
+        <p class="lt-mini mt-2 mb-0">{{#str}} editorhelp, mod_ailanguageteacher {{/str}} <a href="{{replaceurl}}">{{#str}} uploadimage, mod_ailanguageteacher {{/str}}</a></p>
+    </div>
+    <div class="lt-panel">
+        <h4>{{#str}} scenedetails, mod_ailanguageteacher {{/str}}</h4>
+        <label class="lt-mini d-block mb-1" for="lt-situation">{{#str}} situation, mod_ailanguageteacher {{/str}}</label>
+        <select id="lt-situation" class="custom-select form-select mb-2" data-field="situationid">
+            {{#situations}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/situations}}
+        </select>
+        <label class="lt-mini d-block mb-1" for="lt-context">{{#str}} scenecontext, mod_ailanguageteacher {{/str}}</label>
+        <textarea id="lt-context" class="lt-textarea mb-2" rows="2" data-field="context">{{context}}</textarea>
+        <label class="lt-mini d-block mb-1" for="lt-imageprompt">{{#str}} sceneimageprompt, mod_ailanguageteacher {{/str}}</label>
+        <textarea id="lt-imageprompt" class="lt-textarea" rows="3" data-field="imageprompt">{{imageprompt}}</textarea>
+    </div>
+</div>
+<div class="lt-ed-side">
+    <div class="lt-panel">
+        <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>{{#str}} quickadd, mod_ailanguageteacher {{/str}}</h4>
+        <p class="lt-mini">{{#str}} quickadd_help, mod_ailanguageteacher, {{maxphrases}} {{/str}}</p>
+        <textarea class="lt-textarea" rows="5" data-region="quick" placeholder="{{#str}} quickadd_placeholder, mod_ailanguageteacher {{/str}}"></textarea>
+        <button type="button" class="lt-btn lt-btn-primary mt-2 w-100" data-action="quick">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/></svg>
+            <span>{{#str}} startplacing, mod_ailanguageteacher {{/str}}</span>
+        </button>
+    </div>
+    <div class="lt-panel">
+        <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h11a2 2 0 012 2v6a2 2 0 01-2 2H9l-4 3.5V14H4a2 2 0 01-2-2V6a2 2 0 012-2z"/></svg>{{#str}} phrases, mod_ailanguageteacher {{/str}}<span class="lt-counter-pill ms-auto" data-region="count"></span></h4>
+        <div class="lt-labellist" data-region="list"></div>
+        <button type="button" class="lt-btn lt-btn-ghost mt-2 w-100" data-action="add">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            <span>{{#str}} addphrase, mod_ailanguageteacher {{/str}}</span>
+        </button>
+    </div>
+    <a class="lt-btn lt-btn-ghost" href="{{previewurl}}">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>{{#str}} previewstudent, mod_ailanguageteacher {{/str}}</span>
+    </a>
+</div>

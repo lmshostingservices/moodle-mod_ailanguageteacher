@@ -1,0 +1,4060 @@
+/**
+ * Styles for mod_ailanguageteacher (based on the Label Diagram player).
+ *
+ * @package    mod_ailanguageteacher
+ * @copyright  2026 LMS Hosting Services
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+.path-mod-ailanguageteacher .lt-app,
+.path-mod-ailanguageteacher .lt-lesson-sheet,
+.path-mod-ailanguageteacher .lt-editor,
+.path-mod-ailanguageteacher .lt-report,
+.path-mod-ailanguageteacher .lt-slides,
+.path-mod-ailanguageteacher .lt-ghost {
+    --lt-bg: #f3f5f9;
+    --lt-surface: #fff;
+    --lt-surface-2: #f8fafc;
+    --lt-border: #e4e8ef;
+    --lt-border-strong: #cbd5e1;
+    --lt-text: #0f172a;
+    --lt-text-2: #334155;
+    --lt-muted: #4b5767;
+    --lt-primary: #4f46e5;
+    --lt-primary-2: #6366f1;
+    --lt-primary-soft: #eef2ff;
+    --lt-success: #0d7f4f;
+    --lt-success-soft: #ecfdf3;
+    --lt-danger: #d0342c;
+    --lt-danger-soft: #fef3f2;
+    --lt-warning: #b26200;
+    --lt-warning-soft: #fffaeb;
+    --lt-teal: #0e9f9a;
+    --lt-radius: 16px;
+    --lt-shadow-sm: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .07);
+    --lt-shadow-md: 0 6px 14px -4px rgba(16, 24, 40, .10), 0 2px 6px -2px rgba(16, 24, 40, .06);
+    --lt-shadow-lg: 0 24px 40px -12px rgba(16, 24, 40, .22), 0 8px 12px -6px rgba(16, 24, 40, .08);
+    --lt-spring: cubic-bezier(.34, 1.56, .64, 1);
+    --lt-ease: cubic-bezier(.22, 1, .36, 1);
+    color: var(--lt-text);
+    font-feature-settings: "tnum" 0;
+}
+.path-mod-ailanguageteacher .lt-app svg,
+.path-mod-ailanguageteacher .lt-lesson-sheet svg,
+.path-mod-ailanguageteacher .lt-editor svg,
+.path-mod-ailanguageteacher .lt-slides svg,
+.path-mod-ailanguageteacher .lt-report svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.path-mod-ailanguageteacher .lt-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: .95rem;
+    line-height: 1;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform .18s var(--lt-ease), box-shadow .18s var(--lt-ease), background-color .18s, opacity .18s;
+}
+.path-mod-ailanguageteacher .lt-btn svg {
+    width: 18px;
+    height: 18px;
+}
+.path-mod-ailanguageteacher .lt-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+.path-mod-ailanguageteacher .lt-btn:active:not(:disabled) {
+    transform: translateY(0) scale(.98);
+}
+.path-mod-ailanguageteacher .lt-btn:focus-visible,
+.path-mod-ailanguageteacher .lt-iconbtn:focus-visible,
+.path-mod-ailanguageteacher .lt-chip:focus-visible,
+.path-mod-ailanguageteacher .lt-slot-zone:focus-visible,
+.path-mod-ailanguageteacher .lt-pin:focus-visible {
+    outline: 3px solid var(--lt-primary-2);
+    outline-offset: 3px;
+}
+.path-mod-ailanguageteacher .lt-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+.path-mod-ailanguageteacher .lt-btn-primary {
+    color: #fff;
+    background: linear-gradient(180deg, var(--lt-primary-2), var(--lt-primary));
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 6px 16px -6px rgba(79, 70, 229, .65);
+}
+.path-mod-ailanguageteacher .lt-btn-primary:hover:not(:disabled) {
+    color: #fff;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 10px 22px -6px rgba(79, 70, 229, .7);
+}
+.path-mod-ailanguageteacher .lt-btn-ghost {
+    color: var(--lt-text-2);
+    background: var(--lt-surface);
+    border-color: var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-btn-ghost:hover:not(:disabled) {
+    color: var(--lt-text);
+    box-shadow: var(--lt-shadow-md);
+}
+.path-mod-ailanguageteacher .lt-btn-danger {
+    color: var(--lt-danger);
+    background: var(--lt-surface);
+    border-color: #fecdca;
+}
+.path-mod-ailanguageteacher .lt-btn-sm {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: .875rem;
+    border-radius: 10px;
+}
+.path-mod-ailanguageteacher .lt-iconbtn {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface);
+    color: var(--lt-text-2);
+    box-shadow: var(--lt-shadow-sm);
+    cursor: pointer;
+    padding: 0;
+    transition: transform .18s var(--lt-ease), box-shadow .18s, color .18s;
+}
+.path-mod-ailanguageteacher .lt-iconbtn:hover {
+    color: var(--lt-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--lt-shadow-md);
+}
+.path-mod-ailanguageteacher .lt-iconbtn svg {
+    width: 20px;
+    height: 20px;
+}
+.path-mod-ailanguageteacher .lt-pulse {
+    animation: lt-glow 1.8s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-home {
+    transition: opacity .25s, transform .25s;
+}
+.path-mod-ailanguageteacher .lt-home.lt-leaving {
+    opacity: .5;
+    transform: scale(.99);
+    pointer-events: none;
+}
+.path-mod-ailanguageteacher .lt-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+.path-mod-ailanguageteacher .lt-hero-stats,
+.path-mod-ailanguageteacher .lt-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-stat svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-modes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+}
+.path-mod-ailanguageteacher .lt-mode {
+    --accent: var(--lt-primary);
+    --accent-soft: var(--lt-primary-soft);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+    border-radius: 20px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    overflow: hidden;
+    transition: transform .25s var(--lt-ease), box-shadow .25s var(--lt-ease);
+}
+.path-mod-ailanguageteacher .lt-mode::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--accent);
+    opacity: .9;
+}
+.path-mod-ailanguageteacher .lt-mode:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--lt-shadow-lg);
+}
+.path-mod-ailanguageteacher .lt-mode-study {
+    --accent: var(--lt-teal);
+    --accent-soft: #e6f7f6;
+}
+.path-mod-ailanguageteacher .lt-mode-test {
+    --accent: var(--lt-warning);
+    --accent-soft: var(--lt-warning-soft);
+}
+.path-mod-ailanguageteacher .lt-mode-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    margin-bottom: 6px;
+}
+.path-mod-ailanguageteacher .lt-mode-icon svg {
+    display: none;
+    width: 26px;
+    height: 26px;
+}
+.path-mod-ailanguageteacher .lt-mode-study .lt-i-study,
+.path-mod-ailanguageteacher .lt-mode-practice .lt-i-practice,
+.path-mod-ailanguageteacher .lt-mode-test .lt-i-test {
+    display: block;
+}
+.path-mod-ailanguageteacher .lt-mode-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-mode-desc {
+    margin: 0;
+    color: var(--lt-muted);
+    line-height: 1.5;
+    flex: 1;
+}
+.path-mod-ailanguageteacher .lt-mode-meta {
+    margin: 0;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-warn {
+    color: var(--lt-danger);
+}
+.path-mod-ailanguageteacher .lt-badge {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    color: var(--accent);
+    background: var(--accent-soft);
+}
+.path-mod-ailanguageteacher .lt-mode-start {
+    margin-top: 10px;
+    width: 100%;
+}
+.path-mod-ailanguageteacher .lt-mode-study .lt-mode-start {
+    background: linear-gradient(180deg, #14b8a6, var(--lt-teal));
+    box-shadow: 0 6px 16px -6px rgba(14, 159, 154, .6);
+}
+.path-mod-ailanguageteacher .lt-mode-test .lt-mode-start {
+    background: linear-gradient(180deg, #fdb022, var(--lt-warning));
+    box-shadow: 0 6px 16px -6px rgba(247, 144, 9, .6);
+}
+.path-mod-ailanguageteacher .lt-note {
+    margin-top: 14px;
+    color: var(--lt-muted);
+    font-size: .9rem;
+}
+.path-mod-ailanguageteacher .lt-empty {
+    text-align: center;
+    padding: 48px 24px;
+    border-radius: 20px;
+    background: var(--lt-surface);
+    border: 1px dashed var(--lt-border-strong);
+}
+.path-mod-ailanguageteacher .lt-empty-art svg {
+    width: 120px;
+    height: 90px;
+    color: var(--lt-primary-2);
+    stroke-width: 2.5;
+}
+.path-mod-ailanguageteacher .lt-empty h3 {
+    margin: 12px 0 6px;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-empty p {
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-shell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 24px;
+    background: var(--lt-bg);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-md);
+    outline: none;
+    --maxh: 62vh;
+    animation: lt-rise .5s var(--lt-ease);
+}
+.path-mod-ailanguageteacher .lt-shell.is-full {
+    border-radius: 0;
+    padding: 20px 28px;
+    overflow: auto;
+    --maxh: calc(100vh - 290px);
+}
+.path-mod-ailanguageteacher .lt-shell:fullscreen {
+    background: var(--lt-bg);
+}
+.path-mod-ailanguageteacher .lt-shell.is-pseudo-full {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    height: 100%;
+}
+.path-mod-ailanguageteacher .lt-topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.path-mod-ailanguageteacher .lt-titlewrap {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-modetag {
+    flex: none;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+}
+.path-mod-ailanguageteacher .lt-modetag-study {
+    color: #0b6d69;
+    background: #e6f7f6;
+}
+.path-mod-ailanguageteacher .lt-modetag-test {
+    color: #b54708;
+    background: var(--lt-warning-soft);
+}
+.path-mod-ailanguageteacher .lt-slidetitle {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.path-mod-ailanguageteacher .lt-slidename {
+    font-weight: 700;
+    font-size: 1.05rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.path-mod-ailanguageteacher .lt-counter {
+    font-size: .8rem;
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-timer,
+.path-mod-ailanguageteacher .lt-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 12px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-timer svg,
+.path-mod-ailanguageteacher .lt-score svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-primary-2);
+}
+.path-mod-ailanguageteacher .lt-score strong {
+    display: inline-block;
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-score-label {
+    font-weight: 600;
+    color: var(--lt-muted);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-score-total {
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-timer.is-warning {
+    color: #b54708;
+    border-color: #fedf89;
+    background: var(--lt-warning-soft);
+}
+.path-mod-ailanguageteacher .lt-timer.is-danger {
+    color: var(--lt-danger);
+    border-color: #fecdca;
+    background: var(--lt-danger-soft);
+    animation: lt-throb 1s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--lt-border-strong);
+    cursor: pointer;
+    transition: width .35s var(--lt-ease), background-color .3s;
+}
+.path-mod-ailanguageteacher .lt-dot.is-done {
+    background: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-dot.is-active {
+    width: 28px;
+    background: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-viewport {
+    overflow: hidden;
+    border-radius: 20px;
+    transition: height .45s cubic-bezier(.22, 1, .36, 1);
+}
+.path-mod-ailanguageteacher .lt-track {
+    display: flex;
+    align-items: flex-start;
+    will-change: transform;
+}
+.path-mod-ailanguageteacher .lt-slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 0;
+    padding: 2px 4px 6px;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: scale(.97);
+    transition: opacity .45s var(--lt-ease), transform .6s var(--lt-ease);
+}
+.path-mod-ailanguageteacher .lt-slide.is-active {
+    opacity: 1;
+    transform: none;
+}
+.path-mod-ailanguageteacher .lt-slide-head {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.path-mod-ailanguageteacher .lt-instructions {
+    display: inline-block;
+    margin: 0;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    color: var(--lt-muted);
+    font-size: .88rem;
+    font-weight: 500;
+}
+.path-mod-ailanguageteacher .lt-board {
+    --rail: clamp(120px, 24%, 230px);
+    --slot-h: 44px;
+    --chip-fs: .9rem;
+    --pin: 28px;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: var(--rail) minmax(0, 1fr);
+    column-gap: 48px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-board.lt-compact {
+    --slot-h: 36px;
+    --chip-fs: .8rem;
+    --pin: 24px;
+}
+.path-mod-ailanguageteacher .lt-board.lt-n9,
+.path-mod-ailanguageteacher .lt-board.lt-n10 {
+    --slot-h: 32px;
+    --chip-fs: .76rem;
+}
+.path-mod-ailanguageteacher .lt-rail {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 6px;
+    align-self: stretch;
+    padding: 4px 0;
+}
+.path-mod-ailanguageteacher .lt-slot-zone {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--slot-h);
+    padding: 3px 5px 3px 4px;
+    border-radius: 12px;
+    border: 2px dashed var(--lt-border-strong);
+    background: var(--lt-surface-2);
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: border-color .2s, background-color .2s, transform .25s var(--lt-spring), box-shadow .2s;
+}
+.path-mod-ailanguageteacher .lt-slot-num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--lt-text);
+    font-size: .72rem;
+    font-weight: 800;
+    box-shadow: 0 0 0 1.5px var(--lt-border-strong);
+}
+.path-mod-ailanguageteacher .lt-slot-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-filled {
+    border-style: solid;
+    border-color: transparent;
+    background: transparent;
+}
+.path-mod-ailanguageteacher .lt-board.is-dragging .lt-slot-zone:not(.is-filled):not(.is-correct),
+.path-mod-ailanguageteacher .lt-board.is-targeting .lt-slot-zone:not(.is-correct):not(.is-revealed) {
+    border-color: #a5b4fc;
+    background: #f5f7ff;
+    animation: lt-breathe 1.4s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-board .lt-slot-zone.lt-slot-zone.is-over:not(.is-correct):not(.is-revealed) {
+    border-color: var(--lt-primary);
+    border-style: solid;
+    background: var(--lt-primary-soft);
+    transform: scale(1.04);
+    box-shadow: 0 0 0 5px rgba(99, 102, 241, .18), 0 10px 24px -10px rgba(79, 70, 229, .55);
+    animation: none;
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-correct {
+    border: 2px solid var(--lt-success);
+    background: var(--lt-success-soft);
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-revealed {
+    border: 2px dashed var(--lt-success);
+    background: var(--lt-success-soft);
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-incorrect {
+    border: 2px solid var(--lt-danger);
+    background: var(--lt-danger-soft);
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-wrong {
+    border-color: var(--lt-danger);
+    background: var(--lt-danger-soft);
+    animation: lt-shake .45s ease;
+}
+.path-mod-ailanguageteacher .lt-slot-zone.lt-hinted {
+    border-color: var(--lt-warning);
+    background: var(--lt-warning-soft);
+    animation: lt-hint 0.6s ease-in-out 3;
+}
+.path-mod-ailanguageteacher .lt-check {
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--lt-success);
+    color: #fff;
+    box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(18, 183, 106, .45);
+    animation: lt-pop .5s var(--lt-spring);
+    z-index: 2;
+}
+.path-mod-ailanguageteacher .lt-check svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 3;
+}
+.path-mod-ailanguageteacher .lt-check.lt-cross {
+    background: var(--lt-danger);
+    box-shadow: 0 0 0 2px #fff, 0 4px 10px rgba(240, 68, 56, .45);
+}
+.path-mod-ailanguageteacher .lt-correction {
+    font-size: .72rem;
+    color: #b42318;
+    line-height: 1.2;
+    padding: 0 2px;
+}
+.path-mod-ailanguageteacher .lt-figure {
+    position: relative;
+    justify-self: center;
+    width: min(100%, calc(var(--maxh) * var(--arn, 1.333)));
+    aspect-ratio: var(--ar, 4 / 3);
+}
+.path-mod-ailanguageteacher .lt-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .12);
+    user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+    background: var(--lt-surface-2);
+}
+.path-mod-ailanguageteacher .lt-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    overflow: visible;
+}
+.path-mod-ailanguageteacher .lt-line {
+    fill: none;
+    stroke: #b8c2d3;
+    stroke-width: 1.75;
+    stroke-dasharray: 4 5;
+    transition: stroke .3s, stroke-width .3s, opacity .3s;
+    opacity: .9;
+}
+.path-mod-ailanguageteacher .lt-line.is-filled {
+    stroke: var(--line, #b8c2d3);
+    stroke-dasharray: none;
+    stroke-width: 2.5;
+    opacity: 1;
+    filter: drop-shadow(0 1px 1.5px rgba(15, 23, 42, .25));
+}
+.path-mod-ailanguageteacher .lt-lines .lt-line.lt-line.is-over {
+    stroke: var(--c, var(--lt-primary));
+    stroke-width: 3;
+    stroke-dasharray: 7 5;
+    opacity: 1;
+    animation: lt-flow .6s linear infinite;
+}
+.path-mod-ailanguageteacher .lt-line-end {
+    fill: #b8c2d3;
+    stroke: #fff;
+    stroke-width: 1.5;
+}
+.path-mod-ailanguageteacher .lt-line-end.is-filled {
+    fill: var(--line, #b8c2d3);
+}
+.path-mod-ailanguageteacher .lt-pin {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: var(--pin);
+    height: var(--pin);
+    padding: 0;
+    border-radius: 50%;
+    border: 0;
+    background: #fff;
+    color: #0f172a;
+    font-weight: 800;
+    font-size: calc(var(--pin) * .46);
+    line-height: 1;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, .78), 0 3px 10px rgba(0, 0, 0, .45);
+    transition: transform .3s var(--lt-spring), box-shadow .25s;
+}
+.path-mod-ailanguageteacher .lt-pin::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 50%;
+}
+.path-mod-ailanguageteacher .lt-pin.is-filled {
+    box-shadow: 0 0 0 3px var(--c, #0f172a), 0 3px 10px rgba(0, 0, 0, .45);
+}
+.path-mod-ailanguageteacher .lt-board.is-dragging .lt-pin:not(.is-correct):not(.is-filled),
+.path-mod-ailanguageteacher .lt-board.is-targeting .lt-pin:not(.is-correct) {
+    animation: lt-ring 1.4s ease-out infinite;
+}
+.path-mod-ailanguageteacher .lt-board .lt-pin.lt-pin.is-over:not(.is-correct),
+.path-mod-ailanguageteacher .lt-board .lt-pin.lt-pin.is-focus:not(.is-correct),
+.path-mod-ailanguageteacher .lt-ed-figure .lt-pin.is-focus {
+    transform: translate(-50%, -50%) scale(1.4);
+    box-shadow: 0 0 0 3px var(--lt-primary), 0 0 0 9px rgba(99, 102, 241, .28), 0 6px 18px rgba(0, 0, 0, .4);
+    animation: none;
+}
+.path-mod-ailanguageteacher .lt-pin.is-correct {
+    box-shadow: 0 0 0 3px var(--lt-success), 0 3px 10px rgba(0, 0, 0, .45);
+}
+.path-mod-ailanguageteacher .lt-pin.is-incorrect {
+    box-shadow: 0 0 0 3px var(--lt-danger), 0 3px 10px rgba(0, 0, 0, .45);
+}
+.path-mod-ailanguageteacher .lt-pin.is-wrong {
+    box-shadow: 0 0 0 3px var(--lt-danger), 0 0 0 9px rgba(240, 68, 56, .25);
+    animation: lt-pinshake .45s ease;
+}
+.path-mod-ailanguageteacher .lt-pin.lt-hinted {
+    box-shadow: 0 0 0 3px var(--lt-warning), 0 0 0 10px rgba(247, 144, 9, .3);
+    animation: lt-pinhint .6s ease-in-out 3;
+}
+.path-mod-ailanguageteacher .lt-board.is-complete {
+    box-shadow: 0 0 0 3px rgba(18, 183, 106, .25), var(--lt-shadow-md);
+    transition: box-shadow .6s;
+}
+.path-mod-ailanguageteacher .lt-chip {
+    --c: #6366f1;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 6px 14px;
+    border: 0;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 700;
+    font-size: .92rem;
+    line-height: 1.15;
+    text-align: center;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, .18);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 82%, #fff), var(--c) 70%);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, .35) inset,
+        0 -2px 0 rgba(0, 0, 0, .14) inset,
+        0 6px 14px -6px var(--c);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition: transform .22s var(--lt-spring), box-shadow .22s, opacity .2s, filter .2s;
+    word-break: break-word;
+    hyphens: auto;
+}
+.path-mod-ailanguageteacher .lt-chip:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, .35) inset,
+        0 -2px 0 rgba(0, 0, 0, .14) inset,
+        0 12px 20px -8px var(--c);
+}
+.path-mod-ailanguageteacher .lt-chip.is-selected {
+    outline: 3px solid var(--lt-text);
+    outline-offset: 3px;
+    transform: translateY(-3px) scale(1.04);
+    animation: lt-bob 1.2s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-chip.is-lifted {
+    opacity: .22;
+    transform: scale(.95);
+    filter: saturate(.3);
+}
+.path-mod-ailanguageteacher .lt-chip.lt-hinted {
+    animation: lt-hint .6s ease-in-out 3;
+    outline: 3px solid var(--lt-warning);
+    outline-offset: 2px;
+}
+.path-mod-ailanguageteacher .lt-chip.is-locked,
+.path-mod-ailanguageteacher .lt-chip:disabled,
+.path-mod-ailanguageteacher .lt-chip-static {
+    cursor: default;
+    opacity: 1;
+}
+.path-mod-ailanguageteacher .lt-slot-body .lt-chip {
+    width: 100%;
+    min-height: calc(var(--slot-h) - 6px);
+    padding: 3px 8px;
+    font-size: var(--chip-fs);
+    border-radius: 8px;
+}
+.path-mod-ailanguageteacher .lt-ghost {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10000;
+    margin: 0;
+    pointer-events: none;
+    cursor: grabbing;
+    will-change: transform;
+    transition: none;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, .35) inset,
+        0 22px 40px -10px rgba(15, 23, 42, .5),
+        0 8px 16px -8px var(--c);
+}
+.path-mod-ailanguageteacher.lt-noselect,
+.path-mod-ailanguageteacher.lt-noselect * {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: grabbing;
+}
+.path-mod-ailanguageteacher .lt-tray {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 14px;
+    min-height: 72px;
+    box-sizing: border-box;
+    border-radius: 18px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    transition: background-color .25s, border-color .25s, min-height .3s var(--lt-ease), padding .3s;
+}
+.path-mod-ailanguageteacher .lt-tray.is-dragging {
+    border: 1px dashed var(--lt-border-strong);
+}
+.path-mod-ailanguageteacher .lt-tray.is-over {
+    background: var(--lt-primary-soft);
+    border-color: var(--lt-primary-2);
+}
+.path-mod-ailanguageteacher .lt-tray.is-empty {
+    min-height: 16px;
+    padding: 6px;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+.path-mod-ailanguageteacher .lt-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-actions-left,
+.path-mod-ailanguageteacher .lt-actions-right {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-actions-right {
+    margin-left: auto;
+}
+.path-mod-ailanguageteacher .lt-card {
+    --c: #6366f1;
+    position: absolute;
+    z-index: 40;
+    box-sizing: border-box;
+    max-height: 70%;
+    overflow: auto;
+    padding: 18px 44px 18px 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: var(--lt-shadow-lg), 0 0 0 1px rgba(15, 23, 42, .06);
+    opacity: 0;
+    transform: scale(.9) translateY(8px);
+    transition: opacity .28s var(--lt-ease), transform .42s var(--lt-spring);
+    outline: none;
+}
+.path-mod-ailanguageteacher .lt-card.is-open {
+    opacity: 1;
+    transform: none;
+}
+.path-mod-ailanguageteacher .lt-card.is-closing {
+    opacity: 0;
+    transform: scale(.96) translateY(6px);
+    transition-duration: .2s;
+}
+.path-mod-ailanguageteacher .lt-card.is-sheet {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-height: 75%;
+    transform: translateY(24px);
+}
+.path-mod-ailanguageteacher .lt-card.is-sheet.is-open {
+    transform: none;
+}
+.path-mod-ailanguageteacher .lt-card-accent {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--c) 70%, #fff), var(--c));
+}
+.path-mod-ailanguageteacher .lt-card-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.path-mod-ailanguageteacher .lt-card-num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: var(--c);
+    color: #fff;
+    font-weight: 800;
+    box-shadow: 0 6px 14px -6px var(--c);
+}
+.path-mod-ailanguageteacher .lt-card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-card-eyebrow svg {
+    width: 13px;
+    height: 13px;
+}
+.path-mod-ailanguageteacher .lt-card-title {
+    margin: 2px 0 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-card-body {
+    font-size: .95rem;
+    line-height: 1.6;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-card-body p {
+    margin: 0 0 .6em;
+}
+.path-mod-ailanguageteacher .lt-card-body p:last-child,
+.path-mod-ailanguageteacher .lt-card-body ul:last-child,
+.path-mod-ailanguageteacher .lt-card-body ol:last-child {
+    margin-bottom: 0;
+}
+.path-mod-ailanguageteacher .lt-card-body ul,
+.path-mod-ailanguageteacher .lt-card-body ol {
+    margin: 0 0 .6em;
+    padding-left: 1.2em;
+}
+.path-mod-ailanguageteacher .lt-card-body li {
+    margin-bottom: .25em;
+}
+.path-mod-ailanguageteacher .lt-card-body li::marker {
+    color: var(--c);
+}
+.path-mod-ailanguageteacher .lt-card-body strong {
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-card-body h1,
+.path-mod-ailanguageteacher .lt-card-body h2,
+.path-mod-ailanguageteacher .lt-card-body h3,
+.path-mod-ailanguageteacher .lt-card-body h4 {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: .6em 0 .3em;
+}
+.path-mod-ailanguageteacher .lt-card-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    box-shadow: none;
+}
+.path-mod-ailanguageteacher .lt-card-close svg {
+    width: 16px;
+    height: 16px;
+}
+.path-mod-ailanguageteacher .lt-particle {
+    position: absolute;
+    z-index: 30;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+}
+.path-mod-ailanguageteacher .lt-confetti {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 60;
+    pointer-events: none;
+}
+.path-mod-ailanguageteacher .lt-banner {
+    position: absolute;
+    top: 44px;
+    left: 50%;
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    color: #fff;
+    font-weight: 800;
+    background: linear-gradient(180deg, #32d583, var(--lt-success));
+    box-shadow: 0 12px 28px -10px rgba(18, 183, 106, .7);
+    transform: translateX(-50%);
+    animation: lt-drop .6s var(--lt-spring);
+    transition: opacity .5s, transform .5s var(--lt-ease);
+}
+.path-mod-ailanguageteacher .lt-banner.is-out {
+    opacity: 0;
+    transform: translate(-50%, -16px);
+}
+.path-mod-ailanguageteacher .lt-banner svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+}
+.path-mod-ailanguageteacher .lt-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 70;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    border-radius: inherit;
+    background: rgba(15, 23, 42, .35);
+    backdrop-filter: blur(3px);
+    animation: lt-fade .2s ease;
+}
+.path-mod-ailanguageteacher .lt-dialog {
+    max-width: 420px;
+    padding: 22px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: var(--lt-shadow-lg);
+    animation: lt-rise .35s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-dialog p {
+    margin: 0 0 16px;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-summary-shell {
+    align-items: center;
+    padding: 28px;
+}
+.path-mod-ailanguageteacher .lt-summary {
+    width: 100%;
+    max-width: 560px;
+    text-align: center;
+    padding: 32px 28px;
+    border-radius: 24px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-lg);
+    animation: lt-rise .6s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-summary-ring {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    margin: 0 auto 12px;
+}
+.path-mod-ailanguageteacher .lt-summary-ring svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+.path-mod-ailanguageteacher .lt-ring-bg {
+    stroke: #eef1f6;
+    stroke-width: 12;
+}
+.path-mod-ailanguageteacher .lt-ring-fg {
+    stroke-width: 12;
+    stroke-linecap: round;
+}
+.path-mod-ailanguageteacher .lt-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    padding-top: 58px;
+    font-variant-numeric: tabular-nums;
+}
+.path-mod-ailanguageteacher .lt-ring-label strong {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+.path-mod-ailanguageteacher .lt-ring-label span {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-summary-title {
+    margin: 4px 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-summary-sub {
+    margin: 0 0 18px;
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-summary-stats {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.path-mod-ailanguageteacher .lt-sstat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 14px;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-sstat svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-primary-2);
+}
+.path-mod-ailanguageteacher .lt-sstat strong {
+    color: var(--lt-text);
+    font-variant-numeric: tabular-nums;
+}
+.path-mod-ailanguageteacher .lt-summary-actions {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-leaderboard {
+    text-align: left;
+    margin: 0 0 20px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-leaderboard h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    font-size: 1rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-leaderboard h4 svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-leaderboard ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.path-mod-ailanguageteacher .lt-leaderboard li {
+    display: grid;
+    grid-template-columns: 28px 1fr auto auto;
+    gap: 10px;
+    align-items: center;
+    padding: 7px 8px;
+    border-radius: 10px;
+    font-variant-numeric: tabular-nums;
+}
+.path-mod-ailanguageteacher .lt-leaderboard li.is-me {
+    background: var(--lt-primary-soft);
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-lb-rank {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--lt-border);
+    font-size: .75rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-leaderboard li:nth-child(1) .lt-lb-rank {
+    background: #fef0c7;
+    border-color: #fec84b;
+}
+.path-mod-ailanguageteacher .lt-lb-time {
+    color: var(--lt-muted);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-editor {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 20px;
+    align-items: start;
+}
+.path-mod-ailanguageteacher .lt-ed-main,
+.path-mod-ailanguageteacher .lt-ed-side {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.path-mod-ailanguageteacher .lt-ed-side {
+    position: sticky;
+    top: 70px;
+}
+.path-mod-ailanguageteacher .lt-panel {
+    padding: 16px;
+    border-radius: 18px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-panel h4 {
+    margin: 0 0 10px;
+    font-size: .95rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-panel h4 svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-ed-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-ed-toolbar .lt-grow {
+    flex: 1;
+}
+.path-mod-ailanguageteacher .lt-ed-titleinput {
+    flex: 1;
+    min-width: 200px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface);
+}
+.path-mod-ailanguageteacher .lt-input,
+.path-mod-ailanguageteacher .lt-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface);
+    font: inherit;
+    color: var(--lt-text);
+    transition: border-color .2s, box-shadow .2s;
+}
+.path-mod-ailanguageteacher .lt-input:focus,
+.path-mod-ailanguageteacher .lt-textarea:focus,
+.path-mod-ailanguageteacher .lt-ed-titleinput:focus {
+    outline: none;
+    border-color: var(--lt-primary-2);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, .15);
+}
+.path-mod-ailanguageteacher .lt-textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.5;
+}
+.path-mod-ailanguageteacher .lt-ed-canvas {
+    position: relative;
+    padding: 14px;
+    border-radius: 20px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-ed-figure {
+    position: relative;
+    margin: 0 auto;
+    width: min(100%, calc(70vh * var(--arn, 1.333)));
+    aspect-ratio: var(--ar, 4 / 3);
+    cursor: crosshair;
+    touch-action: none;
+}
+.path-mod-ailanguageteacher .lt-ed-figure .lt-image {
+    pointer-events: none;
+}
+.path-mod-ailanguageteacher .lt-ed-figure .lt-pin {
+    cursor: grab;
+    touch-action: none;
+}
+.path-mod-ailanguageteacher .lt-ed-figure .lt-pin.is-sel {
+    transform: translate(-50%, -50%) scale(1.3);
+    box-shadow: 0 0 0 3px var(--c), 0 0 0 9px color-mix(in srgb, var(--c) 30%, transparent), 0 6px 18px rgba(0, 0, 0, .4);
+}
+.path-mod-ailanguageteacher .lt-ed-figure .lt-pin.is-new {
+    animation: lt-pop .45s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-ed-figure .lt-pin-tag {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 6px);
+    transform: translateX(-50%);
+    white-space: nowrap;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 700;
+    color: #fff;
+    background: var(--c);
+    box-shadow: 0 4px 10px -4px rgba(0, 0, 0, .5);
+    pointer-events: none;
+}
+.path-mod-ailanguageteacher .lt-ed-figure.is-placing {
+    cursor: copy;
+}
+.path-mod-ailanguageteacher .lt-ed-figure.is-placing .lt-pin {
+    pointer-events: none;
+    opacity: .75;
+}
+.path-mod-ailanguageteacher .lt-ed-cursor {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px dashed var(--lt-primary);
+    background: rgba(99, 102, 241, .15);
+    transform: translate(-50%, -50%);
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-ed-figure.is-placing .lt-ed-cursor {
+    display: block;
+}
+.path-mod-ailanguageteacher .lt-queue-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--lt-primary-2), var(--lt-primary));
+    box-shadow: 0 10px 24px -12px rgba(79, 70, 229, .8);
+    animation: lt-rise .35s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-queue-banner .lt-qlabel {
+    flex: 1;
+    min-width: 180px;
+}
+.path-mod-ailanguageteacher .lt-queue-banner .lt-qlabel strong {
+    display: block;
+    font-size: 1.1rem;
+}
+.path-mod-ailanguageteacher .lt-queue-banner .lt-qlabel span {
+    opacity: .85;
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-queue-banner .lt-btn-ghost {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, .3);
+    box-shadow: none;
+}
+.path-mod-ailanguageteacher .lt-labellist {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 58vh;
+    overflow: auto;
+    padding: 2px;
+}
+.path-mod-ailanguageteacher .lt-lrow {
+    border-radius: 14px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface);
+    transition: box-shadow .2s, border-color .2s;
+}
+.path-mod-ailanguageteacher .lt-lrow.is-sel {
+    border-color: var(--lt-primary-2);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+}
+.path-mod-ailanguageteacher .lt-lrow-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+}
+.path-mod-ailanguageteacher .lt-lrow-num {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    font-weight: 800;
+    font-size: .75rem;
+    box-shadow: 0 0 0 2px var(--c);
+}
+.path-mod-ailanguageteacher .lt-lrow-num.is-unplaced {
+    box-shadow: 0 0 0 2px var(--lt-border-strong);
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-lrow .lt-input {
+    flex: 1;
+    padding: 6px 8px;
+}
+.path-mod-ailanguageteacher .lt-swatch {
+    flex: none;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--lt-border);
+    background: var(--c);
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-lrow-body {
+    padding: 0 10px 10px;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-lrow.is-sel .lt-lrow-body {
+    display: flex;
+}
+.path-mod-ailanguageteacher .lt-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.path-mod-ailanguageteacher .lt-palette button {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border-radius: 7px;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--lt-border);
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-palette button.is-on {
+    box-shadow: 0 0 0 2px var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-mini {
+    font-size: .8rem;
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-mini a {
+    text-decoration: underline;
+}
+.path-mod-ailanguageteacher .lt-check-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .88rem;
+}
+.path-mod-ailanguageteacher .lt-preview-card {
+    position: relative;
+    padding: 14px 16px 14px 20px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: var(--lt-shadow-md), 0 0 0 1px rgba(15, 23, 42, .05);
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-preview-card .lt-card-accent {
+    width: 5px;
+}
+.path-mod-ailanguageteacher .lt-savestate {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--lt-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.path-mod-ailanguageteacher .lt-savestate.is-dirty {
+    color: #b54708;
+}
+.path-mod-ailanguageteacher .lt-savestate.is-saved {
+    color: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-counter-pill {
+    font-size: .78rem;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-counter-pill.is-full {
+    color: #b54708;
+    background: var(--lt-warning-soft);
+    border-color: #fedf89;
+}
+.path-mod-ailanguageteacher .lt-slides-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 18px;
+    margin: 18px 0 26px;
+}
+.path-mod-ailanguageteacher .lt-slidecard {
+    display: flex;
+    flex-direction: column;
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    transition: transform .25s var(--lt-ease), box-shadow .25s;
+}
+.path-mod-ailanguageteacher .lt-slidecard:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--lt-shadow-lg);
+}
+.path-mod-ailanguageteacher .lt-slidecard-thumb {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--lt-surface-2);
+    display: block;
+}
+.path-mod-ailanguageteacher .lt-slidecard-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.path-mod-ailanguageteacher .lt-slidecard-no {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 800;
+    color: #fff;
+    background: rgba(15, 23, 42, .7);
+    backdrop-filter: blur(4px);
+}
+.path-mod-ailanguageteacher .lt-slidecard-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-slidecard-title {
+    font-weight: 800;
+    margin: 0;
+    font-size: 1rem;
+}
+.path-mod-ailanguageteacher .lt-slidecard-meta {
+    font-size: .82rem;
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-slidecard-meta.is-warn {
+    color: #b54708;
+}
+.path-mod-ailanguageteacher .lt-slidecard-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-slidecard-actions .lt-iconbtn {
+    width: 36px;
+    height: 36px;
+}
+.path-mod-ailanguageteacher .lt-slidecard-actions .lt-iconbtn svg {
+    width: 17px;
+    height: 17px;
+}
+.path-mod-ailanguageteacher .lt-slidecard-actions .lt-btn {
+    flex: 1 0 100%;
+    justify-content: center;
+}
+.path-mod-ailanguageteacher .lt-report .lt-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px;
+    margin: 12px 0 22px;
+}
+.path-mod-ailanguageteacher .lt-kpi {
+    padding: 16px 18px;
+    border-radius: 18px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-kpi span {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--lt-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.path-mod-ailanguageteacher .lt-kpi strong {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+.path-mod-ailanguageteacher .lt-report h3 {
+    font-weight: 800;
+    font-size: 1.15rem;
+    margin: 26px 0 6px;
+}
+.path-mod-ailanguageteacher .lt-report .lt-help {
+    color: var(--lt-muted);
+    margin-bottom: 12px;
+}
+.path-mod-ailanguageteacher .lt-report table.lt-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-table th {
+    background: var(--lt-surface-2);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--lt-muted);
+    font-weight: 800;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--lt-border);
+    text-align: left;
+}
+.path-mod-ailanguageteacher .lt-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--lt-border);
+    vertical-align: middle;
+    font-variant-numeric: tabular-nums;
+}
+.path-mod-ailanguageteacher .lt-table tr:last-child td {
+    border-bottom: 0;
+}
+.path-mod-ailanguageteacher .lt-bar {
+    position: relative;
+    height: 10px;
+    min-width: 120px;
+    border-radius: 999px;
+    background: #eef1f6;
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-bar span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+    background: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-bar.is-mid span {
+    background: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-bar.is-bad span {
+    background: var(--lt-danger);
+}
+.path-mod-ailanguageteacher .lt-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-bar-row b {
+    min-width: 46px;
+    text-align: right;
+}
+.path-mod-ailanguageteacher .lt-dotcolor {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.path-mod-ailanguageteacher .lt-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-pill.is-test {
+    color: #b54708;
+    background: var(--lt-warning-soft);
+    border-color: #fedf89;
+}
+.path-mod-ailanguageteacher .lt-pill.is-practice {
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    border-color: #c7d2fe;
+}
+.path-mod-ailanguageteacher .lt-tabs {
+    display: inline-flex;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    margin-bottom: 8px;
+}
+.path-mod-ailanguageteacher .lt-tabs a {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    color: var(--lt-muted);
+    text-decoration: none;
+}
+.path-mod-ailanguageteacher .lt-tabs a.is-on {
+    background: var(--lt-primary-soft);
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-report-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 12px 0;
+}
+
+@media (max-width: 991px) {
+    .path-mod-ailanguageteacher .lt-editor {
+        grid-template-columns: 1fr;
+    }
+    .path-mod-ailanguageteacher .lt-ed-side {
+        position: static;
+    }
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-shell {
+        padding: 10px;
+        border-radius: 18px;
+        gap: 10px;
+        --maxh: 52vh;
+    }
+    .path-mod-ailanguageteacher .lt-board {
+        --rail: minmax(96px, 36%);
+        grid-template-columns: minmax(88px, 32%) minmax(0, 1fr);
+        column-gap: 14px;
+        padding: 8px;
+        border-radius: 16px;
+        --slot-h: 34px;
+        --chip-fs: .74rem;
+        --pin: 22px;
+    }
+    .path-mod-ailanguageteacher .lt-board.lt-compact,
+    .path-mod-ailanguageteacher .lt-board.lt-n9,
+    .path-mod-ailanguageteacher .lt-board.lt-n10 {
+        --slot-h: 28px;
+        --chip-fs: .66rem;
+        --pin: 19px;
+    }
+    .path-mod-ailanguageteacher .lt-slot-num {
+        width: 18px;
+        height: 18px;
+        font-size: .62rem;
+    }
+    .path-mod-ailanguageteacher .lt-slot-zone {
+        gap: 4px;
+        padding: 2px 3px;
+        border-radius: 9px;
+    }
+    .path-mod-ailanguageteacher .lt-slot-body .lt-chip {
+        padding: 2px 4px;
+        border-radius: 6px;
+    }
+    .path-mod-ailanguageteacher .lt-chip {
+        min-height: 40px;
+        padding: 6px 12px;
+        font-size: .85rem;
+    }
+    .path-mod-ailanguageteacher .lt-tray {
+        gap: 8px;
+        padding: 10px;
+    }
+    .path-mod-ailanguageteacher .lt-score-label,
+    .path-mod-ailanguageteacher .lt-counter-hide-sm {
+        display: none;
+    }
+    .path-mod-ailanguageteacher .lt-timer,
+    .path-mod-ailanguageteacher .lt-score {
+        height: 36px;
+        padding: 0 8px;
+        font-size: .85rem;
+    }
+    .path-mod-ailanguageteacher .lt-iconbtn {
+        width: 36px;
+        height: 36px;
+    }
+    .path-mod-ailanguageteacher .lt-modetag {
+        display: none;
+    }
+    .path-mod-ailanguageteacher .lt-actions .lt-btn {
+        min-height: 42px;
+        padding: 0 12px;
+    }
+    .path-mod-ailanguageteacher .lt-card {
+        padding: 16px 40px 16px 20px;
+    }
+    .path-mod-ailanguageteacher .lt-banner {
+        top: 30px;
+        font-size: .85rem;
+    }
+    .path-mod-ailanguageteacher .lt-leaderboard li {
+        grid-template-columns: 24px 1fr auto;
+    }
+    .path-mod-ailanguageteacher .lt-lb-time {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    .path-mod-ailanguageteacher .lt-board {
+        grid-template-columns: minmax(84px, 38%) minmax(0, 1fr);
+        column-gap: 12px;
+    }
+    .path-mod-ailanguageteacher .lt-actions .lt-btn span {
+        font-size: .85rem;
+    }
+    .path-mod-ailanguageteacher .lt-timer svg,
+    .path-mod-ailanguageteacher .lt-score svg {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    /* Reduced motion must beat every animated state, so this is the one place !important is used. */
+    /* stylelint-disable declaration-no-important */
+    .path-mod-ailanguageteacher .lt-app *,
+    .path-mod-ailanguageteacher .lt-lesson-sheet *,
+    .path-mod-ailanguageteacher .lt-editor *,
+    .path-mod-ailanguageteacher .lt-wizard * {
+        animation: none !important;
+        transition: none !important;
+    }
+    /* stylelint-enable declaration-no-important */
+}
+
+@keyframes lt-rise {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes lt-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes lt-pop {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes lt-drop {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -24px) scale(.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+@keyframes lt-shake {
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    20% {
+        transform: translateX(-7px);
+    }
+    40% {
+        transform: translateX(6px);
+    }
+    60% {
+        transform: translateX(-4px);
+    }
+    80% {
+        transform: translateX(3px);
+    }
+}
+
+@keyframes lt-pinshake {
+    0%,
+    100% {
+        transform: translate(-50%, -50%);
+    }
+    25% {
+        transform: translate(calc(-50% - 5px), -50%);
+    }
+    75% {
+        transform: translate(calc(-50% + 5px), -50%);
+    }
+}
+
+@keyframes lt-breathe {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, .14);
+    }
+}
+
+@keyframes lt-ring {
+    0% {
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, .78), 0 0 0 0 rgba(99, 102, 241, .55), 0 3px 10px rgba(0, 0, 0, .45);
+    }
+    100% {
+        box-shadow: 0 0 0 2px rgba(15, 23, 42, .78), 0 0 0 14px rgba(99, 102, 241, 0), 0 3px 10px rgba(0, 0, 0, .45);
+    }
+}
+
+@keyframes lt-flow {
+    to {
+        stroke-dashoffset: -24;
+    }
+}
+
+@keyframes lt-bob {
+    0%,
+    100% {
+        transform: translateY(-3px) scale(1.04);
+    }
+    50% {
+        transform: translateY(-6px) scale(1.04);
+    }
+}
+
+@keyframes lt-hint {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.06);
+    }
+}
+
+@keyframes lt-pinhint {
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.35);
+    }
+}
+
+@keyframes lt-glow {
+    0%,
+    100% {
+        box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 6px 16px -6px rgba(79, 70, 229, .65), 0 0 0 0 rgba(99, 102, 241, .45);
+    }
+    50% {
+        box-shadow: 0 1px 0 rgba(255, 255, 255, .25) inset, 0 6px 16px -6px rgba(79, 70, 229, .65), 0 0 0 8px rgba(99, 102, 241, 0);
+    }
+}
+
+@keyframes lt-throb {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+.path-mod-ailanguageteacher .lt-intro-shell {
+    align-items: center;
+    padding: 24px;
+}
+.path-mod-ailanguageteacher .lt-intro {
+    width: 100%;
+    max-width: 820px;
+    border-radius: 24px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-lg);
+    overflow: hidden;
+    animation: lt-rise .5s var(--lt-spring);
+    --accent: var(--lt-primary);
+    --accent-soft: var(--lt-primary-soft);
+}
+.path-mod-ailanguageteacher .lt-intro-study {
+    --accent: var(--lt-teal);
+    --accent-soft: #e6f7f6;
+}
+.path-mod-ailanguageteacher .lt-intro-test {
+    --accent: var(--lt-warning);
+    --accent-soft: var(--lt-warning-soft);
+}
+.path-mod-ailanguageteacher .lt-intro-hero {
+    text-align: center;
+    padding: 30px 24px 22px;
+    background: radial-gradient(120% 90% at 50% 0%, var(--accent-soft), #fff 70%);
+    border-bottom: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-intro-badge {
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 20px;
+    color: #fff;
+    background: var(--accent);
+    box-shadow: 0 14px 28px -12px var(--accent);
+    animation: lt-pop .6s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-intro-badge svg {
+    width: 32px;
+    height: 32px;
+    stroke-width: 2.4;
+}
+.path-mod-ailanguageteacher .lt-intro-hero .lt-modetag {
+    display: inline-block;
+    color: color-mix(in srgb, var(--accent) 70%, #000);
+    background: #fff;
+    border: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-intro-title {
+    margin: 10px 0 4px;
+    font-size: 1.6rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-intro-sub {
+    margin: 0 auto;
+    max-width: 520px;
+    color: var(--lt-muted);
+    line-height: 1.5;
+}
+.path-mod-ailanguageteacher .lt-intro-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 0;
+}
+.path-mod-ailanguageteacher .lt-intro-col {
+    padding: 22px 24px;
+}
+.path-mod-ailanguageteacher .lt-intro-col + .lt-intro-col {
+    border-left: 1px solid var(--lt-border);
+    background: var(--lt-surface-2);
+}
+.path-mod-ailanguageteacher .lt-intro-col h4 {
+    margin: 0 0 12px;
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-intro-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-intro-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 600;
+    color: var(--lt-text-2);
+    line-height: 1.35;
+}
+.path-mod-ailanguageteacher .lt-intro-list li.is-key {
+    padding: 10px 12px;
+    margin: -2px -4px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--lt-text);
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-intro-ic {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: #fff;
+    border: 1px solid var(--lt-border);
+    color: var(--accent);
+}
+.path-mod-ailanguageteacher .lt-intro-ic svg {
+    width: 18px;
+    height: 18px;
+}
+.path-mod-ailanguageteacher .lt-intro-how p {
+    margin: 12px 0 0;
+    color: var(--lt-text-2);
+    line-height: 1.5;
+}
+.path-mod-ailanguageteacher .lt-intro-demo {
+    position: relative;
+    height: 90px;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--lt-border);
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-demo-path {
+    position: absolute;
+    inset: 10px 10px;
+    width: calc(100% - 20px);
+    height: 70px;
+}
+.path-mod-ailanguageteacher .lt-demo-path path {
+    stroke: #b8c2d3;
+    stroke-width: 2;
+    stroke-dasharray: 4 5;
+}
+.path-mod-ailanguageteacher .lt-demo-chip {
+    position: absolute;
+    left: 14px;
+    top: 44px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 800;
+    font-size: .8rem;
+    background: var(--accent);
+    box-shadow: 0 8px 16px -8px var(--accent);
+    animation: lt-demo-chip 2.8s var(--lt-ease) infinite;
+}
+.path-mod-ailanguageteacher .lt-demo-pin {
+    position: absolute;
+    right: 18%;
+    top: 14px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    font-weight: 800;
+    font-size: .75rem;
+    box-shadow: 0 0 0 2px rgba(15, 23, 42, .78), 0 3px 8px rgba(0, 0, 0, .3);
+    animation: lt-demo-pin 2.8s ease infinite;
+}
+.path-mod-ailanguageteacher .lt-demo-hand {
+    position: absolute;
+    left: 30px;
+    top: 56px;
+    color: var(--lt-text);
+    animation: lt-demo-hand 2.8s var(--lt-ease) infinite;
+}
+.path-mod-ailanguageteacher .lt-demo-hand svg {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+}
+.path-mod-ailanguageteacher .lt-intro-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 16px 24px 22px;
+    border-top: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-btn-lg {
+    min-height: 50px;
+    padding: 0 28px;
+    font-size: 1.02rem;
+    border-radius: 14px;
+}
+.path-mod-ailanguageteacher .lt-intro-test .lt-btn-primary {
+    background: linear-gradient(180deg, #fdb022, var(--lt-warning));
+    box-shadow: 0 8px 20px -8px rgba(247, 144, 9, .7);
+}
+.path-mod-ailanguageteacher .lt-intro-study .lt-btn-primary {
+    background: linear-gradient(180deg, #14b8a6, var(--lt-teal));
+    box-shadow: 0 8px 20px -8px rgba(14, 159, 154, .7);
+}
+.path-mod-ailanguageteacher .lt-verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    margin-bottom: 6px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .9rem;
+    animation: lt-pop .5s var(--lt-spring) .9s both;
+}
+.path-mod-ailanguageteacher .lt-verdict svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 3;
+}
+.path-mod-ailanguageteacher .lt-verdict.is-pass {
+    color: #067647;
+    background: var(--lt-success-soft);
+    border: 1px solid #abefc6;
+}
+.path-mod-ailanguageteacher .lt-verdict.is-fail {
+    color: #b42318;
+    background: var(--lt-danger-soft);
+    border: 1px solid #fecdca;
+}
+.path-mod-ailanguageteacher .lt-summary.is-pass {
+    background: radial-gradient(120% 60% at 50% 0%, #ecfdf3, #fff 60%);
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-intro-grid {
+        grid-template-columns: 1fr;
+    }
+    .path-mod-ailanguageteacher .lt-intro-col + .lt-intro-col {
+        border-left: 0;
+        border-top: 1px solid var(--lt-border);
+    }
+    .path-mod-ailanguageteacher .lt-intro-actions .lt-btn-lg {
+        flex: 1;
+    }
+}
+
+@keyframes lt-demo-chip {
+    0%,
+    15% {
+        transform: translate(0, 0);
+    }
+    55%,
+    80% {
+        transform: translate(calc(82% + 60px), -32px) scale(.95);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(calc(82% + 60px), -32px);
+        opacity: 0;
+    }
+}
+
+@keyframes lt-demo-hand {
+    0%,
+    15% {
+        transform: translate(0, 0);
+    }
+    55%,
+    80% {
+        transform: translate(calc(82% + 60px), -32px);
+    }
+    100% {
+        transform: translate(calc(82% + 60px), -32px);
+        opacity: 0;
+    }
+}
+
+@keyframes lt-demo-pin {
+    0%,
+    50% {
+        transform: scale(1);
+    }
+    60% {
+        transform: scale(1.35);
+        box-shadow: 0 0 0 3px #4f46e5, 0 0 0 9px rgba(99, 102, 241, .28);
+    }
+    80%,
+    100% {
+        transform: scale(1);
+    }
+}
+.path-mod-ailanguageteacher .lt-steps {
+    margin: 0 0 14px;
+    padding-left: 1.3em;
+    color: var(--lt-text-2);
+    line-height: 1.6;
+}
+.path-mod-ailanguageteacher .lt-prompt {
+    margin-bottom: 18px;
+    border-radius: 14px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface-2);
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-prompt-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-prompt-text {
+    border: 0;
+    border-radius: 0;
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .8rem;
+    min-height: 240px;
+}
+.path-mod-ailanguageteacher .lt-copy.is-done {
+    background: linear-gradient(180deg, #32d583, var(--lt-success));
+}
+.path-mod-ailanguageteacher textarea.lt-json {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: .82rem;
+}
+
+@media (max-width: 560px) {
+    .path-mod-ailanguageteacher .lt-board.lt-compact {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 12px;
+        --pin: 24px;
+        --slot-h: 36px;
+        --chip-fs: .74rem;
+    }
+    .path-mod-ailanguageteacher .lt-board.lt-compact .lt-figure {
+        order: -1;
+        width: 100%;
+    }
+    .path-mod-ailanguageteacher .lt-board.lt-compact .lt-rail {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+    }
+    .path-mod-ailanguageteacher .lt-board.lt-compact .lt-lines {
+        display: none;
+    }
+}
+.path-mod-ailanguageteacher .lt-tips {
+    margin: 4px 0 16px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--lt-primary-soft);
+    border: 1px solid #c7d2fe;
+    color: var(--lt-text-2);
+    font-size: .88rem;
+}
+.path-mod-ailanguageteacher .lt-tips-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-tips-head svg {
+    width: 18px;
+    height: 18px;
+}
+.path-mod-ailanguageteacher .lt-tips ul {
+    margin: 0;
+    padding-left: 1.2em;
+    display: grid;
+    gap: 4px;
+    line-height: 1.45;
+}
+.path-mod-ailanguageteacher .lt-tips strong {
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-queue-banner .lt-qsteps {
+    flex-basis: 100%;
+    order: 5;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 2px 0 0;
+    padding: 10px 0 0;
+    list-style: none;
+    border-top: 1px solid rgba(255, 255, 255, .25);
+    counter-reset: ldq;
+}
+.path-mod-ailanguageteacher .lt-qstep {
+    counter-increment: ldq;
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, .14);
+    border: 1px solid rgba(255, 255, 255, .28);
+}
+.path-mod-ailanguageteacher .lt-qstep::before {
+    content: counter(ldq) ".";
+    margin-right: 5px;
+    opacity: .7;
+}
+.path-mod-ailanguageteacher .lt-qstep.is-done {
+    opacity: .6;
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+}
+.path-mod-ailanguageteacher .lt-qstep.is-current {
+    background: #fff;
+    color: var(--lt-primary);
+    font-weight: 800;
+    box-shadow: 0 4px 12px -4px rgba(0, 0, 0, .35);
+    animation: lt-pop .35s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-qstep button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-qstep button:hover {
+    text-decoration: underline;
+}
+.path-mod-ailanguageteacher .lt-aihelper {
+    margin: 0 0 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--lt-primary-soft);
+    border: 1px solid #c7d2fe;
+    font-size: .84rem;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-aihelper-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-aihelper-title svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+}
+.path-mod-ailanguageteacher .lt-aihelper-steps {
+    margin: 0 0 10px;
+    padding-left: 1.2em;
+    line-height: 1.45;
+}
+.path-mod-ailanguageteacher .lt-aihelper .lt-btn.is-done {
+    color: #fff;
+    background: linear-gradient(180deg, #32d583, var(--lt-success));
+    border-color: transparent;
+}
+.path-mod-ailanguageteacher .lt-tips .lt-prompt {
+    margin: 12px 0 0;
+    background: #fff;
+}
+.path-mod-ailanguageteacher .lt-tips .lt-prompt-head {
+    align-items: flex-start;
+}
+.path-mod-ailanguageteacher .lt-tips .lt-prompt-text {
+    min-height: 200px;
+}
+.path-mod-ailanguageteacher .lt-intro-demo.is-study {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-shell {
+    gap: 8px;
+    padding: 12px;
+}
+.path-mod-ailanguageteacher .lt-shell.is-full {
+    padding: 12px 18px;
+}
+.path-mod-ailanguageteacher .lt-titlewrap {
+    flex: 0 1 auto;
+    max-width: 38%;
+}
+.path-mod-ailanguageteacher .lt-hint {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: .84rem;
+    font-weight: 500;
+    color: var(--lt-muted);
+    line-height: 1.3;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.path-mod-ailanguageteacher .lt-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-counter .lt-dots {
+    gap: 4px;
+}
+.path-mod-ailanguageteacher .lt-counter .lt-dot {
+    width: 6px;
+    height: 6px;
+}
+.path-mod-ailanguageteacher .lt-counter .lt-dot.is-active {
+    width: 18px;
+}
+.path-mod-ailanguageteacher .lt-slide {
+    padding: 0 2px 4px;
+}
+.path-mod-ailanguageteacher .lt-board {
+    padding: 10px;
+    column-gap: 36px;
+}
+.path-mod-ailanguageteacher .lt-tray {
+    margin-top: 8px;
+    padding: 10px;
+    min-height: 60px;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(170px, 230px);
+    gap: 10px;
+    align-items: stretch;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray > .lt-board {
+    grid-column: 1;
+    grid-row: 1;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray > .lt-tray {
+    grid-column: 2;
+    grid-row: 1;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray > .lt-scenecontext,
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray > .lt-stagebar {
+    grid-column: 1 / -1;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray,
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray.is-empty {
+    margin: 0;
+    padding: 10px;
+    height: 0;
+    min-height: 100%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-y: auto;
+    gap: 8px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray.is-dragging {
+    border-style: dashed;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray.is-over {
+    background: var(--lt-primary-soft);
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray .lt-chip {
+    flex: none;
+    width: 100%;
+    min-height: 38px;
+    font-size: .86rem;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray[hidden] {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-topbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .path-mod-ailanguageteacher .lt-titlewrap {
+        flex: 1;
+        max-width: none;
+    }
+    .path-mod-ailanguageteacher .lt-hint {
+        order: 5;
+        flex-basis: 100%;
+        font-size: .78rem;
+    }
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-slidename {
+        -webkit-line-clamp: 1;
+        font-size: .95rem;
+    }
+    .path-mod-ailanguageteacher .lt-counter {
+        white-space: nowrap;
+    }
+    .path-mod-ailanguageteacher .lt-counter .lt-dots {
+        display: none;
+    }
+}
+.path-mod-ailanguageteacher .lt-tray-done {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: auto;
+    color: var(--lt-success);
+    font-weight: 700;
+    font-size: .88rem;
+    text-align: center;
+}
+.path-mod-ailanguageteacher .lt-tray-done svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 3;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-tray.is-empty .lt-tray-done {
+    display: flex;
+    flex-direction: column;
+}
+.path-mod-ailanguageteacher .lt-mode.is-done {
+    --accent: var(--lt-success);
+    border-color: #abefc6;
+    background: linear-gradient(180deg, #f3fcf6 0%, #fff 55%);
+}
+.path-mod-ailanguageteacher .lt-mode.is-done::before {
+    background: linear-gradient(90deg, #32d583, var(--lt-success));
+}
+.path-mod-ailanguageteacher .lt-mode-done {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(180deg, #32d583, var(--lt-success));
+    box-shadow: 0 0 0 6px #fff, 0 0 0 7px #d1fadf, 0 14px 28px -10px rgba(18, 183, 106, .7);
+    transform: translateX(-50%);
+    animation: lt-done-pop .6s var(--lt-spring) both;
+}
+.path-mod-ailanguageteacher .lt-mode-done svg {
+    width: 34px;
+    height: 34px;
+    stroke-width: 3;
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: lt-done-tick .45s var(--lt-ease) .35s forwards;
+}
+.path-mod-ailanguageteacher .lt-mode.is-done .lt-mode-icon {
+    color: var(--lt-success);
+    background: var(--lt-success-soft);
+}
+.path-mod-ailanguageteacher .lt-badge.lt-badge-done {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: #067647;
+    background: var(--lt-success-soft);
+    border: 1px solid #abefc6;
+}
+.path-mod-ailanguageteacher .lt-badge-done svg {
+    width: 13px;
+    height: 13px;
+    stroke-width: 3;
+}
+.path-mod-ailanguageteacher .lt-mode.is-done .lt-mode-start {
+    color: #067647;
+    background: #fff;
+    border: 1px solid #abefc6;
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-mode.is-done .lt-mode-start:hover:not(:disabled) {
+    color: #fff;
+    background: linear-gradient(180deg, #32d583, var(--lt-success));
+}
+.path-mod-ailanguageteacher .lt-stat.lt-stat-done {
+    color: #067647;
+    background: var(--lt-success-soft);
+    border-color: #abefc6;
+}
+.path-mod-ailanguageteacher .lt-stat.lt-stat-done svg {
+    color: var(--lt-success);
+    stroke-width: 3;
+}
+
+@keyframes lt-done-pop {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) scale(.4);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+    }
+}
+
+@keyframes lt-done-tick {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+.path-mod-ailanguageteacher .lt-mode-bestfor {
+    margin: -2px 0 4px;
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+.path-mod-ailanguageteacher .lt-cmp {
+    list-style: none;
+    margin: 4px 0 2px;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+    flex: 1;
+}
+.path-mod-ailanguageteacher .lt-cmp li {
+    display: grid;
+    grid-template-columns: 22px minmax(92px, auto) 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--lt-border);
+    font-size: .88rem;
+}
+.path-mod-ailanguageteacher .lt-cmp li:last-child {
+    border-bottom: 0;
+}
+.path-mod-ailanguageteacher .lt-cmp-ic {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+}
+.path-mod-ailanguageteacher .lt-cmp-ic svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 3;
+}
+.path-mod-ailanguageteacher .lt-cmp li.is-yes .lt-cmp-ic {
+    color: #fff;
+    background: var(--accent);
+}
+.path-mod-ailanguageteacher .lt-cmp li.is-no .lt-cmp-ic {
+    color: var(--lt-muted);
+    background: #eef1f6;
+}
+.path-mod-ailanguageteacher .lt-cmp-label {
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-cmp-text {
+    color: var(--lt-text);
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-cmp li.is-no .lt-cmp-text {
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-mode-extra {
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-mode .lt-mode-desc {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-mode {
+    --mode-accent: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-mode-study {
+    --mode-accent: var(--lt-teal);
+}
+.path-mod-ailanguageteacher .lt-mode-test {
+    --mode-accent: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-cmp li {
+    grid-template-columns: 22px 118px minmax(0, 1fr);
+}
+.path-mod-ailanguageteacher .lt-cmp li.is-yes .lt-cmp-ic {
+    background: var(--mode-accent);
+}
+.path-mod-ailanguageteacher .lt-mode-bestfor {
+    color: color-mix(in srgb, var(--mode-accent) 70%, #000);
+}
+.path-mod-ailanguageteacher .lt-board {
+    --rail: clamp(160px, 25%, 270px);
+}
+.path-mod-ailanguageteacher .lt-rail {
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-slot-zone {
+    gap: 8px;
+    padding: 4px 6px 4px 5px;
+}
+.path-mod-ailanguageteacher .lt-slot-num {
+    width: 26px;
+    height: 26px;
+    font-size: .82rem;
+}
+.path-mod-ailanguageteacher .lt-slot-body .lt-chip {
+    min-height: calc(var(--slot-h) - 10px);
+    padding: 4px 10px;
+    font-size: var(--chip-fs);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: .01em;
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-board.lt-compact,
+    .path-mod-ailanguageteacher .lt-board.lt-n9,
+    .path-mod-ailanguageteacher .lt-board.lt-n10 {
+        --chip-fs: .8rem;
+        --slot-h: 38px;
+    }
+    .path-mod-ailanguageteacher .lt-slot-num {
+        width: 22px;
+        height: 22px;
+        font-size: .72rem;
+    }
+}
+.path-mod-ailanguageteacher .lt-tray {
+    gap: 12px;
+    padding: 14px;
+}
+.path-mod-ailanguageteacher .lt-tray .lt-chip {
+    min-height: 48px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray,
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray.is-empty {
+    gap: 12px;
+    padding: 12px;
+}
+.path-mod-ailanguageteacher .lt-shell.lt-wide .lt-slide.has-tray .lt-tray .lt-chip {
+    min-height: 48px;
+    padding: 10px 12px;
+    font-size: 1rem;
+}
+.path-mod-ailanguageteacher .lt-ghost {
+    font-size: 1rem;
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-tray {
+        gap: 10px;
+        padding: 10px;
+    }
+    .path-mod-ailanguageteacher .lt-tray .lt-chip {
+        min-height: 44px;
+        padding: 8px 14px;
+        font-size: .92rem;
+    }
+}
+.path-mod-ailanguageteacher .lt-rail {
+    gap: var(--rail-gap, 8px);
+}
+.path-mod-ailanguageteacher .lt-slot-body .lt-chip {
+    min-height: max(22px, calc(var(--slot-h) - 10px));
+}
+.path-mod-ailanguageteacher .lt-slot-zone {
+    padding: 2px 5px 2px 4px;
+}
+.path-mod-ailanguageteacher .lt-slot-body .lt-chip {
+    padding: clamp(1px, calc((var(--slot-h) - 32px) / 4), 5px) 10px;
+    line-height: 1.15;
+}
+
+/* ------------------------------------------------------------------ */
+/* AI Language Teacher additions                                      */
+/* ------------------------------------------------------------------ */
+.path-mod-ailanguageteacher .lt-wizard,
+.path-mod-ailanguageteacher .lt-lesson-wrap,
+.path-mod-ailanguageteacher .lt-editor-inner {
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-wizard svg,
+.path-mod-ailanguageteacher .lt-report svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.path-mod-ailanguageteacher .lt-wizard {
+    --lt-bg: #f3f5f9;
+    --lt-surface: #fff;
+    --lt-surface-2: #f8fafc;
+    --lt-border: #e4e8ef;
+    --lt-border-strong: #cbd5e1;
+    --lt-text: #0f172a;
+    --lt-text-2: #334155;
+    --lt-muted: #4b5767;
+    --lt-primary: #4f46e5;
+    --lt-primary-2: #6366f1;
+    --lt-primary-soft: #eef2ff;
+    --lt-success: #0d7f4f;
+    --lt-danger: #c4271c;
+    --lt-warning: #a15c00;
+    --lt-radius: 16px;
+    --lt-shadow-sm: 0 1px 2px rgba(16, 24, 40, .05), 0 1px 3px rgba(16, 24, 40, .07);
+    --lt-shadow-md: 0 6px 14px -4px rgba(16, 24, 40, .1), 0 2px 6px -2px rgba(16, 24, 40, .06);
+    --lt-spring: cubic-bezier(.34, 1.56, .64, 1);
+    --lt-ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* Chips: phrase text, romanisation and (hint) meaning, on a readable shade of the phrase colour. */
+.path-mod-ailanguageteacher .lt-app .lt-chip,
+.path-mod-ailanguageteacher .lt-ghost {
+    flex-direction: column;
+    gap: 1px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--ink, var(--c)) 90%, #fff), var(--ink, var(--c)) 75%);
+}
+.path-mod-ailanguageteacher .lt-chip-text {
+    display: block;
+}
+.path-mod-ailanguageteacher .lt-chip-rom {
+    display: block;
+    font-size: .78em;
+    font-weight: 500;
+    font-style: italic;
+    opacity: .92;
+}
+.path-mod-ailanguageteacher .lt-chip-meaning {
+    display: block;
+    margin-top: 3px;
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, .2);
+    font-size: .76em;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-chip.is-faded {
+    opacity: .25;
+    filter: grayscale(1);
+    pointer-events: none;
+}
+
+/* Home. */
+.path-mod-ailanguageteacher .lt-hero-lang {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-langpill,
+.path-mod-ailanguageteacher .lt-levelpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-langpill svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-levelpill {
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    border-color: transparent;
+}
+.path-mod-ailanguageteacher .lt-langmeta {
+    color: var(--lt-muted);
+    font-weight: 500;
+}
+.path-mod-ailanguageteacher .lt-progressstrip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+    margin: 0 0 18px;
+}
+.path-mod-ailanguageteacher .lt-mastery {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 260px;
+}
+.path-mod-ailanguageteacher .lt-mastery-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.path-mod-ailanguageteacher .lt-mastery-label svg {
+    width: 18px;
+    height: 18px;
+    color: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-mastery-bar,
+.path-mod-ailanguageteacher .lt-bar {
+    position: relative;
+    flex: 1;
+    display: block;
+    min-width: 60px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--lt-border);
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-mastery-bar > span,
+.path-mod-ailanguageteacher .lt-bar > span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--lt-primary-2), var(--lt-success));
+}
+.path-mod-ailanguageteacher ol.lt-modes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.path-mod-ailanguageteacher .lt-mode-step {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    color: var(--lt-muted);
+    font-size: .8rem;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-mode.is-locked {
+    opacity: .72;
+}
+.path-mod-ailanguageteacher .lt-badge-locked {
+    color: var(--lt-text-2);
+    background: var(--lt-surface-2);
+}
+.path-mod-ailanguageteacher .lt-badge-locked svg {
+    width: 14px;
+    height: 14px;
+}
+.path-mod-ailanguageteacher .lt-i-practice-mic {
+    color: inherit;
+}
+
+/* Start screen steps. */
+.path-mod-ailanguageteacher .lt-steps {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.path-mod-ailanguageteacher .lt-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.4;
+}
+.path-mod-ailanguageteacher .lt-steps-n {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: #fff;
+    background: var(--lt-primary);
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+/* Top bar. */
+.path-mod-ailanguageteacher .lt-situation {
+    display: block;
+    color: var(--lt-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-scenecontext {
+    margin: 8px 4px 0;
+    color: var(--lt-text-2);
+    font-size: .92rem;
+    white-space: pre-line;
+}
+
+/* Phrase card. */
+.path-mod-ailanguageteacher .lt-lesson-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    border-radius: inherit;
+    background: rgba(15, 23, 42, .42);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    transition: opacity .25s var(--lt-ease);
+}
+.path-mod-ailanguageteacher .lt-lesson-wrap.is-open {
+    opacity: 1;
+}
+.path-mod-ailanguageteacher .lt-card.lt-lesson {
+    position: relative;
+    width: 600px;
+    max-width: 100%;
+    max-height: 100%;
+    padding: 20px 26px 16px 30px;
+    opacity: 1;
+    transform: scale(.94) translateY(10px);
+}
+.path-mod-ailanguageteacher .lt-lesson-wrap.is-open .lt-lesson {
+    transform: none;
+}
+.path-mod-ailanguageteacher .lt-card-close[hidden] {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-phrase {
+    margin: 2px 0 0;
+    font-size: 1.6rem;
+    line-height: 1.2;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-phrase-rom {
+    margin: 2px 0 0;
+    color: var(--lt-muted);
+    font-style: italic;
+}
+.path-mod-ailanguageteacher .lt-listen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+.path-mod-ailanguageteacher .lt-btn-listen {
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    border-color: #c7d2fe;
+}
+.path-mod-ailanguageteacher .lt-mini-label {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--lt-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-card-body > div {
+    margin-bottom: 10px;
+}
+.path-mod-ailanguageteacher .lt-card-body p {
+    margin: 0;
+    white-space: pre-line;
+}
+.path-mod-ailanguageteacher .lt-meaning p {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-example-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-example-text {
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-example-trans {
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-iconbtn.lt-iconbtn-sm {
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+}
+.path-mod-ailanguageteacher .lt-iconbtn-sm svg {
+    width: 16px;
+    height: 16px;
+}
+.path-mod-ailanguageteacher .lt-card-foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+@media (min-width: 900px) {
+    .path-mod-ailanguageteacher .lt-card.lt-lesson {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 290px;
+        grid-template-areas:
+            "head speak"
+            "listen speak"
+            "body speak"
+            "foot foot";
+        column-gap: 20px;
+        align-items: start;
+        width: 880px;
+    }
+    .path-mod-ailanguageteacher .lt-lesson .lt-card-head {
+        grid-area: head;
+    }
+    .path-mod-ailanguageteacher .lt-lesson .lt-listen {
+        grid-area: listen;
+    }
+    .path-mod-ailanguageteacher .lt-lesson .lt-card-body {
+        grid-area: body;
+    }
+    .path-mod-ailanguageteacher .lt-lesson .lt-speak {
+        grid-area: speak;
+        margin-top: 0;
+    }
+    .path-mod-ailanguageteacher .lt-lesson .lt-card-foot {
+        grid-area: foot;
+    }
+}
+
+/* Speaking. */
+.path-mod-ailanguageteacher .lt-speak {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    padding: 14px;
+    border-radius: 14px;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    text-align: center;
+}
+.path-mod-ailanguageteacher .lt-speak-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px 10px;
+}
+.path-mod-ailanguageteacher .lt-speak-head h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-speak-goal {
+    color: var(--lt-muted);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-speak-dots {
+    display: flex;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-sdot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid var(--lt-border-strong);
+    background: #fff;
+}
+.path-mod-ailanguageteacher .lt-sdot.is-done {
+    border-color: var(--lt-success);
+    background: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-mic {
+    --level: 0;
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--lt-text);
+    font-weight: 700;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-mic svg {
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+    width: 76px;
+    height: 76px;
+    padding: 20px;
+    border-radius: 50%;
+    color: #fff;
+    background: linear-gradient(180deg, #ef4b6b, #c81e4a);
+    box-shadow: 0 10px 22px -8px rgba(200, 30, 74, .7);
+    transition: transform .2s var(--lt-spring);
+}
+.path-mod-ailanguageteacher .lt-mic:hover:not(:disabled) svg {
+    transform: scale(1.05);
+}
+.path-mod-ailanguageteacher .lt-mic:focus-visible svg {
+    outline: 3px solid var(--lt-primary-2);
+    outline-offset: 4px;
+}
+.path-mod-ailanguageteacher .lt-mic:disabled {
+    cursor: not-allowed;
+    opacity: .5;
+}
+.path-mod-ailanguageteacher .lt-mic-ring {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 76px;
+    height: 76px;
+    margin-left: -38px;
+    border-radius: 50%;
+    background: rgba(239, 75, 107, .3);
+    transform: scale(1);
+    opacity: 0;
+}
+.path-mod-ailanguageteacher .lt-mic.is-listening .lt-mic-ring {
+    opacity: 1;
+    transform: scale(calc(1.15 + var(--level) * .6));
+    transition: transform .1s linear;
+}
+.path-mod-ailanguageteacher .lt-mic.is-checking svg {
+    animation: lt-breathe 1s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-mic-sm svg,
+.path-mod-ailanguageteacher .lt-mic-sm .lt-mic-ring {
+    width: 56px;
+    height: 56px;
+    padding: 14px;
+}
+.path-mod-ailanguageteacher .lt-mic-sm .lt-mic-ring {
+    margin-left: -28px;
+    padding: 0;
+}
+.path-mod-ailanguageteacher .lt-speak-status {
+    min-height: 1.2em;
+    color: var(--lt-text-2);
+    font-size: .9rem;
+}
+.path-mod-ailanguageteacher .lt-speak-note {
+    margin: 0;
+    color: var(--lt-muted);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-speak-result {
+    width: 100%;
+}
+.path-mod-ailanguageteacher .lt-result {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid var(--lt-border);
+    text-align: left;
+}
+.path-mod-ailanguageteacher .lt-result-ring {
+    --p: 0;
+    --tone: var(--lt-danger);
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: conic-gradient(var(--tone) calc(var(--p) * 1%), var(--lt-border) 0);
+}
+.path-mod-ailanguageteacher .lt-result-ring > span {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #fff;
+    line-height: 1;
+}
+.path-mod-ailanguageteacher .lt-result-ring strong {
+    font-size: 1.3rem;
+}
+.path-mod-ailanguageteacher .lt-result-great .lt-result-ring,
+.path-mod-ailanguageteacher .lt-result-good .lt-result-ring {
+    --tone: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-result-ok .lt-result-ring {
+    --tone: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-result-body {
+    flex: 1;
+    min-width: 0;
+}
+.path-mod-ailanguageteacher .lt-result-headline {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-result-great .lt-result-headline,
+.path-mod-ailanguageteacher .lt-result-good .lt-result-headline {
+    color: var(--lt-success);
+}
+.path-mod-ailanguageteacher .lt-result-ok .lt-result-headline {
+    color: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-result-bad .lt-result-headline {
+    color: var(--lt-danger);
+}
+.path-mod-ailanguageteacher .lt-result-message {
+    margin: 2px 0 0;
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-words {
+    margin: 6px 0 0;
+    line-height: 1.8;
+}
+.path-mod-ailanguageteacher .lt-word {
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-word-good {
+    color: #065f3b;
+    background: #d9f6e8;
+}
+.path-mod-ailanguageteacher .lt-word-ok {
+    color: #7a4500;
+    background: #fdefd3;
+}
+.path-mod-ailanguageteacher .lt-word-bad {
+    color: #8f1d14;
+    background: #fde3e0;
+}
+.path-mod-ailanguageteacher .lt-word-miss {
+    color: var(--lt-muted);
+    background: var(--lt-surface-2);
+    text-decoration: underline dotted;
+}
+.path-mod-ailanguageteacher .lt-result-eyebrow {
+    margin: 0 0 2px;
+    color: var(--lt-muted);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-result-summary {
+    margin: 2px 0 0;
+    font-weight: 700;
+    color: var(--lt-text);
+}
+.path-mod-ailanguageteacher .lt-heard {
+    margin: 6px 0 0;
+    color: var(--lt-text-2);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-selfcheck {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+/* Practice marks and hints. */
+.path-mod-ailanguageteacher .lt-check.is-star {
+    color: #fff;
+    background: #d98a00;
+}
+.path-mod-ailanguageteacher .lt-check.is-again {
+    color: #fff;
+    background: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-area {
+    position: absolute;
+    z-index: 3;
+    width: 26%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(250, 204, 21, .55), rgba(250, 204, 21, 0) 70%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: lt-areapulse 1.2s ease-in-out infinite;
+}
+.path-mod-ailanguageteacher .lt-slot-zone.is-playing {
+    border-color: var(--lt-primary-2);
+    box-shadow: 0 0 0 4px var(--lt-primary-soft);
+}
+
+/* Test stages. */
+.path-mod-ailanguageteacher .lt-stagebar {
+    margin-top: 10px;
+}
+.path-mod-ailanguageteacher .lt-stage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 10px 16px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-stage-step {
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    font-size: .8rem;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-stage-text {
+    margin: 0;
+    font-size: 1rem;
+}
+.path-mod-ailanguageteacher .lt-stage-speak .lt-stage-text strong {
+    display: block;
+    font-size: 1.2rem;
+}
+.path-mod-ailanguageteacher .lt-board.is-listening .lt-slot-body,
+.path-mod-ailanguageteacher .lt-board.is-speaking .lt-slot-body {
+    visibility: hidden;
+}
+.path-mod-ailanguageteacher .lt-board.is-listening .lt-pin {
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-pin.is-chosen {
+    transform: translate(-50%, -50%) scale(1.35);
+}
+
+/* Results review. */
+.path-mod-ailanguageteacher .lt-review {
+    width: 100%;
+    margin: 12px 0;
+    text-align: left;
+}
+.path-mod-ailanguageteacher .lt-review summary {
+    font-weight: 700;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-review h5 {
+    margin: 14px 0 6px;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-review-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+.path-mod-ailanguageteacher .lt-review-table th,
+.path-mod-ailanguageteacher .lt-review-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--lt-border);
+    vertical-align: top;
+}
+.path-mod-ailanguageteacher .lt-review-phrase {
+    display: block;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-review-trans {
+    display: block;
+    color: var(--lt-muted);
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-yes {
+    color: var(--lt-success);
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-no {
+    color: var(--lt-danger);
+    font-weight: 700;
+}
+
+/* Lesson builder. */
+.path-mod-ailanguageteacher .lt-wizard {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.path-mod-ailanguageteacher .lt-wizard-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 20px;
+    margin-bottom: 18px;
+}
+.path-mod-ailanguageteacher .lt-wizard-head h2 {
+    margin: 0;
+}
+.path-mod-ailanguageteacher .lt-wizard-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    flex: 1;
+}
+.path-mod-ailanguageteacher .lt-wizard-steps li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px 4px 4px;
+    border-radius: 999px;
+    color: var(--lt-muted);
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    font-size: .85rem;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-wizard-steps li span {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #fff;
+    border: 1px solid var(--lt-border);
+    font-size: .8rem;
+}
+.path-mod-ailanguageteacher .lt-wizard-steps li.is-active {
+    color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    border-color: #c7d2fe;
+}
+.path-mod-ailanguageteacher .lt-wizard-steps li.is-active span,
+.path-mod-ailanguageteacher .lt-wizard-steps li.is-done span {
+    color: #fff;
+    background: var(--lt-primary);
+    border-color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-wstep {
+    margin: 0 0 20px;
+    padding: 22px;
+    border: 1px solid var(--lt-border);
+    border-radius: var(--lt-radius);
+    background: var(--lt-surface);
+    box-shadow: var(--lt-shadow-sm);
+}
+.path-mod-ailanguageteacher .lt-wstep-title {
+    float: none;
+    width: auto;
+    margin: 0 0 4px;
+    padding: 0;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-cardgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+}
+.path-mod-ailanguageteacher .lt-pick {
+    position: relative;
+    display: block;
+    margin: 0;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-pick input,
+.path-mod-ailanguageteacher .lt-pickchip input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+.path-mod-ailanguageteacher .lt-pick-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 2px solid var(--lt-border);
+    background: var(--lt-surface-2);
+    transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+.path-mod-ailanguageteacher .lt-pick:hover .lt-pick-body {
+    border-color: var(--lt-border-strong);
+}
+.path-mod-ailanguageteacher .lt-pick input:checked + .lt-pick-body {
+    border-color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, .15);
+}
+.path-mod-ailanguageteacher .lt-pick input:focus-visible + .lt-pick-body,
+.path-mod-ailanguageteacher .lt-pickchip input:focus-visible + span {
+    outline: 3px solid var(--lt-primary-2);
+    outline-offset: 2px;
+}
+.path-mod-ailanguageteacher .lt-pick-endonym {
+    color: var(--lt-muted);
+    font-size: .95rem;
+}
+.path-mod-ailanguageteacher .lt-variety {
+    margin-top: 6px;
+}
+.path-mod-ailanguageteacher .lt-variety-label {
+    margin: 0 0 6px;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-chiprow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-pickchip {
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-pickchip span {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 2px solid var(--lt-border);
+    background: #fff;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-pickchip input:checked + span {
+    color: var(--lt-primary);
+    border-color: var(--lt-primary);
+    background: var(--lt-primary-soft);
+}
+.path-mod-ailanguageteacher .lt-sitgroups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 14px 0;
+}
+.path-mod-ailanguageteacher .lt-sitgroup h4 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-check-row.lt-sit {
+    margin: 0 0 6px;
+}
+.path-mod-ailanguageteacher .lt-custom .lt-input {
+    margin-bottom: 8px;
+}
+.path-mod-ailanguageteacher .lt-sizes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    margin-top: 14px;
+}
+.path-mod-ailanguageteacher .lt-sizes label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-levels {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+.path-mod-ailanguageteacher .lt-level-code {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-level-desc {
+    color: var(--lt-text-2);
+    font-size: .9rem;
+}
+.path-mod-ailanguageteacher .lt-ielts {
+    margin-top: 4px;
+    color: var(--lt-muted);
+    font-size: .8rem;
+}
+.path-mod-ailanguageteacher .lt-ielts[hidden] {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-wizard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+.path-mod-ailanguageteacher .lt-wizard-actions [hidden] {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-wizard:not(.is-enhanced) [data-action="prev"],
+.path-mod-ailanguageteacher .lt-wizard:not(.is-enhanced) [data-action="nextstep"] {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-wizard-error {
+    margin: 10px 0 0;
+    color: var(--lt-danger);
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-forcelang {
+    margin-top: 10px;
+}
+.path-mod-ailanguageteacher .lt-choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 0 0 16px;
+}
+.path-mod-ailanguageteacher .lt-choices > div {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--lt-surface);
+    border: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-choices dt {
+    color: var(--lt-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-choices dd {
+    margin: 2px 0 0;
+    font-weight: 700;
+}
+.path-mod-ailanguageteacher .lt-buildpaths {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+.path-mod-ailanguageteacher .lt-buildpath.is-off {
+    align-self: start;
+    background: var(--lt-surface-2);
+    border-style: dashed;
+}
+.path-mod-ailanguageteacher .lt-review-draft {
+    margin-top: 18px;
+}
+.path-mod-ailanguageteacher .lt-draftgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin: 12px 0;
+}
+.path-mod-ailanguageteacher .lt-draft {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--lt-border);
+    background: var(--lt-surface-2);
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-draft-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-draft-head input {
+    margin-top: 4px;
+}
+.path-mod-ailanguageteacher .lt-draft-sit {
+    display: block;
+    color: var(--lt-muted);
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-draft-context {
+    color: var(--lt-text-2);
+    font-size: .88rem;
+}
+.path-mod-ailanguageteacher .lt-draft-phrases {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: .88rem;
+}
+.path-mod-ailanguageteacher .lt-draft-phrase.is-distractor {
+    color: var(--lt-muted);
+    text-decoration: line-through;
+}
+
+/* Scenes and editor. */
+.path-mod-ailanguageteacher .lt-group-title {
+    margin: 20px 0 10px;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-slidecard-noimage {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    color: var(--lt-muted);
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-imagehelp {
+    margin-top: 10px;
+}
+.path-mod-ailanguageteacher .lt-imagehelp summary {
+    font-weight: 700;
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-imagehelp > * + * {
+    margin-top: 8px;
+}
+.path-mod-ailanguageteacher .lt-fieldgrid {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.path-mod-ailanguageteacher .lt-fieldgrid label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+}
+.path-mod-ailanguageteacher .lt-recording {
+    margin-bottom: 10px;
+}
+.path-mod-ailanguageteacher .lt-btn.is-recording {
+    color: #fff;
+    background: #c81e4a;
+    border-color: #c81e4a;
+}
+.path-mod-ailanguageteacher .lt-unplaced-note {
+    margin: 4px 0 0 36px;
+    color: var(--lt-warning);
+}
+.path-mod-ailanguageteacher .lt-lrow-num.is-unplaced {
+    color: var(--lt-warning);
+    background: #fff7e6;
+}
+
+/* Reports. */
+.path-mod-ailanguageteacher .lt-tab {
+    color: var(--lt-text-2);
+}
+.path-mod-ailanguageteacher .lt-tabs-sub {
+    margin-top: 0;
+}
+.path-mod-ailanguageteacher .lt-meter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 140px;
+}
+.path-mod-ailanguageteacher .lt-hardrow td {
+    background: #fff5f4;
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-lesson-wrap {
+        position: fixed;
+        z-index: 1050;
+        align-items: flex-end;
+        padding: 0;
+        border-radius: 0;
+    }
+    .path-mod-ailanguageteacher .lt-card.lt-lesson {
+        width: 100%;
+        max-height: 88vh;
+        border-radius: 18px 18px 0 0;
+    }
+    .path-mod-ailanguageteacher .lt-phrase {
+        font-size: 1.35rem;
+    }
+    .path-mod-ailanguageteacher .lt-wstep {
+        padding: 16px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .path-mod-ailanguageteacher .lt-area,
+    .path-mod-ailanguageteacher .lt-mic.is-checking svg {
+        animation: none;
+    }
+    .path-mod-ailanguageteacher .lt-lesson-wrap,
+    .path-mod-ailanguageteacher .lt-card.lt-lesson {
+        transition: none;
+    }
+}
+
+@keyframes lt-areapulse {
+    0%,
+    100% {
+        opacity: .55;
+    }
+    50% {
+        opacity: 1;
+    }
+}

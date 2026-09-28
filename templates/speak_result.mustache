@@ -1,0 +1,66 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/speak_result
+
+    Feedback after the learner says a phrase.
+
+    Feedback is a spoken-answer check: which words of the phrase were recognised and how closely they matched.
+    It is not a pronunciation assessment.
+
+    Example context (json):
+    {
+        "score": 86, "hasscore": true, "tone": "good", "eyebrow": "Spoken-answer check", "headline": "Great!",
+        "message": "1 more to master it.", "summary": "Words recognised: 2 of 3",
+        "scorelabel": "How closely the recognised words matched",
+        "units": [{"text": "Good", "tone": "good"}, {"text": "morning", "tone": "miss"}],
+        "heard": "Good", "showheard": true, "selfcheck": false
+    }
+}}
+<div class="lt-result lt-result-{{tone}}">
+    {{#hasscore}}
+    <div class="lt-result-ring" style="--p: {{score}};" title="{{scorelabel}}">
+        <span><strong>{{score}}</strong><small>%</small></span>
+        <span class="visually-hidden sr-only">{{scorelabel}}</span>
+    </div>
+    {{/hasscore}}
+    <div class="lt-result-body">
+        {{#eyebrow}}<p class="lt-result-eyebrow">{{eyebrow}}</p>{{/eyebrow}}
+        <p class="lt-result-headline">{{headline}}</p>
+        {{#summary}}<p class="lt-result-summary">{{summary}}</p>{{/summary}}
+        {{#message}}<p class="lt-result-message">{{message}}</p>{{/message}}
+        {{#units.0}}
+        <p class="lt-words" dir="auto">
+            {{#units}}<span class="lt-word lt-word-{{tone}}">{{text}}</span> {{/units}}
+        </p>
+        {{/units.0}}
+        {{#showheard}}<p class="lt-heard"><span>{{#str}} weheard, mod_ailanguageteacher {{/str}}</span> <q dir="auto">{{heard}}</q></p>{{/showheard}}
+        {{#selfcheck}}
+        <div class="lt-selfcheck">
+            <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="playmine">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5l12 7-12 7z"/></svg><span>{{#str}} playmine, mod_ailanguageteacher {{/str}}</span>
+            </button>
+            <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="listen">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/></svg><span>{{#str}} listen, mod_ailanguageteacher {{/str}}</span>
+            </button>
+            <button type="button" class="lt-btn lt-btn-primary lt-btn-sm" data-action="selfok">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>{{#str}} soundsright, mod_ailanguageteacher {{/str}}</span>
+            </button>
+        </div>
+        {{/selfcheck}}
+    </div>
+</div>

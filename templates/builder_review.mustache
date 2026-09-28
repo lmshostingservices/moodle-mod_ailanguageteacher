@@ -1,0 +1,56 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_ailanguageteacher/builder_review
+
+    Review of a lesson draft before the scenes are created.
+
+    Example context (json):
+    {
+        "count": 1, "phrases": 4,
+        "scenes": [{"index": 0, "situation": "Greetings", "title": "The housekeeper arrives", "context": "It is 8 am.",
+            "phrases": [{"text": "Good morning!", "romanisation": "", "translation": "สวัสดีตอนเช้า", "anchor": "The homeowner"}],
+            "distractors": [{"text": "Good night"}]}]
+    }
+}}
+<div class="lt-panel">
+    <h4>{{#str}} review_title, mod_ailanguageteacher, { "scenes": {{count}}, "phrases": {{phrases}} } {{/str}}</h4>
+    <p class="lt-mini">{{#str}} review_help, mod_ailanguageteacher {{/str}}</p>
+    <div class="lt-draftgrid">
+        {{#scenes}}
+        <label class="lt-draft">
+            <span class="lt-draft-head">
+                <input type="checkbox" data-scene="{{index}}" checked>
+                <span>
+                    {{#situation}}<span class="lt-draft-sit">{{situation}}</span>{{/situation}}
+                    <strong>{{title}}</strong>
+                </span>
+            </span>
+            {{#context}}<span class="lt-draft-context" dir="auto">{{context}}</span>{{/context}}
+            <span class="lt-draft-phrases">
+                {{#phrases}}
+                <span class="lt-draft-phrase"><b dir="auto">{{text}}</b>{{#romanisation}} <i>{{.}}</i>{{/romanisation}}{{#translation}} <span dir="auto">— {{.}}</span>{{/translation}}</span>
+                {{/phrases}}
+                {{#distractors}}<span class="lt-draft-phrase is-distractor"><span dir="auto">{{text}}</span></span>{{/distractors}}
+            </span>
+        </label>
+        {{/scenes}}
+    </div>
+    <div class="lt-wizard-actions">
+        <button type="button" class="lt-btn lt-btn-primary" data-action="create">{{#str}} review_create, mod_ailanguageteacher {{/str}}</button>
+    </div>
+</div>

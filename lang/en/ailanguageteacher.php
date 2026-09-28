@@ -1,0 +1,792 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * English strings for mod_ailanguageteacher.
+ *
+ * @package    mod_ailanguageteacher
+ * @copyright  2026 LMS Hosting Services
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['addphrase'] = 'Add a phrase';
+$string['addscenes'] = 'Add scenes';
+$string['addscenes_help'] = 'Upload pictures (one scene per picture, a ZIP works too), or give a title to add a scene and upload its picture later.';
+$string['aibadimage'] = 'The AI service did not return a usable picture.';
+$string['ailanguageteacher:addinstance'] = 'Add a new AI Language Teacher activity';
+$string['ailanguageteacher:attempt'] = 'Study, practise and take the Test';
+$string['ailanguageteacher:manage'] = 'Build and edit lessons';
+$string['ailanguageteacher:useai'] = 'Use AI to draft lessons and pictures';
+$string['ailanguageteacher:view'] = 'View AI Language Teacher';
+$string['ailanguageteacher:viewreports'] = 'View reports';
+$string['ainotavailable'] = 'AI drafting is not available on this site yet.';
+$string['airate'] = 'AI requests per teacher per hour';
+$string['airate_desc'] = 'Most AI drafting requests one teacher can make per hour.';
+$string['airatelimit'] = 'You have reached the hourly limit for AI requests. Try again later.';
+$string['allplaced'] = 'All phrases placed';
+$string['alternatives'] = 'Also accept';
+$string['alternatives_help'] = 'Other answers to accept when spoken, one per line';
+$string['anchor'] = 'Belongs to (in the picture)';
+$string['attemptclosed'] = 'This attempt is already finished.';
+$string['attemptsdeleted'] = '{$a} attempts deleted.';
+$string['attemptsleft'] = 'Attempts left';
+$string['attemptsused'] = 'Attempts: {$a->used} of {$a->max}';
+$string['audiounavailable'] = 'Audio is not available for this phrase on this device.';
+$string['avgscore'] = 'Speaking';
+$string['backtomenu'] = 'Back to the menu';
+$string['backtoscenes'] = 'Back to scenes';
+$string['badrecording'] = 'The recording could not be used. Please try again.';
+$string['balance_credits'] = 'LMS Labs credits: {$a} (for information; the balance can change)';
+$string['balance_unlimited'] = 'LMS Labs credits: unlimited';
+$string['bestfor_practice'] = 'Match each phrase, then say it until it sticks.';
+$string['bestfor_study'] = 'See and hear each phrase in its real-life moment.';
+$string['bestfor_test'] = 'Show what you can understand and say without help.';
+$string['bestscore'] = 'Best: {$a}%';
+$string['browserspeech'] = 'Browser speech recognition';
+$string['browserspeech_desc'] = 'When LMS Labs speech is not available, use the browser\'s built-in speech recognition to check what learners say. Some browsers send the audio to their own online service (for example Google in Chrome); this is outside Moodle\'s control. When off, learners record themselves and compare with the model.';
+$string['build_ai_go'] = 'Create the lesson with AI';
+$string['build_ai_help'] = 'Drafts one short lesson with vocabulary and practice for your choices. Review and edit its scene and phrase fields before creating it.';
+$string['build_ai_off'] = 'AI drafting is not available on this site yet. Use any AI assistant instead (right).';
+$string['build_ai_title'] = 'Create with AI';
+$string['build_manual_1'] = 'Copy the prompt below.';
+$string['build_manual_2'] = 'Paste it into ChatGPT, Claude, Gemini or Copilot.';
+$string['build_manual_3'] = 'Paste the reply here and preview it.';
+$string['build_manual_title'] = 'Use any AI assistant';
+$string['build_paste'] = 'Paste the AI\'s reply';
+$string['build_preview'] = 'Preview';
+$string['builder_change'] = 'Change choices';
+$string['builder_existing'] = 'This activity already has {$a} scenes. New scenes are added after them.';
+$string['builder_options'] = '{$a->scenes} pictures per situation, {$a->phrases} phrases per picture';
+$string['builder_save'] = 'Save and build the lesson';
+$string['builder_size'] = 'Size';
+$string['builder_skip'] = 'Skip to building';
+$string['builder_steps'] = 'Lesson builder steps';
+$string['buildlesson'] = 'Build lesson';
+$string['cefrlevel'] = 'Level';
+$string['cefrlevel_help'] = 'The CEFR level (A1 to C2). It changes the language the lesson uses, not only the difficulty: A1 uses very short, common phrases; B2 uses natural conversational language.';
+$string['charsrecognised'] = 'Characters recognised: {$a->found} of {$a->total}';
+$string['checking'] = 'Checking…';
+$string['clicktoplace'] = 'Click where this phrase belongs:';
+$string['close'] = 'Close';
+$string['cmp_attempts_n'] = '{$a} attempts';
+$string['cmp_attempts_unlimited'] = 'unlimited attempts';
+$string['cmp_graded'] = 'Graded';
+$string['cmp_graded_yes'] = 'Yes, {$a}';
+$string['cmp_hints'] = 'Hints';
+$string['cmp_hints_no'] = 'None';
+$string['cmp_hints_yes'] = 'Four levels of help';
+$string['cmp_listen'] = 'Listening';
+$string['cmp_listen_after'] = 'After each correct match';
+$string['cmp_listen_any'] = 'Listen as often as you like';
+$string['cmp_no'] = 'No';
+$string['cmp_phrases'] = 'Phrases';
+$string['cmp_phrases_shown'] = 'Shown on the picture';
+$string['cmp_phrases_you'] = 'You place them';
+$string['cmp_speak'] = 'Speaking';
+$string['cmp_speak_off'] = 'Off';
+$string['cmp_speak_try'] = 'Try it, no pressure';
+$string['cmp_stages'] = 'Stages';
+$string['cmp_time'] = 'Time';
+$string['cmp_time_limit'] = '{$a}';
+$string['cmp_time_none'] = 'No time limit';
+$string['col_attempt'] = 'Attempt';
+$string['col_avgscore'] = 'Speaking (avg best)';
+$string['col_bestscore'] = 'Best speaking';
+$string['col_duration'] = 'Time taken';
+$string['col_hints'] = 'Hints';
+$string['col_kind'] = 'Mode';
+$string['col_lastseen'] = 'Last practised';
+$string['col_learners'] = 'Learners';
+$string['col_mastered'] = 'Mastered';
+$string['col_matchtries'] = 'Drops to match';
+$string['col_needs'] = 'Practise again';
+$string['col_scene'] = 'Scene';
+$string['col_score'] = 'Score';
+$string['col_speaktries'] = 'Speaking tries';
+$string['col_speaktriesavg'] = 'Tries to master';
+$string['col_started'] = 'Started';
+$string['col_state'] = 'State';
+$string['col_studied'] = 'Studied';
+$string['col_testbest'] = 'Test best';
+$string['col_testlisten'] = 'Test: listening';
+$string['col_testmatch'] = 'Test: matched';
+$string['col_testspeak'] = 'Test: speaking';
+$string['completiondetail:finish'] = 'Finish the Test';
+$string['completiondetail:mastery'] = 'Master every phrase';
+$string['completiondetail:study'] = 'Study every scene';
+$string['completionfinish'] = 'Finish the Test';
+$string['completionfinish_desc'] = 'Learner must finish a Test attempt (a Practice attempt when the Test is off)';
+$string['completionfinish_help'] = 'Complete when the learner finishes a Test attempt. When the Test is turned off, a finished Practice attempt counts.';
+$string['completionmastery'] = 'Master every phrase';
+$string['completionmastery_desc'] = 'Learner must master every phrase in Practice';
+$string['completionmastery_help'] = 'Complete when every phrase is mastered in Practice. Phrases the learner moved on from without mastering do not count.';
+$string['completionstudy'] = 'Study every scene';
+$string['completionstudy_desc'] = 'Learner must look at every scene in Study';
+$string['completionstudy_help'] = 'Complete when the learner has seen every scene in Study.';
+$string['confirmdeleteattempts'] = 'Delete the selected attempts? Grades and completion are recalculated.';
+$string['confirmdeletephrase'] = 'Delete "{$a}"?';
+$string['confirmdeletescene'] = 'Delete the scene "{$a}", its picture, phrases, audio and learners\' progress on it?';
+$string['confirmreset'] = 'Start Practice from the beginning? Your mastered phrases will be cleared. Your Study and Test results are kept.';
+$string['confirmsubmit'] = 'Some places are still empty. Submit anyway?';
+$string['consecutive'] = 'In a row';
+$string['consecutive_desc'] = 'Successful tries must be in a row (a try below the pass mark starts the count again).';
+$string['continue'] = 'Continue';
+$string['copied'] = 'Copied';
+$string['copyimageprompt'] = 'Copy picture prompt';
+$string['copyprompt'] = 'Copy prompt';
+$string['correct'] = 'Correct';
+$string['correctfeedback'] = 'Correct: {$a}';
+$string['correctof'] = '{$a->correct} of {$a->total} correct';
+$string['creating'] = 'Creating scenes…';
+$string['credentials_central'] = 'In use: the Site ID and API key from LMS Labs Central Config. The standalone fields below are ignored while Central Config has both.';
+$string['credentials_centralincomplete'] = 'Not configured: LMS Labs Central Config is missing its Site ID or API key, and the standalone fields below are not both filled in. Complete Central Config (recommended) or enter both below. LMS Labs is not contacted until then.';
+$string['credentials_local'] = 'In use: the standalone Site ID and API key below (LMS Labs Central Config is not installed or does not have both).';
+$string['credentials_none'] = 'Not configured: enter this site\'s LMS Labs Site ID and API key in LMS Labs Central Config (recommended), or both in the standalone fields below. LMS Labs is not contacted until then.';
+$string['deletephrase'] = 'Delete phrase';
+$string['deleterecording'] = 'Remove recording';
+$string['deleteselected'] = 'Delete selected';
+$string['distractor'] = 'Distractor (not on the picture)';
+$string['dropzoneempty'] = 'Place {$a}, empty';
+$string['dropzonefilled'] = 'Place {$a->number}: {$a->label}';
+$string['editor_noimage'] = 'This scene has no picture yet, so learners won\'t see it.';
+$string['editorhelp'] = 'Click the picture to place the highlighted phrase. Drag numbers to move them; select one and use the arrow keys to nudge it.';
+$string['editphrases'] = 'Edit phrases';
+$string['editthisphrase'] = 'Edit this phrase';
+$string['emptyeditor'] = 'No phrases yet. Use Quick add or Add a phrase.';
+$string['errornomode'] = 'Turn on at least one of Study, Practice or Test.';
+$string['errorsceneneeds'] = 'Upload at least one picture or give the scene a title.';
+$string['eventattemptfinished'] = 'Attempt finished';
+$string['example'] = 'Example';
+$string['examplemeaning'] = 'Example meaning';
+$string['excellent'] = 'Excellent!';
+$string['exit'] = 'Back to the menu';
+$string['exitfullscreen'] = 'Exit full screen';
+$string['experience'] = 'Experience';
+$string['finish'] = 'Finish';
+$string['forcelang'] = 'Show this activity\'s buttons and messages in the learners\' language';
+$string['forcelang_nopack'] = 'To show the buttons and messages in the learners\' language, an administrator must install that Moodle language pack. Meanings, notes and cues are in their language either way.';
+$string['forspeakers'] = 'for {$a} speakers';
+$string['fullscreen'] = 'Full screen';
+$string['generateimage'] = 'Create the picture with AI';
+$string['generating'] = 'Creating… this can take a minute';
+$string['goal_once'] = 'Words match {$a}% or more';
+$string['goal_times'] = 'Words match {$a->score}% or more, {$a->times} times';
+$string['goback'] = 'Go back';
+$string['goodeffort'] = 'Good effort';
+$string['gotit'] = 'Got it';
+$string['gradeaverage'] = 'Average of attempts';
+$string['graded'] = 'Graded';
+$string['gradefirst'] = 'First attempt';
+$string['gradehighest'] = 'Highest attempt';
+$string['gradelast'] = 'Last attempt';
+$string['grademethod'] = 'Grading method';
+$string['grademethod_help'] = 'How the grade is calculated when a learner makes more than one Test attempt.';
+$string['greatjob'] = 'Great job!';
+$string['guestnote'] = 'Log in to save your progress and take the Test.';
+$string['headline_excellent'] = 'Excellent!';
+$string['headline_great'] = 'Great!';
+$string['headline_nearly'] = 'Nearly there';
+$string['headline_tryagain'] = 'Try again';
+$string['hint'] = 'Hint';
+$string['hint1'] = 'Hint: listen to the phrase.';
+$string['hint2'] = 'Hint: the meaning is now shown on the phrase.';
+$string['hint3'] = 'Hint: it belongs in the glowing area.';
+$string['hint4'] = 'Hint: it belongs at the flashing number.';
+$string['hintlevel'] = 'Hint {$a}';
+$string['hintsused'] = 'Hints';
+$string['ielts_a1'] = 'below 3';
+$string['ielts_a2'] = '3 to 3.5';
+$string['ielts_b1'] = '4 to 5';
+$string['ielts_b2'] = '5.5 to 6.5';
+$string['ielts_c1'] = '7 to 8';
+$string['ielts_c2'] = '8.5 to 9';
+$string['ieltsband'] = 'About IELTS {$a}';
+$string['imagehelp'] = 'Picture';
+$string['imageprompt_full'] = 'Create one {$a->style} for a language lesson.
+
+Scene: {$a->description}
+
+Setting: {$a->country}. The people, place, clothing and everyday details should look typical of {$a->country}.
+
+Each of these must be easy to point at:
+{$a->anchors}
+
+Rules:
+- Landscape, 16:10 (for example 1600 × 1000 pixels).
+- People and important objects clearly visible and spread across the picture, with calm, uncluttered space around them.
+- Gestures and facial expressions make the moment obvious.
+- No text, letters, numbers, signs, captions or speech bubbles anywhere.
+- Friendly, inclusive and culturally appropriate for {$a->country}.';
+$string['imageprompt_help'] = 'Or copy this prompt into any AI that makes pictures (ChatGPT, Gemini, Copilot), then upload the picture.';
+$string['imagereplaced'] = 'Picture saved.';
+$string['imagestyle'] = 'Picture style';
+$string['imagestyle_illustration'] = 'bright, friendly flat illustration with clean shapes and soft colours';
+$string['imagestyle_illustration_name'] = 'Illustration';
+$string['imagestyle_photo'] = 'realistic, natural-light photograph';
+$string['imagestyle_photo_name'] = 'Photo';
+$string['imagetip_culture'] = 'Set it in {$a}: people, places and everyday details typical of the country.';
+$string['imagetip_moment'] = 'One moment per picture, with at most {$a} phrases (such as a greeting and its reply). Saying goodbye is a new picture.';
+$string['imagetip_notext'] = 'No text, signs or speech bubbles: the phrases come from the activity.';
+$string['imagetip_people'] = 'Show the people involved clearly; their gestures should tell the story.';
+$string['imagetip_size'] = 'Landscape, about 1600 × 1000 pixels (16:10).';
+$string['imagetip_space'] = 'Leave calm space around each person or object that a phrase belongs to.';
+$string['imagetips_title'] = 'Good pictures for language learning';
+$string['incorrect'] = 'Incorrect';
+$string['instructions_drag'] = 'Drag each phrase to the right place on the picture.';
+$string['instructions_study'] = 'Tap a phrase to hear it and see what it means.';
+$string['instructions_tap'] = 'Tap a phrase, then tap its place on the picture.';
+$string['intro_attempts'] = '{$a->left} of {$a->max} attempts left';
+$string['intro_back'] = 'Back';
+$string['intro_expect'] = 'What to expect';
+$string['intro_go'] = 'Let\'s go';
+$string['intro_graded'] = 'Your best result goes to the gradebook';
+$string['intro_howto'] = 'How it works';
+$string['intro_item_browserspeech'] = 'Your browser checks what you say: it measures the words, not your accent';
+$string['intro_item_hints'] = 'Stuck? Hints go from hearing the phrase to showing exactly where it goes';
+$string['intro_item_listen'] = 'Listen to every phrase as often as you like, at normal speed or slowly';
+$string['intro_item_nopressure'] = 'Nothing is marked';
+$string['intro_item_nospeak'] = 'Listen to each phrase after you match it';
+$string['intro_item_resume'] = 'You have finished {$a->done} of {$a->total} phrases; you carry on where you left off';
+$string['intro_item_scenes'] = '{$a->scenes} scenes, {$a->phrases} phrases';
+$string['intro_item_selfspeech'] = 'Record yourself, listen back and compare with the model';
+$string['intro_item_servicespeech'] = 'Your answer is checked for the words recognised, not your accent';
+$string['intro_item_speakgoal'] = 'Say each phrase: {$a}';
+$string['intro_item_stages'] = 'Each scene: match the phrases, then listen and choose, then speak';
+$string['intro_item_testnohints'] = 'No hints, meanings or model audio while speaking';
+$string['intro_nopass'] = 'No pass mark: do your best';
+$string['intro_notime'] = 'No time limit';
+$string['intro_pass'] = 'Pass mark: {$a}%';
+$string['intro_practice_1'] = 'Drag a phrase to the person or place it belongs to (or tap the phrase, then the place).';
+$string['intro_practice_2'] = 'When it is right, listen to how it sounds.';
+$string['intro_practice_3'] = 'Tap the microphone and say it. Keep going until the phrase is mastered.';
+$string['intro_practice_4'] = 'Read its meaning and when to use it, then continue.';
+$string['intro_requirements'] = 'What you need to achieve';
+$string['intro_study_1'] = 'Look at the picture: what is happening?';
+$string['intro_study_2'] = 'Tap each phrase to hear it and see what it means.';
+$string['intro_study_3'] = 'Try saying it. When you are ready, go on to Practice.';
+$string['intro_sub_practice'] = 'Every phrase you match, you say until it sticks.';
+$string['intro_sub_study'] = 'Explore each scene at your own pace.';
+$string['intro_sub_test'] = 'No hints this time. You\'ve got this.';
+$string['intro_test_1'] = 'Match every phrase to its place, then submit.';
+$string['intro_test_2'] = 'Listen to each phrase and tap where it belongs.';
+$string['intro_test_3'] = 'Read the cue in your language and say the phrase.';
+$string['intro_time'] = 'Time limit: {$a}';
+$string['intro_title_practice'] = 'Match it, say it';
+$string['intro_title_study'] = 'See it, hear it';
+$string['intro_title_test'] = 'Show what you know';
+$string['intro_unlimited'] = 'Unlimited attempts';
+$string['invalidaction'] = 'Unknown action.';
+$string['invalidmode'] = 'That mode is not available.';
+$string['invalidphrase'] = 'That phrase is not part of this activity.';
+$string['invalidscene'] = 'That scene is not part of this attempt.';
+$string['invalidstage'] = 'That Test stage is not part of this attempt.';
+$string['invalidvariant'] = 'Unknown audio type.';
+$string['journey'] = 'Learning journey';
+$string['keeppractising'] = 'Keep practising';
+$string['labeltray'] = 'Phrases';
+$string['lang_ar'] = 'Arabic';
+$string['lang_de'] = 'German';
+$string['lang_en'] = 'English';
+$string['lang_es'] = 'Spanish';
+$string['lang_fil'] = 'Filipino';
+$string['lang_fr'] = 'French';
+$string['lang_hi'] = 'Hindi';
+$string['lang_id'] = 'Indonesian';
+$string['lang_it'] = 'Italian';
+$string['lang_ja'] = 'Japanese';
+$string['lang_ko'] = 'Korean';
+$string['lang_ms'] = 'Malay';
+$string['lang_nl'] = 'Dutch';
+$string['lang_pl'] = 'Polish';
+$string['lang_pt'] = 'Portuguese';
+$string['lang_ru'] = 'Russian';
+$string['lang_th'] = 'Thai';
+$string['lang_tr'] = 'Turkish';
+$string['lang_vi'] = 'Vietnamese';
+$string['lang_yue'] = 'Cantonese';
+$string['lang_zh'] = 'Chinese (Mandarin)';
+$string['languagesettings'] = 'Language';
+$string['languagesettings_note'] = 'Choose the situations and build the scenes in the lesson builder after saving.';
+$string['leaderboard'] = 'Leaderboard';
+$string['leaderboard_desc'] = 'Show the top Test scores on the results screen (first name and initial only; limited to the learner\'s groups in separate groups mode).';
+$string['lessonempty'] = 'The draft has no usable scenes.';
+$string['lessoninvalid'] = 'That doesn\'t look like a lesson. Paste the whole reply, including the {"scenes": …} part.';
+$string['lessonprompt'] = 'You are an expert language teacher. Create an image-based speaking lesson.
+
+Language taught: {$a->target}
+Learners\' first language (use it for every meaning, note, title and cue): {$a->support}
+Level: CEFR {$a->level}. {$a->levelguide}
+
+Setting: every scene takes place in {$a->country}, with people, places, clothing, food and everyday details typical of {$a->country}.
+
+Situations:
+{$a->situations}
+
+For each situation create {$a->scenes} scenes. A scene is one moment that a single picture can show, for example "The housekeeper arrives at the front door". Each scene has exactly {$a->phrases} useful phrases (never more than {$a->maxphrases}) that people really say in that same moment, in a natural order, for example a greeting and its reply. A phrase that belongs to a different moment, such as saying goodbye after a greeting, needs its own scene and picture. Add 1 or 2 distractors per scene: short phrases in the taught language that learners might confuse but that do not fit the moment.
+
+For every phrase give:
+- text: the phrase in the taught language, with the spelling and vocabulary of that variety
+- romanisation: {$a->romanisation}
+- translation: the natural meaning in the learners\' language
+- usagenote: one or two short sentences in the learners\' language on when and how to use it (formality, time of day, tone)
+- example: a short example line in the taught language that uses the phrase
+- exampletrans: its meaning in the learners\' language
+- prompt: a speaking cue in the learners\' language that makes the learner say the phrase without showing it, for example "Greet the housekeeper in the morning"
+- alternatives: other natural ways to say the same thing that should also be accepted (0 to 3)
+- anchor: in English, who or what in the picture the phrase belongs to, for example "the homeowner at the door"
+
+For every scene give:
+- situation and title (in the learners\' language)
+- context: one sentence in the learners\' language describing what is happening
+- imageprompt: an English description of one {$a->style} for this moment, set in {$a->country} and naming {$a->country} in the description. Show the people and objects the phrases belong to clearly and spread out, with calm uncluttered areas. No text, letters, captions, signs or speech bubbles.
+
+Reply with JSON only, in exactly this shape:
+{"scenes":[{"situation":"","title":"","context":"","imageprompt":"","phrases":[{"text":"","romanisation":"","translation":"","usagenote":"","example":"","exampletrans":"","prompt":"","alternatives":[""],"anchor":""}],"distractors":[{"text":"","romanisation":"","translation":""}]}]}';
+$string['level_a1'] = 'A1 Beginner';
+$string['level_a2'] = 'A2 Elementary';
+$string['level_b1'] = 'B1 Intermediate';
+$string['level_b2'] = 'B2 Upper intermediate';
+$string['level_c1'] = 'C1 Advanced';
+$string['level_c2'] = 'C2 Proficient';
+$string['leveldesc_a1'] = 'Understands and uses familiar everyday expressions and very basic phrases.';
+$string['leveldesc_a2'] = 'Handles simple, routine exchanges on familiar topics.';
+$string['leveldesc_b1'] = 'Deals with most everyday situations and talks about experiences and plans.';
+$string['leveldesc_b2'] = 'Talks fluently and spontaneously about a wide range of topics.';
+$string['leveldesc_c1'] = 'Uses the language flexibly and effectively for social, study and work purposes.';
+$string['leveldesc_c2'] = 'Understands virtually everything and expresses ideas precisely and naturally.';
+$string['levelguide_a1'] = 'Use very short, common, high-frequency phrases (1 to 5 words). One idea per phrase. Polite and literal, with no idioms.';
+$string['levelguide_a2'] = 'Use short everyday sentences, simple polite requests and questions, and common vocabulary.';
+$string['levelguide_b1'] = 'Use natural conversational sentences, polite indirect requests, a wider everyday vocabulary and common set expressions.';
+$string['levelguide_b2'] = 'Use fluent, natural language with softeners, indirect questions, opinions and reasons, and common idioms where native speakers would use them.';
+$string['levelguide_c1'] = 'Use nuanced, idiomatic language, switching between formal and casual register, with hedging and precise vocabulary.';
+$string['levelguide_c2'] = 'Use highly natural, idiomatic and culturally aware language, as a native speaker would, including subtle politeness.';
+$string['levelname_a1'] = 'Beginner';
+$string['levelname_a2'] = 'Elementary';
+$string['levelname_b1'] = 'Intermediate';
+$string['levelname_b2'] = 'Upper intermediate';
+$string['levelname_c1'] = 'Advanced';
+$string['levelname_c2'] = 'Proficient';
+$string['limitreached'] = 'The limit is {$a} per scene.';
+$string['listen'] = 'Listen';
+$string['listenexample'] = 'Listen to the example';
+$string['listening'] = 'Listening…';
+$string['listenslow'] = 'Slowly';
+$string['lmslabsapikey'] = 'Standalone LMS Labs API key';
+$string['lmslabsapikey_desc'] = 'Used only with the standalone site ID above. Stays on the server and is sent only to lms-labs.com.';
+$string['lmslabscredentialsmissing'] = 'Configure this site\'s LMS Labs Site ID and API key in Central Config, or provide both in this plugin\'s settings.';
+$string['lmslabssiteid'] = 'Standalone LMS Labs site ID';
+$string['lmslabssiteid_desc'] = 'Leave empty when LMS Labs Central Config (local_aiconfig) is installed: its Site ID and API key are used automatically. Used only when Central Config does not have both, and only together with the standalone API key.';
+$string['locale_ar_EG'] = 'Arabic (Egypt)';
+$string['locale_ar_SA'] = 'Arabic (Saudi Arabia)';
+$string['locale_de_DE'] = 'German';
+$string['locale_en_AU'] = 'English (Australia)';
+$string['locale_en_CA'] = 'English (Canada)';
+$string['locale_en_GB'] = 'English (UK)';
+$string['locale_en_IN'] = 'English (India)';
+$string['locale_en_US'] = 'English (US)';
+$string['locale_es_ES'] = 'Spanish (Spain)';
+$string['locale_es_MX'] = 'Spanish (Mexico)';
+$string['locale_fil_PH'] = 'Filipino';
+$string['locale_fr_CA'] = 'French (Canada)';
+$string['locale_fr_FR'] = 'French (France)';
+$string['locale_hi_IN'] = 'Hindi';
+$string['locale_id_ID'] = 'Indonesian';
+$string['locale_it_IT'] = 'Italian';
+$string['locale_ja_JP'] = 'Japanese';
+$string['locale_ko_KR'] = 'Korean';
+$string['locale_ms_MY'] = 'Malay';
+$string['locale_nl_NL'] = 'Dutch';
+$string['locale_pl_PL'] = 'Polish';
+$string['locale_pt_BR'] = 'Portuguese (Brazil)';
+$string['locale_pt_PT'] = 'Portuguese (Portugal)';
+$string['locale_ru_RU'] = 'Russian';
+$string['locale_th_TH'] = 'Thai';
+$string['locale_tr_TR'] = 'Turkish';
+$string['locale_vi_VN'] = 'Vietnamese';
+$string['locale_zh_CN'] = 'Mandarin (Simplified, mainland China)';
+$string['locale_zh_HK'] = 'Cantonese (Hong Kong)';
+$string['locale_zh_TW'] = 'Mandarin (Traditional, Taiwan)';
+$string['locked_afterpractice'] = 'Opens after Practice';
+$string['locked_afterstudy'] = 'Opens after Study';
+$string['managescenes'] = 'Scenes';
+$string['mastered'] = 'Mastered';
+$string['masteredof'] = '{$a->done} of {$a->total} phrases mastered';
+$string['masteredsummary'] = '{$a->done} of {$a->total} phrases mastered';
+$string['matchscore'] = 'How closely the recognised words matched';
+$string['maxattempts'] = 'Attempts allowed';
+$string['maxspeaktries'] = 'Allow moving on after';
+$string['maxspeaktries_help'] = 'After this many tries on a phrase, the learner may move on without mastering it, so nobody gets stuck (for example because of a poor microphone). The phrase is marked "practise again".';
+$string['meaning'] = 'Meaning';
+$string['meaningin'] = 'Meaning in {$a}';
+$string['micblocked'] = 'The microphone is blocked. Allow it in your browser, or move on for now.';
+$string['modedisabled'] = 'That mode is turned off for this activity.';
+$string['modelocked'] = 'That mode opens after you finish the step before it.';
+$string['modepractice'] = 'Practice';
+$string['modepractice_desc'] = 'Match each phrase to the picture, then say it until it is mastered.';
+$string['modesdone'] = '{$a->done} of {$a->total} steps done';
+$string['modestudy'] = 'Study';
+$string['modestudy_desc'] = 'Every phrase is on the picture: hear it, see what it means, try saying it.';
+$string['modetest'] = 'Test';
+$string['modetest_desc'] = 'Match, listen and speak with no help. Graded.';
+$string['modulename'] = 'AI Language Teacher';
+$string['modulename_help'] = 'AI Language Teacher teaches everyday phrases through pictures of real-life moments, such as greeting a visitor or buying a train ticket.
+
+Learners go through three steps:
+
+* **Study**: every phrase is on the picture. Tap a phrase to hear it, see what it means and try saying it.
+* **Practice**: drag each phrase to the right person or place. Each correct match opens the phrase card: listen, then say the phrase until you reach the pass score the required number of times.
+* **Test**: match the phrases, pick the right place for phrases you hear, and say phrases from a cue in your own language. The Test is graded.
+
+Teachers choose the language, the situations, the learners\' own language and the level, and AI (or any AI assistant) drafts the scenes and pictures. Everything can be edited.';
+$string['modulename_link'] = 'mod/ailanguageteacher/view';
+$string['modulenameplural'] = 'AI Language Teachers';
+$string['moveleft'] = 'Move earlier';
+$string['moveon'] = 'Practise this later';
+$string['moveonimage'] = 'Move on the picture';
+$string['moveright'] = 'Move later';
+$string['msg_keepgoing'] = 'Listen again, then have another go.';
+$string['msg_mastered'] = 'Phrase mastered!';
+$string['msg_moretogo'] = '{$a} more to master it.';
+$string['msg_reset'] = 'The count starts again: they need to be in a row.';
+$string['mute'] = 'Mute sounds';
+$string['needspracticecount'] = 'Practise again';
+$string['newphrase'] = 'New phrase';
+$string['newscene'] = 'New scene';
+$string['next'] = 'Next';
+$string['nextscene'] = 'Next scene';
+$string['noattempts'] = 'No attempts yet.';
+$string['noimagefound'] = 'No usable picture was found in the upload.';
+$string['noimageyet'] = 'No picture yet';
+$string['nolearners'] = 'No learners to show.';
+$string['nomatchsaved'] = 'Your answers could not be saved.';
+$string['nomoreattempts'] = 'No attempts left.';
+$string['nophrasesyet'] = 'No placed phrases yet.';
+$string['noscenes'] = 'This activity has no scenes ready yet.';
+$string['noscenesyet'] = 'No scenes yet. Build the lesson, or add scenes below.';
+$string['nospeech'] = 'No recording was received.';
+$string['nothingheard'] = 'We couldn\'t hear you. Tap and speak a little louder. This try didn\'t count.';
+$string['notpassed'] = 'Not passed yet';
+$string['notplacedyet'] = 'Not on the picture yet';
+$string['notready'] = 'This lesson is not ready yet';
+$string['notready_manager'] = 'Add scenes with a picture and at least one placed phrase.';
+$string['notready_student'] = 'Your teacher is still preparing this lesson.';
+$string['notriesleft'] = 'No tries left for this phrase.';
+$string['notyourattempt'] = 'This attempt belongs to someone else.';
+$string['passed'] = 'Passed!';
+$string['passmark'] = 'Pass mark {$a}% reached';
+$string['passscore'] = 'Spoken-answer pass mark';
+$string['passscore_help'] = 'A spoken answer counts as successful when the recognised words match the phrase (or an accepted alternative) at least this closely. This checks which words were recognised, not pronunciation or accent. Silence, or speech that cannot be made out, gets no mark and does not count as a try.';
+$string['phrase'] = 'Phrase';
+$string['phrasecount'] = '{$a} phrases';
+$string['phraseof'] = 'Phrase {$a->current} of {$a->total}';
+$string['phrases'] = 'Phrases';
+$string['phrasesper'] = 'Phrases per picture (at most 2)';
+$string['phrasesummary'] = '{$a->phrases} phrases, {$a->placed} placed';
+$string['phrasetext'] = 'Phrase in {$a}';
+$string['placedfeedback'] = '{$a->label} placed at {$a->number}.';
+$string['placeon'] = 'Place on: {$a}';
+$string['placeonimage'] = 'Place on the picture';
+$string['placingof'] = '{$a->current} of {$a->total} to place';
+$string['playagain'] = 'Play again';
+$string['playall'] = 'Play all';
+$string['playmine'] = 'Play mine';
+$string['pluginadministration'] = 'AI Language Teacher administration';
+$string['pluginname'] = 'AI Language Teacher';
+$string['previewstudent'] = 'Preview as learner';
+$string['previous'] = 'Back';
+$string['previousscene'] = 'Previous scene';
+$string['privacy:metadata:ailog'] = 'Teachers\' AI drafting requests, kept for rate limits.';
+$string['privacy:metadata:ailog:action'] = 'What was drafted (lesson or picture).';
+$string['privacy:metadata:ailog:status'] = 'Whether the request worked.';
+$string['privacy:metadata:ailog:timecreated'] = 'When the request was made.';
+$string['privacy:metadata:ailog:userid'] = 'The teacher.';
+$string['privacy:metadata:attempt'] = 'Each Study, Practice or Test session.';
+$string['privacy:metadata:attempt:attempt'] = 'The attempt number.';
+$string['privacy:metadata:attempt:correct'] = 'How many answers were correct.';
+$string['privacy:metadata:attempt:duration'] = 'How long the attempt took.';
+$string['privacy:metadata:attempt:grade'] = 'The percentage score.';
+$string['privacy:metadata:attempt:kind'] = 'Study, Practice or Test.';
+$string['privacy:metadata:attempt:state'] = 'Whether the attempt is in progress or finished.';
+$string['privacy:metadata:attempt:timefinish'] = 'When the attempt finished.';
+$string['privacy:metadata:attempt:timestart'] = 'When the attempt started.';
+$string['privacy:metadata:attempt:total'] = 'How many answers there were.';
+$string['privacy:metadata:attempt:userid'] = 'The learner.';
+$string['privacy:metadata:core_grades'] = 'Test grades are stored in the gradebook.';
+$string['privacy:metadata:progress'] = 'Each learner\'s progress on each phrase.';
+$string['privacy:metadata:progress:bestscore'] = 'The best speaking score.';
+$string['privacy:metadata:progress:hintlevel'] = 'The strongest hint used.';
+$string['privacy:metadata:progress:hints'] = 'How many hints were used.';
+$string['privacy:metadata:progress:lastscore'] = 'The latest speaking score.';
+$string['privacy:metadata:progress:matchtries'] = 'How many drops it took to match the phrase.';
+$string['privacy:metadata:progress:phraseid'] = 'The phrase.';
+$string['privacy:metadata:progress:speaktries'] = 'How many times the learner said the phrase.';
+$string['privacy:metadata:progress:state'] = 'Studied, matched, mastered or to practise again.';
+$string['privacy:metadata:progress:successes'] = 'How many of those tries reached the pass score.';
+$string['privacy:metadata:progress:timemastered'] = 'When the phrase was mastered.';
+$string['privacy:metadata:progress:timemodified'] = 'When the progress last changed.';
+$string['privacy:metadata:progress:timestudied'] = 'When the phrase was first studied.';
+$string['privacy:metadata:progress:userid'] = 'The learner.';
+$string['privacy:metadata:response'] = 'Each marked answer in an attempt.';
+$string['privacy:metadata:response:answerid'] = 'The phrase the learner chose.';
+$string['privacy:metadata:response:correct'] = 'Whether the answer was correct.';
+$string['privacy:metadata:response:hints'] = 'The strongest hint used.';
+$string['privacy:metadata:response:phraseid'] = 'The phrase asked about.';
+$string['privacy:metadata:response:score'] = 'How closely the recognised words matched, for spoken Test items.';
+$string['privacy:metadata:response:stage'] = 'Match, listen or speak.';
+$string['privacy:metadata:response:timecreated'] = 'When the answer was given.';
+$string['privacy:metadata:response:tries'] = 'How many tries were made.';
+$string['privacy:metadata:speech'] = 'Spoken-answer checks: which words were recognised and how closely they matched. The recording itself is never stored.';
+$string['privacy:metadata:speech:kind'] = 'Study, Practice or Test.';
+$string['privacy:metadata:speech:passed'] = 'Whether the try reached the pass mark.';
+$string['privacy:metadata:speech:phraseid'] = 'The phrase that was said.';
+$string['privacy:metadata:speech:provider'] = 'How the spoken answer was checked (site speech service, browser or self-check).';
+$string['privacy:metadata:speech:recognised'] = 'The words that were recognised.';
+$string['privacy:metadata:speech:score'] = 'How closely the recognised words matched the phrase.';
+$string['privacy:metadata:speech:timecreated'] = 'When the phrase was said.';
+$string['privacy:metadata:speech:userid'] = 'The learner.';
+$string['prompt_noromanise'] = 'leave empty';
+$string['prompt_romanise'] = 'the pronunciation in Latin letters (for example pinyin, romaji or a standard transliteration)';
+$string['prompt_wherespoken'] = 'a place where {$a} is spoken';
+$string['q_custom'] = 'Your own situation';
+$string['q_custom_add'] = 'Add another';
+$string['q_custom_help'] = 'Anything your learners need, for example "Talking to customers at a hair salon".';
+$string['q_custom_placeholder'] = 'Describe a situation';
+$string['q_language'] = 'Which language are you teaching?';
+$string['q_language_help'] = 'Pick the language your learners are learning.';
+$string['q_learners'] = 'What is your learners\' first language?';
+$string['q_learners_help'] = 'Meanings, notes and speaking cues are written in this language, so learners can follow even as complete beginners.';
+$string['q_level'] = 'What level are your learners?';
+$string['q_level_help'] = 'The level changes the language itself: beginners get short, common phrases; advanced learners get natural, idiomatic language.';
+$string['q_situations'] = 'Which situations should your learners practise?';
+$string['q_situations_help'] = 'Choose as many as you like. Each becomes a group of picture scenes.';
+$string['q_situations_none'] = 'Choose at least one situation, or add your own.';
+$string['q_variety'] = 'Which variety?';
+$string['quickadd'] = 'Quick add';
+$string['quickadd_help'] = 'One phrase per line: Phrase | Meaning | When to use it. Up to {$a} phrases per picture; a new moment needs a new scene.';
+$string['quickadd_placeholder'] = 'Good morning! | สวัสดีตอนเช้า
+Please come in. | เชิญเข้ามาครับ/ค่ะ';
+$string['recordagain'] = 'Record again';
+$string['recorded'] = 'Recorded';
+$string['recording'] = 'Recording…';
+$string['recordphrase'] = 'Record';
+$string['recordstop'] = 'Stop recording';
+$string['regradeall'] = 'Recalculate grades';
+$string['regraded'] = 'Grades recalculated.';
+$string['repetitions'] = 'Successful tries to master';
+$string['repetitions_help'] = 'How many successful tries a phrase needs before it is mastered. Repeating a phrase several times helps learners remember it.';
+$string['replaceimage'] = 'Save picture';
+$string['report_attempts'] = 'Attempts';
+$string['report_learners'] = 'Learners';
+$string['report_learners_help'] = 'Each learner\'s progress through Study, Practice and the Test.';
+$string['report_phrases'] = 'Phrases';
+$string['report_phrases_help'] = 'Which phrases learners find hard. Rows with fewer than 60% correct matches in the Test are highlighted.';
+$string['reports'] = 'Reports';
+$string['reset'] = 'Reset';
+$string['resetattempts'] = 'Delete all attempts and progress';
+$string['resetdone'] = 'Your practice progress has been cleared.';
+$string['resetprogress'] = 'Practise from the start';
+$string['returntotray'] = '{$a} returned to the phrases.';
+$string['review_create'] = 'Create these scenes';
+$string['review_help'] = 'Untick any scene you don\'t want. You can edit every phrase afterwards, and add pictures in the scene manager.';
+$string['review_title'] = 'Draft: {$a->scenes} scenes, {$a->phrases} phrases';
+$string['reviewanswers'] = 'Review your answers';
+$string['romanisation'] = 'Romanisation';
+$string['save'] = 'Save';
+$string['saved'] = 'Saved';
+$string['saving'] = 'Saving…';
+$string['sayit'] = 'Say it';
+$string['scenealreadysubmitted'] = 'This part of the scene has already been submitted.';
+$string['scenecomplete'] = 'Scene complete!';
+$string['scenecontext'] = 'What is happening (learners\' language)';
+$string['scenecount'] = '{$a} scenes';
+$string['scenedeleted'] = 'Scene deleted.';
+$string['scenedetails'] = 'Scene details';
+$string['sceneimage'] = 'Picture';
+$string['sceneimageprompt'] = 'Picture description (for AI)';
+$string['sceneof'] = 'Scene {$a->current} of {$a->total}';
+$string['scenescreated'] = '{$a} scenes added.';
+$string['scenesper'] = 'Pictures per situation';
+$string['scenetitle'] = 'Scene title';
+$string['scenetitle_help'] = 'Used when you add a scene without a picture. Scenes made from pictures take the file name as their title.';
+$string['scenex'] = 'Scene {$a}';
+$string['score'] = 'Scenes';
+$string['selectedfeedback'] = '{$a} selected. Now choose a place.';
+$string['selectplace'] = 'Tap the place where it belongs.';
+$string['sequential'] = 'Unlock in order';
+$string['sequential_desc'] = 'Practice opens after Study, and the Test opens after every phrase has been practised.';
+$string['sequential_help'] = 'Teachers can always open every mode. Learners who move on from a phrase without mastering it still count as having practised it.';
+$string['settings_ai'] = 'AI lesson drafting (LMS Labs)';
+$string['settings_ai_desc'] = 'LMS Labs has not yet published the generation service for AI Language Teacher, so the "Create with AI" buttons stay off for now. Teachers can already draft lessons and pictures with any AI assistant: the lesson builder gives them a ready-made prompt, and they paste the reply back. The site ID and key below are used only to show the LMS Labs credit balance.';
+$string['settings_defaults'] = 'Defaults for new activities';
+$string['settings_speech'] = 'Speech';
+$string['settings_speech_desc'] = 'Teachers can create and cache phrase audio using the approved Google voice catalog through LMS Labs (1 credit per successful synthesis). Learner listening never generates a paid request. No paid Speech-to-Text is available: the browser\'s transcript, manual input or listen-back self-check compares recognised words, not phonemes, pronunciation or accent.';
+$string['showromanisation'] = 'Show romanisation';
+$string['showromanisation_desc'] = 'Show pronunciation in Latin letters (such as pinyin or romaji) under phrases.';
+$string['shufflelabels'] = 'Shuffle phrases';
+$string['sit_airport'] = 'At the airport';
+$string['sit_appointments'] = 'Making appointments';
+$string['sit_bank'] = 'Banking';
+$string['sit_carhire'] = 'Hiring a car';
+$string['sit_construction'] = 'Construction site';
+$string['sit_customerservice'] = 'Customer service';
+$string['sit_customs'] = 'Immigration and customs';
+$string['sit_directions'] = 'Asking for directions';
+$string['sit_doctor'] = 'Doctor or hospital';
+$string['sit_emergencies'] = 'Emergencies';
+$string['sit_family'] = 'Family and friends';
+$string['sit_farewells'] = 'Farewells';
+$string['sit_food'] = 'Food and drink';
+$string['sit_greetings'] = 'Greetings';
+$string['sit_hairsalon'] = 'Hair salon';
+$string['sit_hobbies'] = 'Hobbies and free time';
+$string['sit_home'] = 'At home';
+$string['sit_hospitality'] = 'Hospitality';
+$string['sit_hotel'] = 'At the hotel';
+$string['sit_housekeeping'] = 'Cleaning and housekeeping';
+$string['sit_instructions'] = 'Giving and following instructions';
+$string['sit_introductions'] = 'Introducing yourself';
+$string['sit_jobinterview'] = 'Job interviews';
+$string['sit_lostproperty'] = 'Lost property';
+$string['sit_meetings'] = 'Meetings';
+$string['sit_pharmacy'] = 'Pharmacy';
+$string['sit_phonecalls'] = 'Telephone calls';
+$string['sit_postoffice'] = 'Post office';
+$string['sit_repairs'] = 'Repairs and tradespeople';
+$string['sit_restaurant'] = 'Restaurant or café';
+$string['sit_retail'] = 'Working in a shop';
+$string['sit_safety'] = 'Health and safety';
+$string['sit_shopping'] = 'At the shops';
+$string['sit_sightseeing'] = 'Sightseeing';
+$string['sit_supermarket'] = 'Supermarket';
+$string['sit_taxi'] = 'Taxi or rideshare';
+$string['sit_tickets'] = 'Buying tickets';
+$string['sit_time'] = 'Times, days and dates';
+$string['sit_trainbus'] = 'Train or bus station';
+$string['sit_transport'] = 'Getting transport';
+$string['sit_weather'] = 'Weather and small talk';
+$string['sit_workplace'] = 'At work';
+$string['sitgroup_everyday'] = 'Everyday life';
+$string['sitgroup_services'] = 'Health and services';
+$string['sitgroup_travel'] = 'Travel';
+$string['sitgroup_work'] = 'Work';
+$string['situation'] = 'Situation';
+$string['situation_general'] = 'General';
+$string['situation_new'] = 'New situation…';
+$string['situation_newname'] = 'New situation name';
+$string['skip'] = 'Skip';
+$string['sounds'] = 'Sound effects';
+$string['sounds_desc'] = 'Play short sound effects (made in the browser, no audio files). Learners can mute them.';
+$string['soundsright'] = 'Sounds right';
+$string['speaking'] = 'Speaking in Practice';
+$string['speaking_desc'] = 'After each correct match, the learner says the phrase until it is mastered.';
+$string['speaking_help'] = 'Turn this off to make Practice match-and-listen only. Learners who cannot use a microphone can always move on; the phrase is then marked "practise again" in the reports.';
+$string['speakingcue'] = 'Speaking cue (Test)';
+$string['speakingcue_help'] = 'For example: Greet the housekeeper in the morning';
+$string['speakingsettings'] = 'Speaking';
+$string['speaknotavailable'] = 'Speaking isn\'t available on this device or browser. You can listen and move on.';
+$string['speechfailed_short'] = 'Speaking check is not available right now. Please try again.';
+$string['speechinprogress'] = 'Your last answer is still being checked. Please wait a moment.';
+$string['speechnotconfigured'] = 'The speech service is not available on this site.';
+$string['speechrate'] = 'Speaking checks per minute';
+$string['speechrate_desc'] = 'Most speaking checks one learner can make per minute.';
+$string['speechratelimit'] = 'Too many speaking checks in a short time. Wait a minute and try again.';
+$string['createaudio'] = 'Create voice (1 credit)';
+$string['voicechoose'] = 'Create phrase audio for 1 credit. Choose an exact voice name from the live list:';
+$string['voiceinvalid'] = 'Choose a voice from the live list.';
+$string['drafttariff'] = 'Draft a short lesson: 3 credits on success. Review and edit the draft before creating scenes.';
+$string['operationpending'] = 'This request is still pending. Wait and retry the same operation; do not start another charge.';
+$string['operationconflict'] = 'The pending request has changed. Finish or reconcile it before changing its contents.';
+$string['operationexpired'] = 'The previous draft has expired. Click Generate again only if you want a new 3-credit draft.';
+$string['speechresultnotretained'] = 'The previous speech result is no longer available. No audio was saved. Creating audio again is a new teacher-requested operation that may cost 1 credit; no automatic retry was started.';
+$string['remoteuncertain'] = 'The provider response is uncertain. Do not start a new request; retry this operation later.';
+$string['remoteerror'] = 'The service returned an error: {$a}. No automatic new request was started.';
+$string['speechcatalogunavailable'] = 'No approved voice is available for this exact locale.';
+$string['speechtxttoolong'] = 'This phrase exceeds the 200-character speech limit.';
+$string['privacy:metadata:operation'] = 'Teacher-requested speech synthesis and short lesson draft claims.';
+$string['privacy:metadata:operation:userid'] = 'The teacher who requested the operation.';
+$string['privacy:metadata:operation:body'] = 'The temporary lesson brief; speech requests retain no phrase text.';
+$string['privacy:metadata:operation:result'] = 'The draft retained for at most 24 hours or the selected voice.';
+$string['privacy:metadata:external'] = 'LMS Labs processes teacher-requested lesson briefs and phrase text.';
+$string['spokencheck'] = 'Spoken-answer check';
+$string['stage_listen'] = 'Listen';
+$string['stage_listen_help'] = 'Where does this phrase belong? Tap the place.';
+$string['stage_listen_step'] = 'Listen · {$a->current} of {$a->total}';
+$string['stage_match'] = 'Match';
+$string['stage_match_help'] = 'Drag each phrase to its place, then submit.';
+$string['stage_speak'] = 'Speak';
+$string['stage_speak_help'] = 'Say this in the language you are learning:';
+$string['stage_speak_step'] = 'Speak · {$a->current} of {$a->total}';
+$string['start'] = 'Start';
+$string['startagain'] = 'Start again';
+$string['startplacing'] = 'Add and place';
+$string['state_finished'] = 'Finished';
+$string['state_inprogress'] = 'In progress';
+$string['status_completed'] = 'Completed';
+$string['status_notpassed'] = 'Not passed yet. You need {$a}%.';
+$string['status_passed'] = 'Passed';
+$string['status_practised'] = 'Practised';
+$string['status_studied'] = 'Studied';
+$string['step_build'] = 'Build';
+$string['step_language'] = 'Language';
+$string['step_learners'] = 'Learners\' language';
+$string['step_level'] = 'Level';
+$string['step_situations'] = 'Situations';
+$string['stop'] = 'Stop';
+$string['stopplaying'] = 'Stop';
+$string['studyrecorded'] = 'Study progress saved.';
+$string['submitscene'] = 'Submit';
+$string['successfultries'] = 'Successful tries: {$a->done} of {$a->total}';
+$string['supportlang'] = 'Learners\' language';
+$string['supportlang_help'] = 'Your learners\' first language. Meanings, notes, scene descriptions and speaking cues are written in it, so complete beginners can follow.';
+$string['tapandsay'] = 'Tap and say it';
+$string['tapwhendone'] = 'Listening… tap when done';
+$string['targetlang'] = 'Language taught';
+$string['targetlang_help'] = 'The language your learners are learning.';
+$string['targetlocale'] = 'Regional variety';
+$string['targetlocale_help'] = 'Used for spelling and vocabulary in drafted lessons, for the voice that reads phrases aloud and for checking spoken answers. It must belong to the language taught; otherwise the language\'s main variety is used.';
+$string['testinprogress'] = 'You have a Test open. Finish it before practising.';
+$string['testlistening'] = 'Listening in the Test';
+$string['testlistening_desc'] = 'Learners hear a phrase and tap the right place on the picture.';
+$string['testsettings'] = 'Test';
+$string['testspeaking'] = 'Speaking in the Test';
+$string['testspeaking_desc'] = 'Learners say each phrase from a cue in their own language, and the words recognised are checked. Needs the site speech service or the browser\'s speech recognition.';
+$string['time'] = 'Time';
+$string['timeexpired'] = 'The time limit has passed.';
+$string['timelimit'] = 'Time limit';
+$string['timelimit_help'] = 'Time allowed for a Test attempt. The server allows 30 seconds of grace for slow connections.';
+$string['toomanyphrases'] = 'A scene can have up to {$a->phrases} phrases and {$a->distractors} distractors.';
+$string['triesleft'] = '{$a} try left';
+$string['tryagain'] = 'Try again';
+$string['tryagainshort'] = 'Try once more';
+$string['trysayingit'] = 'Try saying it';
+$string['unintelligible'] = 'We couldn\'t make out the words. Try again. This try didn\'t count.';
+$string['unmute'] = 'Turn sounds on';
+$string['unsaved'] = 'Unsaved changes';
+$string['uploadimage'] = 'Upload a picture';
+$string['uploadimages'] = 'Pictures';
+$string['uploadimages_help'] = 'PNG, JPEG, GIF or WebP, or a ZIP of them (up to 100 pictures).';
+$string['weheard'] = 'We heard:';
+$string['whentouse'] = 'When to use it';
+$string['wordsrecognised'] = 'Words recognised: {$a->found} of {$a->total}';
+$string['wrongfeedback'] = 'Not quite. {$a} goes back.';
+$string['you'] = 'you';
+$string['youneed'] = 'You need {$a}% to pass';
+$string['youplaced'] = 'You placed: {$a}';
+$string['yourrecording'] = 'Your recording (used instead of the generated voice)';
+$string['zipinvalid'] = 'That ZIP file could not be read.';
+$string['ziptoolarge'] = 'That ZIP is too large. Upload at most {$a} pictures and 200 MB unpacked.';
