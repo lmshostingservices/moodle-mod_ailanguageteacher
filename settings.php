@@ -24,8 +24,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$ADMIN->add('modsettings', new admin_externalpage(
+    'mod_ailanguageteacher_activation', get_string('activation', 'mod_ailanguageteacher'),
+    new moodle_url('/mod/ailanguageteacher/activation.php'), 'moodle/site:config'
+));
+
 if ($ADMIN->fulltree) {
     $component = 'mod_ailanguageteacher';
+
+    $unlockstate = \mod_ailanguageteacher\local\unlock::state();
+    $settings->add(new admin_setting_heading(
+        "$component/activationheading", get_string('activation', $component),
+        html_writer::div(
+            s(get_string('act_settings_status', $component, get_string('act_status_' .
+                $unlockstate['status'], $component))) . ' ' .
+            html_writer::link(new moodle_url('/mod/ailanguageteacher/activation.php'),
+                get_string('act_settings_link', $component)),
+            $unlockstate['status'] === 'unlocked' ? 'alert alert-success' : 'alert alert-warning'
+        )
+    ));
 
     $settings->add(new admin_setting_heading(
         "$component/speechheading",

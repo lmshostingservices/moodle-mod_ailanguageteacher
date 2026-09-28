@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.0.3] - 2026-09-28
+
+### Added
+
+- Administrator-only activation page with free access verification, live release/credit-price review and explicit POST confirmation before one-time site unlock.
+- Durable pending marker and verification-first recovery for uncertain unlock responses; show unlimited/low balances, Marketplace restorations and server conflict messages without claiming a new debit for prior purchases.
+- Activation uses the existing complete LMS Labs credential pair. Phrase request keys, 410 recovery, text drafting (3 credits) and speech (1 credit) are unchanged; no speech-to-text route is added.
+
 All notable changes to mod_ailanguageteacher are recorded here.
 
 ## [v1.0.2] - 2026-09-28
