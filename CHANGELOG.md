@@ -2,6 +2,17 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.2.1] - 2026-10-09
+
+Builds on 1.2.0, which it replaces. It follows the LMS Labs handover of 9 Oct 2026 for the lesson import route. No tariff or database changes.
+
+### Changed
+
+- **An unexpected server error (5xx) is never taken as "not charged".** The request is kept, and the same button asks again with the same key. Only LMS Labs' documented provider failures count as a definite no.
+- **"Already used with different content" (409) and "no longer available" (410) now say the earlier request may have been charged**, and tell the teacher to contact LMS Labs support before trying again.
+- **A lost phrase voice says it may have been charged.** LMS Labs keeps no voices, so a completed voice that did not arrive cannot be recovered.
+- **Every scene sent for charging has a title.** An empty title becomes "Scene N", because LMS Labs rejects empty titles.
+
 ## [v1.2.0] - 2026-10-08
 
 Builds on the live 1.0.3, which it replaces. The number 1.1.0 is skipped because an earlier, withdrawn test build used it. Tariffs are unchanged: 50 credits to unlock, 3 per scene, 1 per phrase voice.

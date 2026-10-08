@@ -233,8 +233,16 @@ final class charging_test extends \advanced_testcase {
         $this->assertSame('gone', remote::outcome(410, ''));
         $this->assertSame('uncertain', remote::outcome(0, ''));
         $this->assertSame('uncertain', remote::outcome(503, ''));
+        $this->assertSame(
+            'uncertain',
+            remote::outcome(500, json_encode(['error' => ['code' => 'INTERNAL']])),
+            'An unexpected server error is never taken as not charged.'
+        );
+        $this->assertSame('refused', remote::outcome(503, json_encode(['error' => ['code' => 'PROVIDER_UNAVAILABLE']])));
+        $this->assertSame('refused', remote::outcome(502, json_encode(['error' => ['code' => 'PROVIDER_FAILED']])));
+        $this->assertSame('uncertain', remote::outcome(502, ''));
         $this->assertSame('uncertain', remote::outcome(500, json_encode(['error' => ['code' => 'SETTLEMENT_UNCONFIRMED']])));
-        foreach ([400, 401, 402, 403, 404, 409, 413, 422, 429, 502] as $status) {
+        foreach ([400, 401, 402, 403, 404, 409, 413, 422, 429] as $status) {
             $this->assertSame('refused', remote::outcome($status, ''), (string)$status);
         }
     }

@@ -97,10 +97,13 @@ class import_lesson extends base {
         if (\mod_ailanguageteacher\local\credentials::find() === null) {
             throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');
         }
-        $body = ['sceneCount' => count($data['scenes']), 'titles' => array_map(
-            fn($s) => \core_text::substr(str_replace(['<', '>'], '', (string)$s['title']), 0, 200),
-            $data['scenes']
-        )];
+        $titles = [];
+        foreach (array_values($data['scenes']) as $i => $scene) {
+            $title = trim(\core_text::substr(str_replace(['<', '>'], '', (string)$scene['title']), 0, 200));
+            // LMS Labs needs a title with text for every scene.
+            $titles[] = $title !== '' ? $title : get_string('scenex', 'mod_ailanguageteacher', $i + 1);
+        }
+        $body = ['sceneCount' => count($data['scenes']), 'titles' => $titles];
         $op = operation::claim((int)$instance->id, (int)$USER->id, 'import', 0, $body, false, $params['discard']);
         $charge = (new lmslabs())->charge_import($body, $op);
         $transaction = $DB->start_delegated_transaction();

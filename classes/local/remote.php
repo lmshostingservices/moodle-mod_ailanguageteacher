@@ -33,6 +33,10 @@ final class remote {
     /** @var string[] Error codes that leave the outcome unknown (the same key must be asked again). */
     public const UNCERTAIN = ['SETTLEMENT_UNCONFIRMED', 'DEADLINE_EXCEEDED'];
 
+    /** @var string[] Documented 5xx codes LMS Labs uses when the provider failed before anything was charged. */
+    public const PROVIDER_REFUSED = ['PROVIDER_UNAVAILABLE', 'PROVIDER_FAILED', 'PROVIDER_RATE_LIMITED',
+        'INVALID_PROVIDER_RESULT', 'SPEECH_FAILED', 'IMAGE_FAILED'];
+
     /**
      * @var callable|null Replacement transport for unit tests: fn($url, $headers, $body) => [status, body, info,
      * headers]; headers is optional.
@@ -113,9 +117,10 @@ final class remote {
         if ($status === 410) {
             return 'gone';
         }
+        // An unexpected server error is never taken as "not charged": only documented provider refusals are a no.
         if (
-            $status === 0 || in_array($code, self::UNCERTAIN, true) || ($status >= 500 && $status !== 502 &&
-                $code === 'REMOTE_ERROR')
+            $status === 0 || in_array($code, self::UNCERTAIN, true) ||
+                ($status >= 500 && !in_array($code, self::PROVIDER_REFUSED, true))
         ) {
             return 'uncertain';
         }
