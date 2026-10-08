@@ -25,7 +25,7 @@
 /**
  * Runs the upgrade steps between the installed version and this one.
  *
- * Version 1.0.0 is the first release, so there are no steps yet; new ones go below with upgrade_mod_savepoint().
+ * 2026092801 (1.0.2): stored LMS Labs requests. 2026100800 (1.2.0): the activity's phrase voice.
  *
  * @param int $oldversion the version being upgraded from
  * @return bool
@@ -46,16 +46,34 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         $table->add_field('result', XMLDB_TYPE_TEXT);
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL);
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
-        $table->add_key('ailanguageteacherid', XMLDB_KEY_FOREIGN, ['ailanguageteacherid'],
-            'ailanguageteacher', ['id']);
+        $table->add_key(
+            'ailanguageteacherid',
+            XMLDB_KEY_FOREIGN,
+            ['ailanguageteacherid'],
+            'ailanguageteacher',
+            ['id']
+        );
         $table->add_index('requestkey', XMLDB_INDEX_UNIQUE, ['idemkey']);
-        $table->add_index('scope', XMLDB_INDEX_NOTUNIQUE,
-            ['ailanguageteacherid', 'userid', 'kind', 'itemid', 'state']);
+        $table->add_index(
+            'scope',
+            XMLDB_INDEX_NOTUNIQUE,
+            ['ailanguageteacherid', 'userid', 'kind', 'itemid', 'state']
+        );
         $dbman = $DB->get_manager();
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
         upgrade_mod_savepoint(true, 2026092801, 'ailanguageteacher');
+    }
+    if ($oldversion < 2026100800) {
+        // The LMS Labs voice used for all of the activity's phrase audio (chosen once in the Voices step).
+        $table = new xmldb_table('ailanguageteacher');
+        $field = new xmldb_field('ttsvoice', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'imagestyle');
+        $dbman = $DB->get_manager();
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026100800, 'ailanguageteacher');
     }
     return true;
 }

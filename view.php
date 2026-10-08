@@ -42,6 +42,15 @@ $PAGE->set_title(format_string($instance->name));
 $PAGE->set_heading(format_string($course->fullname));
 
 $canmanage = has_capability('mod/ailanguageteacher:manage', $context);
+
+// The whole plugin needs this site to be unlocked with LMS Labs (50 credits or a recognised Marketplace purchase).
+if (!\mod_ailanguageteacher\local\unlock::active()) {
+    echo $OUTPUT->header();
+    echo \mod_ailanguageteacher\local\unlock::locked_notice($canmanage);
+    echo $OUTPUT->footer();
+    exit;
+}
+
 $ready = manager::ready_scenes($instance, $context);
 
 // A new activity with nothing in it: take the teacher straight to the lesson builder.
@@ -194,8 +203,7 @@ $templatedata = [
     'config' => json_encode($config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
     'ready' => (bool)$ready,
     'canmanage' => $canmanage,
-    'builderurl' => (new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id]))->out(false),
-    'scenesurl' => (new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id]))->out(false),
+    'setupurl' => (new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id, 'step' => 'resume']))->out(false),
     'reporturl' => has_capability('mod/ailanguageteacher:viewreports', $context)
         ? (new moodle_url('/mod/ailanguageteacher/report.php', ['id' => $cm->id]))->out(false) : null,
     'guest' => !$canattempt,

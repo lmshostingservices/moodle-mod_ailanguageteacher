@@ -26,14 +26,15 @@
 import Ajax from 'core/ajax';
 import Notification from 'core/notification';
 import {init as initCopy} from 'mod_ailanguageteacher/copy';
-import {render, loadStrings} from 'mod_ailanguageteacher/ui';
+import {render, loadStrings, fmt} from 'mod_ailanguageteacher/ui';
 
 /**
  * The wizard (steps 1 to 4).
  *
  * @param {string} selector
+ * @param {number} start the step to open (1 to 4), e.g. 4 when coming back from step 5
  */
-export const initWizard = async(selector) => {
+export const initWizard = async(selector, start = 1) => {
     const form = document.querySelector(selector);
     if (!form) {
         return;
@@ -44,6 +45,8 @@ export const initWizard = async(selector) => {
     const next = form.querySelector('[data-action="nextstep"]');
     const save = form.querySelector('[data-action="save"]');
     let current = 0;
+    const progress = document.querySelector('[data-region="setupprogress"]');
+    const P = await loadStrings(['setup_progress']);
     form.classList.add('is-enhanced');
 
     const target = () => (form.querySelector('input[name="targetlang"]:checked') || {}).value;
@@ -68,7 +71,15 @@ export const initWizard = async(selector) => {
         steps.forEach((s, k) => {
             s.hidden = k !== current;
         });
+        if (progress) {
+            progress.textContent = fmt(P.setup_progress, {current: current + 1, total: 9});
+        }
         dots.forEach((d, k) => {
+            if (k === current) {
+                d.setAttribute('aria-current', 'step');
+            } else {
+                d.removeAttribute('aria-current');
+            }
             d.classList.toggle('is-active', k === current);
             d.classList.toggle('is-done', k < current);
         });
@@ -119,11 +130,13 @@ export const initWizard = async(selector) => {
     });
     syncVariety();
     syncPack();
-    show(0);
+    show(start - 1);
 };
 
 /**
- * Step 5: draft, review and create.
+ * Step 5: pick a way to create the scenes, review the draft, and create it. Both ways are charged: an LMS Labs draft
+ * when it is delivered (its scenes are then created free, once), scenes from the teacher's own AI assistant when they
+ * are created. Every charge is confirmed first, with the credits named.
  *
  * @param {string} selector
  */
@@ -132,17 +145,38 @@ export const initBuild = async(selector) => {
     if (!root) {
         return;
     }
-    const S = await loadStrings(['lessoninvalid', 'generating', 'creating', 'build_ai_go', 'lessonempty']);
+    const S = await loadStrings(['lessoninvalid', 'generating', 'creating', 'lessonempty', 'confirm_title',
+        'confirm_create', 'draft_confirm', 'import_confirm', 'discard_confirm', 'import_done']);
     initCopy('.lt-copy');
     const cmid = parseInt(root.dataset.cmid, 10);
+    const perscene = parseInt(root.dataset.importcredits, 10);
     const review = root.querySelector('[data-region="review"]');
-    let draft = null;
     let another = false;
 
-    const showDraft = async(data) => {
-        draft = data;
-        // Keep the editable original JSON alongside the checkbox review.
-        root.querySelector('[data-region="json"]').value = JSON.stringify(data, null, 2);
+    const confirm = (question) => new Promise((resolve) => {
+        Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
+    });
+    // An unfinished earlier request with different content: only abandoned when the teacher says so.
+    const call = async(methodname, args) => {
+        try {
+            return await Ajax.call([{methodname, args}], true, true, false, 120000)[0];
+        } catch (err) {
+            if (err && err.errorcode === 'operationconflict' && await confirm(S.discard_confirm)) {
+                return Ajax.call([{methodname, args: {...args, discard: true}}], true, true, false, 120000)[0];
+            }
+            throw err;
+        }
+    };
+
+    // Two ways to create scenes: show only the one the teacher picks.
+    root.querySelectorAll('input[name="lt-path"]').forEach((radio) => radio.addEventListener('change', () => {
+        root.querySelectorAll('[data-path]').forEach((path) => {
+            path.hidden = path.dataset.path !== radio.value;
+        });
+        review.hidden = true;
+    }));
+
+    const showDraft = async(data, draftid) => {
         let phrases = 0;
         data.scenes.forEach((s) => {
             phrases += s.phrases.length;
@@ -155,20 +189,29 @@ export const initBuild = async(selector) => {
         node.querySelector('[data-action="create"]').addEventListener('click', async(e) => {
             const btn = e.currentTarget;
             const keep = Array.from(node.querySelectorAll('[data-scene]')).filter((c) => c.checked)
-                .map((c) => draft.scenes[parseInt(c.dataset.scene, 10)]);
+                .map((c) => data.scenes[parseInt(c.dataset.scene, 10)]);
             if (!keep.length) {
                 Notification.alert('', S.lessonempty);
                 return;
             }
+            // The teacher's own AI assistant: 3 credits per scene, confirmed first. An LMS Labs draft is paid for.
+            if (!draftid && !await confirm(fmt(S.import_confirm, {count: keep.length, credits: keep.length * perscene}))) {
+                return;
+            }
+            const original = btn.textContent;
             btn.disabled = true;
             btn.textContent = S.creating;
             try {
-                await Ajax.call([{methodname: 'mod_ailanguageteacher_import_lesson', args: {cmid,
+                const res = await call('mod_ailanguageteacher_import_lesson', {cmid, draftid,
                     // Escape "<" so the JSON passes PARAM_TEXT; the server decodes it and strips any markup itself.
-                    draft: JSON.stringify({scenes: keep}).replace(/</g, '\\u003c')}}])[0];
-                window.location.href = root.dataset.scenesurl;
+                    draft: JSON.stringify({scenes: keep}).replace(/</g, '\\u003c')});
+                if (res.charged > 0) {
+                    Notification.addNotification({message: fmt(S.import_done, res), type: 'success'});
+                }
+                window.location.href = root.dataset.nexturl;
             } catch (err) {
                 btn.disabled = false;
+                btn.textContent = original;
                 Notification.exception(err);
             }
         });
@@ -208,30 +251,36 @@ export const initBuild = async(selector) => {
         }
     };
 
-    root.querySelector('[data-action="preview"]').addEventListener('click', () => {
+    const preview = root.querySelector('[data-action="preview"]');
+    preview?.addEventListener('click', () => {
         const data = parse(root.querySelector('[data-region="json"]').value);
         if (!data) {
             Notification.alert('', S.lessoninvalid);
             return;
         }
-        showDraft(data);
+        showDraft(data, 0);
     });
 
     const gen = root.querySelector('[data-action="generate"]');
     if (gen) {
+        const label = gen.querySelector('span');
+        const original = label.textContent;
         gen.addEventListener('click', async() => {
+            if (!await confirm(S.draft_confirm)) {
+                return;
+            }
             gen.disabled = true;
-            gen.textContent = S.generating;
+            label.textContent = S.generating;
             try {
-                const res = await Ajax.call([{methodname: 'mod_ailanguageteacher_generate_lesson',
-                    args: {cmid, newdraft: another}}])[0];
-                await showDraft(JSON.parse(res.draft));
+                // One intentional request; an unanswered one is asked again with the same key, never a new charge.
+                const res = await call('mod_ailanguageteacher_generate_lesson', {cmid, newdraft: another});
+                await showDraft(JSON.parse(res.draft), res.draftid);
                 another = true;
             } catch (err) {
                 Notification.exception(err);
             } finally {
                 gen.disabled = false;
-                gen.textContent = S.build_ai_go;
+                label.textContent = original;
             }
         });
     }

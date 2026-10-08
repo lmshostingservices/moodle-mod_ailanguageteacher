@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Version information for mod_ailanguageteacher.
+ * Caches for mod_ailanguageteacher.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -24,9 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'mod_ailanguageteacher';
-$plugin->version   = 2026100800;
-$plugin->release   = '1.2.0';
-$plugin->requires  = 2024042200; // Moodle 4.4.
-$plugin->supported = [404, 503];
-$plugin->maturity  = MATURITY_STABLE;
+$definitions = [
+    // The LMS Labs voice catalogue (voice names only), so learner pages never wait on LMS Labs.
+    'speechcatalog' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => false,
+        'staticacceleration' => true,
+    ],
+];

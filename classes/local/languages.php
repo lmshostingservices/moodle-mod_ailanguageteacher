@@ -110,13 +110,14 @@ class languages {
      * Language name in the current interface language.
      *
      * @param string $code
+     * @param string|null $lang language to name it in (null: the current language)
      * @return string
      */
-    public static function name(string $code): string {
+    public static function name(string $code, ?string $lang = null): string {
         if (!self::is_language($code)) {
             return $code;
         }
-        return get_string('lang_' . $code, 'mod_ailanguageteacher');
+        return get_string_manager()->get_string('lang_' . $code, 'mod_ailanguageteacher', null, $lang);
     }
 
     /**
@@ -249,10 +250,11 @@ class languages {
      * Display name of a built-in situation.
      *
      * @param string $key
+     * @param string|null $lang language to name it in (null: the current language)
      * @return string
      */
-    public static function situation_name(string $key): string {
-        return get_string('sit_' . $key, 'mod_ailanguageteacher');
+    public static function situation_name(string $key, ?string $lang = null): string {
+        return get_string_manager()->get_string('sit_' . $key, 'mod_ailanguageteacher', null, $lang);
     }
 
     /**

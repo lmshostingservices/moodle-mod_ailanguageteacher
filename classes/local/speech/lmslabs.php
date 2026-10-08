@@ -26,41 +26,86 @@ use moodle_exception;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class lmslabs implements service {
+    /** @var string Voice catalogue route. */
+    public const CAPABILITIES_ROUTE = '/api/moodle/ai-language-teacher/speech/capabilities';
+
+    /** @var string Phrase audio route (1 credit per delivered clip). */
+    public const TTS_ROUTE = '/api/moodle/ai-language-teacher/speech/tts';
+
     /** @var array|null Live catalog for this PHP request. */
     private $catalog = null;
 
+    /** @var int How long the voice catalogue is kept, in seconds. */
+    public const CATALOG_TTL = 3600;
+
+    /** @var int How long a failed catalogue fetch is remembered before LMS Labs is asked again, in seconds. */
+    public const CATALOG_RETRY = 300;
+
+    /**
+     * The voice catalogue. It is kept in Moodle's cache for an hour, so learner pages never wait on LMS Labs; a failed
+     * fetch is remembered for five minutes.
+     *
+     * @return array
+     * @throws moodle_exception speechcatalogunavailable
+     */
     public function capabilities(): array {
         if ($this->catalog !== null) {
             return $this->catalog;
         }
-        [$status, $body] = \mod_ailanguageteacher\local\remote::request(
-            '/api/moodle/ai-language-teacher/speech/capabilities'
-        );
+        $cache = \cache::make('mod_ailanguageteacher', 'speechcatalog');
+        $credentials = \mod_ailanguageteacher\local\credentials::find();
+        $key = sha1((string)($credentials['siteid'] ?? ''));
+        $cached = $cache->get($key);
+        if (is_array($cached) && ($cached['time'] ?? 0) > time() - ($cached['locales'] ? self::CATALOG_TTL : self::CATALOG_RETRY)) {
+            if (!$cached['locales']) {
+                throw new moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
+            }
+            return $this->catalog = $cached['locales'];
+        }
+        try {
+            [$status, $body] = \mod_ailanguageteacher\local\remote::request(self::CAPABILITIES_ROUTE);
+        } catch (\moodle_exception $e) {
+            $status = 0;
+            $body = '';
+        }
         $data = json_decode($body, true);
         if ($status !== 200 || !is_array($data) || empty($data['locales']) || !is_array($data['locales'])) {
+            $cache->set($key, ['time' => time(), 'locales' => []]);
             throw new moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
         }
+        $cache->set($key, ['time' => time(), 'locales' => $data['locales']]);
         return $this->catalog = $data['locales'];
     }
 
+    /**
+     * The Chirp 3 HD voices for one exact locale.
+     *
+     * @param string $locale
+     * @return array voices, each with at least a name
+     */
     public function voices(string $locale): array {
         foreach ($this->capabilities() as $entry) {
             if (($entry['locale'] ?? '') === $locale) {
                 $code = (string)($entry['ttsLanguageCode'] ?? $locale);
                 // The two approved Chinese aliases are explicit; never infer a substitute dialect.
-                if ($code !== $locale &&
+                if (
+                    $code !== $locale &&
                         !(($locale === 'zh-CN' && $code === 'cmn-CN') ||
-                            ($locale === 'zh-HK' && $code === 'yue-HK'))) {
+                            ($locale === 'zh-HK' && $code === 'yue-HK'))
+                ) {
                     return [];
                 }
-                return array_values(array_filter((array)($entry['voices'] ?? []),
+                return array_values(array_filter(
+                    (array)($entry['voices'] ?? []),
                     fn($voice) => is_array($voice) && isset($voice['name']) &&
                         str_starts_with($voice['name'], $code . '-Chirp3-HD-') &&
-                        preg_match('/^[a-zA-Z-]+-Chirp3-HD-[a-zA-Z]+$/', $voice['name'])));
+                    preg_match('/^[a-zA-Z-]+-Chirp3-HD-[a-zA-Z]+$/', $voice['name'])
+                ));
             }
         }
         return [];
     }
+
     /**
      * Whether server-side site credentials are configured.
      *
@@ -120,21 +165,31 @@ class lmslabs implements service {
         if ($voice !== '') {
             $request['voice'] = $voice;
         }
-        [$status, $body, $info] = \mod_ailanguageteacher\local\remote::request(
-            '/api/moodle/ai-language-teacher/speech/tts', $request, $idemkey
+        global $DB;
+        [$status, $body, , $headers] = \mod_ailanguageteacher\local\remote::request(
+            self::TTS_ROUTE,
+            $request,
+            $idemkey,
+            'audio/mpeg, application/json'
         );
+        $operation = $DB->get_record('ailanguageteacher_operation', ['idemkey' => $idemkey]);
         if ($status !== 200) {
-            if ($status === 410) {
-                throw new moodle_exception('speechresultnotretained', 'mod_ailanguageteacher');
+            if ($operation) {
+                \mod_ailanguageteacher\local\operation::not_delivered($operation, $status, $body, $headers);
             }
-            throw new moodle_exception('remoteerror', 'mod_ailanguageteacher',
-                '', \mod_ailanguageteacher\local\remote::error($status, $body));
+            \mod_ailanguageteacher\local\remote::fail($status, $body, $headers);
         }
         $frames = strlen($body) > 1 && ord($body[0]) === 255 &&
             (ord($body[1]) & 0xe0) === 0xe0 && (ord($body[1]) & 0x06) === 0x02;
-        if ($body === '' || strlen($body) > 2 * 1024 * 1024 ||
-                (substr($body, 0, 3) !== 'ID3' && !$frames)) {
-            throw new moodle_exception('remoteuncertain', 'mod_ailanguageteacher');
+        if (
+            $body === '' || strlen($body) > 2 * 1024 * 1024 ||
+                (substr($body, 0, 3) !== 'ID3' && !$frames)
+        ) {
+            // Delivered (and perhaps charged) but not usable here: ended, so the teacher can contact support.
+            if ($operation) {
+                \mod_ailanguageteacher\local\operation::failed($operation);
+            }
+            throw new moodle_exception('unusableaudio', 'mod_ailanguageteacher');
         }
         return ['audio' => $body, 'mimetype' => 'audio/mpeg', 'requestid' => ''];
     }

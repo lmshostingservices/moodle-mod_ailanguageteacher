@@ -42,6 +42,12 @@ class generate_lesson extends base {
         return new external_function_parameters([
             'cmid' => new external_value(PARAM_INT, 'Course module id'),
             'newdraft' => new external_value(PARAM_BOOL, 'Explicitly draft another lesson', VALUE_DEFAULT, false),
+            'discard' => new external_value(
+                PARAM_BOOL,
+                'The teacher confirmed abandoning an unfinished request',
+                VALUE_DEFAULT,
+                false
+            ),
         ]);
     }
 
@@ -49,11 +55,16 @@ class generate_lesson extends base {
      * Generates.
      *
      * @param int $cmid
+     * @param bool $newdraft
+     * @param bool $discard
      * @return array
      */
-    public static function execute(int $cmid, bool $newdraft = false): array {
+    public static function execute(int $cmid, bool $newdraft = false, bool $discard = false): array {
         global $USER;
-        $params = self::validate_parameters(self::execute_parameters(), ['cmid' => $cmid, 'newdraft' => $newdraft]);
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            ['cmid' => $cmid, 'newdraft' => $newdraft, 'discard' => $discard]
+        );
         [, , $instance, $context] = self::load_cm($params['cmid'], 'manage');
         require_capability('mod/ailanguageteacher:useai', $context);
         $provider = factory::get();
@@ -61,25 +72,31 @@ class generate_lesson extends base {
             throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');
         }
         $body = lesson::draft_request($instance);
-        if (!confirm_sesskey()) {
-            throw new moodle_exception('invalidsesskey');
-        }
-        $operation = operation::claim((int)$instance->id, (int)$USER->id, 'lesson', 0, $body, $newdraft);
+        $operation = operation::claim(
+            (int)$instance->id,
+            (int)$USER->id,
+            'lesson',
+            0,
+            $body,
+            $params['newdraft'],
+            $params['discard']
+        );
         if ($operation->result !== null) {
-            return ['draft' => $operation->result];
+            return ['draft' => $operation->result, 'draftid' => (int)$operation->id];
         }
+        // A refusal ends the stored request; no answer or "still working" keeps it for the same key.
+        $delivered = $provider->draft($body, $operation);
         try {
-            $draft = lesson::clean(lesson::from_approved($provider->draft($body, $operation->idemkey), $instance));
-            $json = json_encode($draft, JSON_UNESCAPED_UNICODE);
-            operation::complete($operation, $json);
-        } catch (\Throwable $e) {
-            if ($e instanceof moodle_exception && $e->errorcode === 'operationexpired') {
-                operation::expired($operation);
-            }
-            throw $e;
+            $draft = lesson::clean(lesson::from_approved($delivered, $instance));
+        } catch (moodle_exception $e) {
+            // Delivered but not usable here: ended (never replayed), so the teacher can contact LMS Labs support.
+            operation::failed($operation);
+            throw new moodle_exception('unusabledraft', 'mod_ailanguageteacher', '', '-');
         }
+        $json = json_encode($draft, JSON_UNESCAPED_UNICODE);
+        operation::complete($operation, $json);
         lesson::log_ai((int)$instance->id, (int)$USER->id, 'lesson', 'ok');
-        return ['draft' => $json];
+        return ['draft' => $json, 'draftid' => (int)$operation->id];
     }
 
     /**
@@ -90,6 +107,7 @@ class generate_lesson extends base {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'draft' => new external_value(PARAM_TEXT, 'Cleaned lesson draft as JSON'),
+            'draftid' => new external_value(PARAM_INT, 'The delivered draft, for creating its scene without a new charge'),
         ]);
     }
 }

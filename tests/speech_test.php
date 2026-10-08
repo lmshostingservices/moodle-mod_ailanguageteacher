@@ -383,26 +383,27 @@ final class speech_test extends \advanced_testcase {
     }
 
     /**
-     * Phrase audio is made once per text, locale, voice, speed and service settings, then reused for everyone.
+     * Learners never cause a voice to be made: only the teacher's explicit action does, once per text, voice and
+     * service settings, and the saved voice is then reused by everyone.
      */
     public function test_phrase_audio_cache(): void {
         $this->make();
         $fake = $this->fake();
         $phrase = $GLOBALS['DB']->get_record('ailanguageteacher_phrase', ['text' => 'Please come in.']);
-        $url = audio::url($this->instance, $this->context, $phrase, 'normal');
+        $this->assertSame('', audio::url($this->instance, $this->context, $phrase, 'normal'));
+        $this->assertCount(0, $fake->calls['tts'], 'A learner read never asks for a voice.');
+        $url = audio::create($this->instance, $this->context, $phrase, 'normal', 2, 'en-AU-Chirp3-HD-Kore');
         $this->assertStringContainsString('/ttsaudio/', $url);
         $this->assertSame($url, audio::url($this->instance, $this->context, $phrase, 'normal'));
-        $this->assertCount(1, $fake->calls['tts'], 'Cached audio is reused.');
-        $slow = audio::url($this->instance, $this->context, $phrase, 'slow');
-        $this->assertNotSame($url, $slow);
-        $this->assertSame('slow', $fake->calls['tts'][1][2]);
-        $this->assertCount(2, $fake->calls['tts']);
+        $this->assertSame($url, audio::create($this->instance, $this->context, $phrase, 'normal', 2, 'en-AU-Chirp3-HD-Kore'));
+        $this->assertCount(1, $fake->calls['tts'], 'A saved voice is reused, never made again.');
 
-        // Changing the service's synthesis settings makes new audio and removes the old file for that variant.
+        // Changing the service's synthesis settings means a new voice when the teacher asks; the old file goes.
         $fake->identity = 'fake-v2';
-        $new = audio::url($this->instance, $this->context, $phrase, 'normal');
+        $this->assertSame('', audio::url($this->instance, $this->context, $phrase, 'normal'));
+        $new = audio::create($this->instance, $this->context, $phrase, 'normal', 2, 'en-AU-Chirp3-HD-Kore');
         $this->assertNotSame($url, $new);
-        $this->assertCount(3, $fake->calls['tts']);
+        $this->assertCount(2, $fake->calls['tts']);
         $files = get_file_storage()->get_area_files(
             $this->context->id,
             'mod_ailanguageteacher',
@@ -411,15 +412,15 @@ final class speech_test extends \advanced_testcase {
             'filename',
             false
         );
-        $this->assertCount(2, $files);
+        $this->assertCount(1, $files);
 
         // Unsupported locale or no service: no call, the browser speaks.
         $this->instance->targetlocale = 'th-TH';
-        $this->assertSame('', audio::url($this->instance, $this->context, $phrase, 'normal'));
+        $this->assertSame('', audio::create($this->instance, $this->context, $phrase, 'normal', 2, ''));
         $fake->on = false;
         $this->instance->targetlocale = 'en-AU';
         $other = $GLOBALS['DB']->get_record('ailanguageteacher_phrase', ['text' => 'Good morning, Maria!']);
-        $this->assertSame('', audio::url($this->instance, $this->context, $other, 'example'));
-        $this->assertCount(3, $fake->calls['tts']);
+        $this->assertSame('', audio::create($this->instance, $this->context, $other, 'normal', 2, ''));
+        $this->assertCount(2, $fake->calls['tts']);
     }
 }

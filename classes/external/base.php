@@ -39,6 +39,8 @@ abstract class base extends external_api {
         $context = \context_module::instance($cm->id);
         self::validate_context($context);
         require_capability('mod/ailanguageteacher:' . $capability, $context);
+        // The whole plugin needs this site to be unlocked with LMS Labs.
+        \mod_ailanguageteacher\local\unlock::require_active();
         $instance = $DB->get_record('ailanguageteacher', ['id' => $cm->instance], '*', MUST_EXIST);
         return [$course, $cm, $instance, $context];
     }

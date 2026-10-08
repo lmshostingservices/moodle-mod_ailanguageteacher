@@ -17,20 +17,23 @@
 {{!
     @template mod_ailanguageteacher/builder_build
 
-    Lesson builder step 5: draft the scenes with AI (or with any AI assistant), review, and create them.
+    Set-up step 5: pick one of two ways to create the scenes (LMS Labs AI, or your own AI assistant), review the
+    draft, and create the scenes. Both cost 3 LMS Labs credits per scene.
 
     Example context (json):
     {
-        "cmid": 1, "backurl": "#", "scenesurl": "#", "canai": false, "hasbalance": false, "balance": "",
-        "prompt": "Create a lesson", "existing": 0,
+        "cmid": 1, "nexturl": "#", "canai": true, "canimport": true, "draftcredits": 3, "importcredits": 3,
+        "hasbalance": false, "balance": "", "prompt": "Create a lesson", "existing": 0,
+        "bar": {"current": 5, "total": 9, "steps": [{"number": 5, "name": "Create the scenes", "done": false, "current": true, "dot": 0}]},
+        "nav": {"backurl": "#", "backlabel": "Back", "nexturl": "#", "nextlabel": "Next: Pictures", "blocked": ""},
         "summary": {"target": "English (Australia)", "support": "Thai", "level": "A1 · Beginner",
             "situations": "Greetings, Farewells", "options": "2 scenes each, 5 phrases per scene"}
     }
 }}
-<div id="lt-build" class="lt-wizard lt-build" data-cmid="{{cmid}}" data-scenesurl="{{scenesurl}}">
-    <div class="lt-wizard-head">
-        <h2 class="h3">{{#str}} buildlesson, mod_ailanguageteacher {{/str}}</h2>
-        <a class="lt-btn lt-btn-ghost lt-btn-sm" href="{{backurl}}">{{#str}} builder_change, mod_ailanguageteacher {{/str}}</a>
+<div id="lt-build" class="lt-wizard lt-build" data-cmid="{{cmid}}" data-nexturl="{{nexturl}}" data-importcredits="{{importcredits}}">
+    <div class="lt-setup-head">
+        <h2 class="h3">{{#str}} setup_title, mod_ailanguageteacher {{/str}}</h2>
+        {{#bar}}{{> mod_ailanguageteacher/setup_steps}}{{/bar}}
     </div>
     <dl class="lt-choices">
         <div><dt>{{#str}} step_language, mod_ailanguageteacher {{/str}}</dt><dd>{{summary.target}}</dd></div>
@@ -41,36 +44,61 @@
     </dl>
     {{#existing}}<p class="lt-note">{{#str}} builder_existing, mod_ailanguageteacher, {{existing}} {{/str}}</p>{{/existing}}
 
-    <div class="lt-buildpaths">
-        <div class="lt-panel lt-buildpath {{^canai}}is-off{{/canai}}">
-            <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>{{#str}} build_ai_title, mod_ailanguageteacher {{/str}}</h4>
-            {{#canai}}
-            <p class="lt-mini">{{#str}} build_ai_help, mod_ailanguageteacher {{/str}}</p>
-            {{#hasbalance}}<p class="lt-mini">{{balance}}</p>{{/hasbalance}}
-            <button type="button" class="lt-btn lt-btn-primary w-100" data-action="generate">{{#str}} build_ai_go, mod_ailanguageteacher {{/str}}</button>
-            <p class="lt-mini">{{#str}} drafttariff, mod_ailanguageteacher {{/str}}</p>
-            {{/canai}}
-            {{^canai}}
-            <p class="lt-mini">{{#str}} build_ai_off, mod_ailanguageteacher {{/str}}</p>
-            {{#hasbalance}}<p class="lt-mini">{{balance}}</p>{{/hasbalance}}
-            {{/canai}}
+    {{#canai}}
+    <fieldset class="lt-wstep lt-pathpick" data-region="pathpick">
+        <legend class="lt-wstep-title">{{#str}} path_question, mod_ailanguageteacher {{/str}}</legend>
+        <div class="lt-cardgrid lt-pathgrid">
+            <label class="lt-pick">
+                <input type="radio" name="lt-path" value="ai">
+                <span class="lt-pick-body">
+                    <strong>{{#str}} path_ai_title, mod_ailanguageteacher {{/str}}</strong>
+                    <span class="lt-mini">{{#str}} path_ai_desc, mod_ailanguageteacher {{/str}}</span>
+                </span>
+            </label>
+            <label class="lt-pick">
+                <input type="radio" name="lt-path" value="assistant">
+                <span class="lt-pick-body">
+                    <strong>{{#str}} path_assistant_title, mod_ailanguageteacher {{/str}}</strong>
+                    <span class="lt-mini">{{#str}} path_assistant_desc, mod_ailanguageteacher {{/str}}</span>
+                </span>
+            </label>
         </div>
-        <div class="lt-panel lt-buildpath">
-            <h4><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>{{#str}} build_manual_title, mod_ailanguageteacher {{/str}}</h4>
-            <ol class="lt-aihelper-steps">
-                <li>{{#str}} build_manual_1, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} build_manual_2, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} build_manual_3, mod_ailanguageteacher {{/str}}</li>
-            </ol>
-            <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm lt-copy" data-target="#lt-lessonprompt" data-done="{{#str}} copied, mod_ailanguageteacher {{/str}}">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
-                <span>{{#str}} copyprompt, mod_ailanguageteacher {{/str}}</span>
-            </button>
-            <textarea id="lt-lessonprompt" class="lt-textarea lt-prompt-text" readonly rows="6" aria-label="{{#str}} build_manual_title, mod_ailanguageteacher {{/str}}">{{prompt}}</textarea>
-            <label class="lt-mini d-block mt-2" for="lt-lessonjson">{{#str}} build_paste, mod_ailanguageteacher {{/str}}</label>
-            <textarea id="lt-lessonjson" class="lt-textarea" rows="6" data-region="json" placeholder='{"scenes": [ ... ]}'></textarea>
-            <button type="button" class="lt-btn lt-btn-primary mt-2" data-action="preview">{{#str}} build_preview, mod_ailanguageteacher {{/str}}</button>
-        </div>
+    </fieldset>
+
+    <div class="lt-panel lt-buildpath" data-path="ai" hidden>
+        <h3>{{#str}} path_ai_title, mod_ailanguageteacher {{/str}}</h3>
+        <p class="lt-mini">{{#str}} path_ai_help, mod_ailanguageteacher, {{draftcredits}} {{/str}}</p>
+        <button type="button" class="lt-btn lt-btn-primary" data-action="generate">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
+            <span>{{#str}} build_ai_go, mod_ailanguageteacher, {{draftcredits}} {{/str}}</span>
+        </button>
+        {{#hasbalance}}<p class="lt-mini mt-2">{{balance}}</p>{{/hasbalance}}
     </div>
+
+    <div class="lt-panel lt-buildpath" data-path="assistant" hidden>
+        <h3>{{#str}} path_assistant_title, mod_ailanguageteacher {{/str}}</h3>
+        <ol class="lt-aihelper-steps">
+            <li>{{#str}} build_manual_1, mod_ailanguageteacher {{/str}}
+                <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm lt-copy" data-target="#lt-lessonprompt" data-done="{{#str}} copied, mod_ailanguageteacher {{/str}}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+                    <span>{{#str}} copyprompt, mod_ailanguageteacher {{/str}}</span>
+                </button>
+            </li>
+            <li>{{#str}} build_manual_2, mod_ailanguageteacher {{/str}}</li>
+            <li>{{#str}} build_manual_3, mod_ailanguageteacher {{/str}}</li>
+        </ol>
+        <details class="lt-promptview">
+            <summary>{{#str}} build_showprompt, mod_ailanguageteacher {{/str}}</summary>
+            <textarea id="lt-lessonprompt" class="lt-textarea lt-prompt-text" readonly rows="8" aria-label="{{#str}} build_showprompt, mod_ailanguageteacher {{/str}}">{{prompt}}</textarea>
+        </details>
+        <label class="d-block mt-2" for="lt-lessonjson"><strong>{{#str}} build_paste, mod_ailanguageteacher {{/str}}</strong></label>
+        <textarea id="lt-lessonjson" class="lt-textarea" rows="8" data-region="json" placeholder='{"scenes": [ ... ]}'></textarea>
+        <button type="button" class="lt-btn lt-btn-primary mt-2" data-action="preview">{{#str}} build_preview, mod_ailanguageteacher {{/str}}</button>
+        <p class="lt-mini mt-3">{{#str}} path_assistant_note, mod_ailanguageteacher, {{importcredits}} {{/str}}</p>
+    </div>
+    {{/canai}}
+    {{^canai}}<p class="lt-note">{{#str}} path_noai, mod_ailanguageteacher {{/str}}</p>{{/canai}}
+
     <div class="lt-review-draft" data-region="review" hidden></div>
+    {{> mod_ailanguageteacher/setup_nav}}
 </div>

@@ -29,7 +29,7 @@ import {loadStrings, fmt, el, render, renderAll, readable} from 'mod_ailanguaget
 
 const KEYS = ['saved', 'saving', 'unsaved', 'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
-    'voicechoose', 'speechcatalogunavailable', 'voiceinvalid'];
+    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'discard_confirm'];
 
 let S = {};
 
@@ -503,18 +503,27 @@ class Editor {
                     Notification.alert('', S.speechcatalogunavailable);
                     return;
                 }
-                // The names are supplied by live capabilities, not an invented language fallback.
-                const voice = window.prompt(S.voicechoose + '\n' +
-                    catalog.voices.join('\n'), catalog.voices[0]);
-                if (voice === null) {
+                // The activity's voice (chosen in the Voices step), or the first voice LMS Labs offers.
+                const voice = catalog.voices.includes(this.cfg.voice) ? this.cfg.voice : catalog.voices[0];
+                const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title, S.voice_confirm,
+                    S.confirm_create, () => resolve(true), () => resolve(false)));
+                if (!go) {
                     return;
                 }
-                if (!catalog.voices.includes(voice)) {
-                    Notification.alert('', S.voiceinvalid);
-                    return;
+                const args = {phraseid: phrase.id, voice, variant: 'normal'};
+                let res;
+                try {
+                    res = await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio', args}])[0];
+                } catch (err) {
+                    if (err && err.errorcode === 'operationconflict' && await new Promise((resolve) =>
+                            Notification.saveCancel(S.confirm_title, S.discard_confirm, S.confirm_create,
+                                () => resolve(true), () => resolve(false)))) {
+                        res = await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio',
+                            args: {...args, discard: true}}])[0];
+                    } else {
+                        throw err;
+                    }
                 }
-                const res = await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio',
-                    args: {phraseid: phrase.id, voice, variant: 'normal'}}])[0];
                 await Speech.play({url: res.url, text: phrase.text, locale: this.cfg.locale});
             } catch (err) {
                 Notification.exception(err);

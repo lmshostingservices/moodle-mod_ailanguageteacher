@@ -22,18 +22,21 @@ Feature: AI Language Teacher shows each role only the pages its capabilities all
     And the following "mod_ailanguageteacher > scenes" exist:
       | activity | title       | phrases                  |
       | lt1      | At the door | Good morning=Buenos días |
+    And the following config values are set as admin:
+      | name        | value                                         | plugin                |
+      | unlockstate | {"status":"unlocked","checkedat":1790000000} | mod_ailanguageteacher |
 
   Scenario: A learner is offered no teacher pages
     When I am on the "Greetings lesson" "ailanguageteacher activity" page logged in as "student1"
     Then I should see "Study"
     And "Reports" "link" should not exist in current page administration
-    And "Build lesson" "link" should not exist in current page administration
+    And "Set up the lesson" "link" should not exist in current page administration
     And "Scenes" "link" should not exist in current page administration
 
   Scenario: A non-editing teacher can see reports but cannot build or edit the lesson
     When I am on the "Greetings lesson" "ailanguageteacher activity" page logged in as "teacher2"
     Then "Reports" "link" should exist in current page administration
-    And "Build lesson" "link" should not exist in current page administration
+    And "Set up the lesson" "link" should not exist in current page administration
     And "Scenes" "link" should not exist in current page administration
     And I am on the "Greetings lesson" "mod_ailanguageteacher > Report" page
     And I should see "Sam Student"

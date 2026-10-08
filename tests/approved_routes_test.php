@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Mocked dedicated text/speech API fixtures.
@@ -28,16 +28,32 @@ use mod_ailanguageteacher\local\credentials;
 use mod_ailanguageteacher\local\operation;
 use mod_ailanguageteacher\local\remote;
 use mod_ailanguageteacher\local\speech\lmslabs as speech_provider;
+use PHPUnit\Framework\Attributes\CoversClass;
 
-/** Mocked request/response contracts: no provider call or credits charged. */
+/**
+ * Mocked LMS Labs request and response contracts: no provider call is made and no credits are charged.
+ *
+ * @package    mod_ailanguageteacher
+ * @copyright  2026 LMS Hosting Services
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers     \mod_ailanguageteacher\local\remote
+ */
+#[CoversClass(remote::class)]
 final class approved_routes_test extends \advanced_testcase {
+    /**
+     * Resets the fakes.
+     */
     protected function tearDown(): void {
         remote::$transport = null;
         credentials::$central = null;
         parent::tearDown();
     }
 
+    /**
+     * Exact routes and headers, the cached catalogue, a stored draft request and a gone (410) phrase voice.
+     */
     public function test_exact_routes_headers_and_catalog_no_synthesis(): void {
+        global $DB;
         $this->resetAfterTest();
         credentials::$central = fn() => ['siteid' => 'site-fixture', 'apikey' => 'secret-fixture'];
         $calls = [];
@@ -60,15 +76,33 @@ final class approved_routes_test extends \advanced_testcase {
         $this->assertFalse($speech->supports('en-CA', 'tts'));
         $this->assertFalse($speech->supports('en-AU', 'stt'));
         $this->assertCount(1, $calls);
-        $this->assertSame('Greeting', (new text_provider())->draft(
-            ['brief' => 'Greet someone', 'locale' => 'en-AU', 'level' => 'beginner'], 'fixture-key')['title']);
-        $this->assertContains('Idempotency-Key: fixture-key', $calls[1]['headers']);
+        // The catalogue is kept in Moodle's cache: a new object (a new page) does not ask LMS Labs again.
+        $this->assertTrue((new speech_provider())->supports('en-AU', 'tts'));
+        $this->assertCount(1, $calls);
+        $course = $this->getDataGenerator()->create_course();
+        $instance = $this->getDataGenerator()->create_module('ailanguageteacher', ['course' => $course->id]);
+        $body = ['brief' => 'Greet someone', 'locale' => 'en-AU', 'level' => 'beginner'];
+        $op = operation::claim((int)$instance->id, 2, 'lesson', 0, $body);
+        $this->assertSame('Greeting', (new text_provider())->draft($body, $op)['title']);
+        $this->assertSame('https://lms-labs.com/api/moodle/ai-language-teacher/lessons/draft', $calls[1]['url']);
+        $this->assertContains('Idempotency-Key: ' . $op->idemkey, $calls[1]['headers']);
         $this->assertContains('X-Site-ID: site-fixture', $calls[1]['headers']);
         $this->assertStringNotContainsString('secret-fixture', $calls[1]['url']);
-        $this->expectException(\moodle_exception::class);
-        $speech->synthesise('Hi', 'en-AU', 'en-AU-Chirp3-HD-Kore', 'normal', 'same-fixture-key');
+        // Phrase audio asks for MP3; a 410 ends the stored request (a new click is a new request).
+        $tts = operation::claim((int)$instance->id, 2, 'tts', 3, ['text' => 'Hi']);
+        try {
+            $speech->synthesise('Hi', 'en-AU', 'en-AU-Chirp3-HD-Kore', 'normal', $tts->idemkey);
+            $this->fail('A 410 must not look delivered.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('speechresultnotretained', $e->errorcode);
+        }
+        $this->assertContains('Accept: audio/mpeg, application/json', end($calls)['headers']);
+        $this->assertSame('expired', $DB->get_field('ailanguageteacher_operation', 'state', ['id' => $tts->id]));
     }
 
+    /**
+     * A stored request keeps its key; phrase text is not stored with it; an expired one gets a new key.
+     */
     public function test_claim_is_durable_and_speech_text_is_not_stored(): void {
         global $DB;
         $this->resetAfterTest();

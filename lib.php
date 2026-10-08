@@ -291,21 +291,14 @@ function ailanguageteacher_extend_settings_navigation(settings_navigation $setti
     }
     $context = context_module::instance($cm->id);
     if (has_capability('mod/ailanguageteacher:manage', $context)) {
+        // One entry for teachers: it opens the set-up path at the step it is up to.
         $node->add(
-            get_string('buildlesson', 'mod_ailanguageteacher'),
-            new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id]),
+            get_string('setup_title', 'mod_ailanguageteacher'),
+            new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id, 'step' => 'resume']),
             navigation_node::TYPE_SETTING,
             null,
             'ailanguageteacher_builder',
             new pix_icon('i/settings', '')
-        );
-        $node->add(
-            get_string('managescenes', 'mod_ailanguageteacher'),
-            new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id]),
-            navigation_node::TYPE_SETTING,
-            null,
-            'ailanguageteacher_scenes',
-            new pix_icon('i/edit', '')
         );
     }
     if (has_capability('mod/ailanguageteacher:viewreports', $context)) {

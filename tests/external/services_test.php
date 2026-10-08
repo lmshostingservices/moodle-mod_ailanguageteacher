@@ -64,6 +64,8 @@ final class services_test extends \advanced_testcase {
         $instance = $lt->create_instance(['course' => $course->id]);
         $this->scene = $lt->create_scene($instance, 'Arriving', [['text' => 'Hello', 'x' => 20, 'y' => 30]]);
         $this->cm = get_coursemodule_from_instance('ailanguageteacher', $instance->id);
+        // The plugin is unlocked on this site; test_locked_site covers the opposite.
+        set_config('unlockstate', json_encode(['status' => 'unlocked', 'checkedat' => time()]), 'mod_ailanguageteacher');
     }
 
     /**
@@ -107,9 +109,21 @@ final class services_test extends \advanced_testcase {
             [['text' => 'Hi there', 'x' => 10, 'y' => 10, 'placed' => 1]]]);
         $this->assertCount(1, $res['ids']);
         $this->assertSame('Renamed', $DB->get_field('ailanguageteacher_scene', 'title', ['id' => $this->scene->id]));
+        // Scenes from the teacher's own AI assistant are charged (3 credits each) before they are created.
+        set_config('lmslabssiteid', 'site', 'mod_ailanguageteacher');
+        set_config('lmslabsapikey', 'key', 'mod_ailanguageteacher');
+        $sent = [];
+        \mod_ailanguageteacher\local\remote::$transport = function ($url, $headers, $body) use (&$sent) {
+            $sent[] = [$url, json_decode($body, true)];
+            return [200, json_encode(['requestId' => 'imp', 'creditsCharged' => 3, 'creditsBalance' => 40])];
+        };
         $draft = json_encode(['scenes' => [['title' => 'Paying', 'phrases' => [['text' => 'How much?']]]]]);
         $res = $this->call('editingteacher', 'import_lesson', [(int)$this->cm->id, $draft]);
         $this->assertSame(1, $res['scenes']);
+        $this->assertSame(3, $res['charged']);
+        $this->assertSame('https://lms-labs.com/api/moodle/ai-language-teacher/lessons/import', $sent[0][0]);
+        $this->assertSame(['sceneCount' => 1, 'titles' => ['Paying']], $sent[0][1]);
+        \mod_ailanguageteacher\local\remote::$transport = null;
         foreach (['teacher', 'student'] as $who) {
             try {
                 $this->call($who, 'save_scene', [(int)$this->scene->id, 'X', '', '', 0, []]);
@@ -118,6 +132,35 @@ final class services_test extends \advanced_testcase {
                 $this->assertSame('nopermissions', $e->errorcode);
             }
         }
+    }
+
+    /**
+     * Until LMS Labs has unlocked the plugin, nothing can be set up or studied.
+     */
+    public function test_locked_site(): void {
+        unset_config('unlockstate', 'mod_ailanguageteacher');
+        foreach (
+            [['editingteacher', 'generate_lesson', [(int)$this->cm->id]],
+                ['editingteacher', 'save_scene', [(int)$this->scene->id, 'X', '', '', 0, []]],
+                ['student', 'start_attempt', [(int)$this->cm->id, 'practice']]] as [$user, $class, $args]
+        ) {
+            try {
+                $this->call($user, $class, $args);
+                $this->fail($class . ' worked on a locked site');
+            } catch (\moodle_exception $e) {
+                $this->assertSame('notactivated', $e->errorcode, $class);
+            }
+        }
+        set_config('unlockstate', json_encode(['status' => 'unknown', 'wasunlocked' => true]), 'mod_ailanguageteacher');
+        $this->assertTrue(\mod_ailanguageteacher\local\unlock::active());
+    }
+
+    /**
+     * Resets the fake LMS Labs transport.
+     */
+    protected function tearDown(): void {
+        \mod_ailanguageteacher\local\remote::$transport = null;
+        parent::tearDown();
     }
 
     /**

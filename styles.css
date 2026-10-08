@@ -3799,6 +3799,7 @@
     gap: 16px;
     margin: 14px 0;
 }
+.path-mod-ailanguageteacher .lt-sitgroup-title,
 .path-mod-ailanguageteacher .lt-sitgroup h4 {
     margin: 0 0 8px;
     font-size: 1rem;
@@ -4057,4 +4058,101 @@
     50% {
         opacity: 1;
     }
+}
+
+/* Build step: two ways to create scenes. */
+.path-mod-ailanguageteacher .lt-pathgrid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+.path-mod-ailanguageteacher .lt-pathgrid .lt-pick-body {
+    gap: 6px;
+    padding: 16px 18px;
+}
+.path-mod-ailanguageteacher .lt-pathgrid .lt-pick-body strong {
+    font-size: 1.1rem;
+}
+.path-mod-ailanguageteacher .lt-guide {
+    margin: 4px 0 10px;
+    padding-left: 1.2rem;
+}
+.path-mod-ailanguageteacher .lt-promptview {
+    margin: 10px 0;
+}
+.path-mod-ailanguageteacher .lt-promptview summary {
+    cursor: pointer;
+    color: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-aihelper-steps .lt-copy {
+    margin-left: 8px;
+}
+
+/* Set-up path: one step bar on every set-up page, Back and Next at the bottom. */
+.path-mod-ailanguageteacher .lt-setup-head {
+    margin-bottom: 18px;
+}
+.path-mod-ailanguageteacher .lt-setup-head h2 {
+    margin: 0 0 4px;
+}
+.path-mod-ailanguageteacher .lt-setup-head .lt-setupbar {
+    margin-top: 12px;
+}
+.path-mod-ailanguageteacher .lt-setupbar li:not(.is-active) {
+    font-weight: 500;
+}
+.path-mod-ailanguageteacher .lt-setupnav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin: 24px 0 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--lt-border);
+}
+.path-mod-ailanguageteacher .lt-setupnav .lt-grow {
+    flex: 1;
+}
+.path-mod-ailanguageteacher .lt-setupnav-blocked {
+    margin: 0;
+    color: #92400e;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-finish-list {
+    margin: 10px 0 0;
+    padding-left: 1.2rem;
+}
+.path-mod-ailanguageteacher .lt-ok {
+    color: #166534;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-addscenes summary {
+    cursor: pointer;
+}
+.path-mod-ailanguageteacher .lt-setup-progress {
+    margin: 0;
+}
+.path-mod-ailanguageteacher .lt-ok {
+    color: #166534;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-voicepick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+}
+.path-mod-ailanguageteacher .lt-voicepick select {
+    width: auto;
+    min-width: 12rem;
+}
+.path-mod-ailanguageteacher .lt-voicelist {
+    margin: 0;
+    padding-left: 1.1rem;
+    font-size: .9rem;
+}
+.path-mod-ailanguageteacher .lt-voicelist li.is-warn .lt-mini {
+    color: #92400e;
+    font-weight: 600;
+}
+.path-mod-ailanguageteacher .lt-setup-progress {
+    margin: 0;
 }

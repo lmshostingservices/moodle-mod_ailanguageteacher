@@ -47,8 +47,16 @@ $PAGE->set_url('/mod/ailanguageteacher/editor.php', ['id' => $cm->id, 'sceneid' 
 $PAGE->set_title(format_string($instance->name) . ': ' . format_string($scene->title));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->activityheader->disable();
-if ($node = $PAGE->settingsnav->find('ailanguageteacher_scenes', navigation_node::TYPE_SETTING)) {
+if ($node = $PAGE->settingsnav->find('ailanguageteacher_builder', navigation_node::TYPE_SETTING)) {
     $node->make_active();
+}
+
+// The whole plugin needs this site to be unlocked with LMS Labs (50 credits or a recognised Marketplace purchase).
+if (!\mod_ailanguageteacher\local\unlock::active()) {
+    echo $OUTPUT->header();
+    echo \mod_ailanguageteacher\local\unlock::locked_notice();
+    echo $OUTPUT->footer();
+    exit;
 }
 
 $scenes = array_values(manager::get_scenes($instance->id));
@@ -73,14 +81,17 @@ $data += [
     'total' => count($scenes),
     'prevurl' => $editorurl($prev),
     'nexturl' => $editorurl($next),
-    'backurl' => (new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id]))->out(false),
+    'backurl' => \mod_ailanguageteacher\local\setuppath::url((int)$cm->id, \mod_ailanguageteacher\local\setuppath::CHECK)
+        ->out(false),
+    'bar' => \mod_ailanguageteacher\local\setuppath::bar(\mod_ailanguageteacher\local\setuppath::CHECK),
     'previewurl' => (new moodle_url('/mod/ailanguageteacher/view.php', ['id' => $cm->id]))->out(false),
-    'replaceurl' => (new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id, 'action' => 'replace',
-        'sceneid' => $scene->id]))->out(false),
+    'replaceurl' => (new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id, 'step' => 'check',
+        'action' => 'replace', 'sceneid' => $scene->id]))->out(false),
     'locale' => $instance->targetlocale,
     'rtl' => languages::is_rtl($instance->targetlang),
     'romanise' => languages::needs_romanisation($instance->targetlang),
     'hasservicetts' => audio::has_service_tts($instance->targetlocale),
+    'voice' => (string)$instance->ttsvoice,
     'canrecord' => true,
     'targetname' => languages::name($instance->targetlang),
     'supportname' => languages::name($instance->supportlang),
@@ -93,5 +104,6 @@ echo $OUTPUT->render_from_template('mod_ailanguageteacher/editor', [
     'config' => json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT),
     'noimage' => empty($data['image']),
     'replaceurl' => $data['replaceurl'],
+    'bar' => $data['bar'],
 ]);
 echo $OUTPUT->footer();

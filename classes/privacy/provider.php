@@ -112,7 +112,15 @@ class provider implements
         $collection->add_external_location_link('lms-labs.com', [
             'brief' => 'privacy:metadata:operation:body',
             'text' => 'privacy:metadata:operation:body',
+            'titles' => 'privacy:metadata:external:titles',
+            'siteid' => 'privacy:metadata:external:siteid',
         ], 'privacy:metadata:external');
+        // Speech recognition in the learner's browser (for example Chrome sends the audio to Google). Moodle receives
+        // only the recognised text.
+        $collection->add_external_location_link('browserspeech', [
+            'audio' => 'privacy:metadata:browserspeech:audio',
+        ], 'privacy:metadata:browserspeech');
+        $collection->add_subsystem_link('core_files', [], 'privacy:metadata:core_files');
         $collection->add_subsystem_link('core_grades', [], 'privacy:metadata:core_grades');
         return $collection;
     }
@@ -258,8 +266,13 @@ class provider implements
             }
             $ailog = [];
             $operations = [];
-            foreach ($DB->get_records('ailanguageteacher_operation',
-                    ['ailanguageteacherid' => $aid, 'userid' => $userid], 'id') as $row) {
+            foreach (
+                $DB->get_records(
+                    'ailanguageteacher_operation',
+                    ['ailanguageteacherid' => $aid, 'userid' => $userid],
+                    'id'
+                ) as $row
+            ) {
                 $operations[] = (object)['kind' => $row->kind, 'state' => $row->state,
                     'body' => $row->body, 'result' => $row->result,
                     'time' => transform::datetime($row->timecreated)];
@@ -320,8 +333,10 @@ class provider implements
             $cm = get_coursemodule_from_id('ailanguageteacher', $context->instanceid);
             if ($cm) {
                 learning::delete_user_data_for_user((int)$cm->instance, $userid);
-                $GLOBALS['DB']->delete_records('ailanguageteacher_operation',
-                    ['ailanguageteacherid' => $cm->instance, 'userid' => $userid]);
+                $GLOBALS['DB']->delete_records(
+                    'ailanguageteacher_operation',
+                    ['ailanguageteacherid' => $cm->instance, 'userid' => $userid]
+                );
             }
         }
     }
@@ -342,8 +357,10 @@ class provider implements
         }
         foreach ($userlist->get_userids() as $userid) {
             learning::delete_user_data_for_user((int)$cm->instance, (int)$userid);
-            $GLOBALS['DB']->delete_records('ailanguageteacher_operation',
-                ['ailanguageteacherid' => $cm->instance, 'userid' => (int)$userid]);
+            $GLOBALS['DB']->delete_records(
+                'ailanguageteacher_operation',
+                ['ailanguageteacherid' => $cm->instance, 'userid' => (int)$userid]
+            );
         }
     }
 }

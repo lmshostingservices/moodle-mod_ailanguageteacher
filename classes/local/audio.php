@@ -90,8 +90,12 @@ class audio {
      * @param string $variant
      * @return string
      */
-    protected static function tts_filename(stdClass $instance, stdClass $phrase, string $variant,
-            string $voice = ''): string {
+    protected static function tts_filename(
+        stdClass $instance,
+        stdClass $phrase,
+        string $variant,
+        string $voice = ''
+    ): string {
         $identity = implode('|', [
             factory::get()->tts_identity(),
             $instance->targetlocale,
@@ -122,16 +126,26 @@ class audio {
                 return $recording;
             }
         }
-        $rows = $DB->get_records('ailanguageteacher_operation',
+        $rows = $DB->get_records(
+            'ailanguageteacher_operation',
             ['ailanguageteacherid' => $instance->id, 'kind' => 'tts',
                 'itemid' => (int)$phrase->id * 3 + array_search($variant, self::VARIANTS, true),
-                'state' => 'complete'], 'id DESC', '*', 0, 1);
+            'state' => 'complete'],
+            'id DESC',
+            '*',
+            0,
+            1
+        );
         $row = $rows ? reset($rows) : null;
         $voice = $row ? (string)$row->result : '';
         $body = ['text' => self::text_for($phrase, $variant),
             'locale' => $instance->targetlocale, 'speed' => self::speed_for($variant), 'voice' => $voice];
-        if (!$row || $row->bodyhash !== hash('sha256',
-                json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))) {
+        if (
+            !$row || $row->bodyhash !== hash(
+                'sha256',
+                json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            )
+        ) {
             return '';
         }
         $filename = self::tts_filename($instance, $phrase, $variant, $voice);
@@ -165,9 +179,27 @@ class audio {
         return self::existing_url($instance, $context, $phrase, $variant);
     }
 
-    /** Called only after a teacher explicitly asks for one paid phrase recording. */
-    public static function create(stdClass $instance, \context $context, stdClass $phrase, string $variant,
-            int $userid, string $voice): string {
+    /**
+     * Creates one paid phrase recording (1 credit). Called only after a teacher explicitly asks for it.
+     *
+     * @param stdClass $instance
+     * @param \context $context
+     * @param stdClass $phrase
+     * @param string $variant
+     * @param int $userid
+     * @param string $voice exact catalogue voice name
+     * @param bool $discard the teacher confirmed abandoning an unfinished request for different text or voice
+     * @return string URL of the saved audio
+     */
+    public static function create(
+        stdClass $instance,
+        \context $context,
+        stdClass $phrase,
+        string $variant,
+        int $userid,
+        string $voice,
+        bool $discard = false
+    ): string {
         global $DB;
         $url = self::existing_url($instance, $context, $phrase, $variant);
         if ($url !== '' || !self::has_service_tts($instance->targetlocale) || trim(self::text_for($phrase, $variant)) === '') {
@@ -200,26 +232,25 @@ class audio {
             ], 'id DESC');
             $op = null;
             foreach ($pending as $claim) {
-                if ($claim->bodyhash !== hash('sha256',
-                        json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES))) {
+                if ($claim->bodyhash === operation::hash($body)) {
+                    $op = $claim;
+                } else if ($discard) {
+                    operation::failed($claim);
+                } else {
                     throw new \moodle_exception('operationconflict', 'mod_ailanguageteacher');
                 }
-                $op = $claim;
             }
             if ($op === null) {
                 $op = operation::claim((int)$instance->id, $userid, 'tts', $itemid, $body);
             }
-            try {
-                $result = factory::get()->synthesise(
-                    self::text_for($phrase, $variant), $instance->targetlocale,
-                    $voice, self::speed_for($variant), $op->idemkey
-                );
-            } catch (\moodle_exception $e) {
-                if ($e->errorcode === 'speechresultnotretained') {
-                    operation::expired($op);
-                }
-                throw $e;
-            }
+            // A refusal ends the stored request; no answer or "still working" keeps it for the same key.
+            $result = factory::get()->synthesise(
+                self::text_for($phrase, $variant),
+                $instance->targetlocale,
+                $voice,
+                self::speed_for($variant),
+                $op->idemkey
+            );
             $fs = get_file_storage();
             // Remove this variant's older audio (the text, voice or service settings have changed).
             foreach ($fs->get_area_files($context->id, 'mod_ailanguageteacher', 'ttsaudio', $phrase->id, 'id', false) as $file) {

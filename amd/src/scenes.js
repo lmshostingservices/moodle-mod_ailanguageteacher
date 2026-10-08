@@ -14,7 +14,7 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Scene manager: copy picture prompts and create pictures with AI.
+ * Set-up steps 6 to 8. Voices: "Create missing voices" makes every missing phrase voice, one after another.
  *
  * @module     mod_ailanguageteacher/scenes
  * @copyright  2026 LMS Hosting Services
@@ -23,8 +23,7 @@
 
 import Ajax from 'core/ajax';
 import Notification from 'core/notification';
-import {init as initCopy} from 'mod_ailanguageteacher/copy';
-import {loadStrings} from 'mod_ailanguageteacher/ui';
+import {loadStrings, fmt} from 'mod_ailanguageteacher/ui';
 
 /**
  * Initialises the page.
@@ -36,23 +35,49 @@ export const init = async(selector) => {
     if (!root) {
         return;
     }
-    initCopy('.lt-copy');
-    const S = await loadStrings(['generating']);
-    root.querySelectorAll('[data-action="genimage"]').forEach((btn) => {
-        btn.addEventListener('click', async() => {
-            const label = btn.querySelector('span');
-            const original = label.textContent;
-            btn.disabled = true;
-            label.textContent = S.generating;
-            try {
-                await Ajax.call([{methodname: 'mod_ailanguageteacher_generate_image',
-                    args: {sceneid: parseInt(btn.dataset.scene, 10)}}], true, true, false, 180000)[0];
-                window.location.reload();
-            } catch (err) {
-                btn.disabled = false;
-                label.textContent = original;
-                Notification.exception(err);
+    const all = root.querySelector('[data-action="voiceall"]');
+    if (!all) {
+        return;
+    }
+    const S = await loadStrings(['confirm_title', 'confirm_create', 'voices_confirm', 'voices_progress',
+        'discard_confirm']);
+    const confirm = (question) => new Promise((resolve) => {
+        Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
+    });
+    all.addEventListener('click', async() => {
+        const ids = all.dataset.phrases.split(',').map((v) => parseInt(v, 10)).filter((v) => v > 0);
+        const voice = root.querySelector('[data-region="voice"]').value;
+        // Every paid request is confirmed first; the credits are named (1 per phrase voice).
+        if (!ids.length || !voice || !await confirm(fmt(S.voices_confirm, {count: ids.length, credits: ids.length}))) {
+            return;
+        }
+        const label = all.querySelector('span');
+        const original = label.textContent;
+        all.disabled = true;
+        let made = 0;
+        try {
+            // One after another; the run stops at the first voice that is not delivered (nothing is retried).
+            for (const phraseid of ids) {
+                label.textContent = fmt(S.voices_progress, {done: made + 1, count: ids.length});
+                const args = {phraseid, voice, variant: 'normal'};
+                try {
+                    await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio', args}], true, true, false, 120000)[0];
+                } catch (err) {
+                    if (err && err.errorcode === 'operationconflict' && await confirm(S.discard_confirm)) {
+                        await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio', args: {...args, discard: true}}],
+                            true, true, false, 120000)[0];
+                    } else {
+                        throw err;
+                    }
+                }
+                made++;
             }
-        });
+        } catch (err) {
+            all.disabled = false;
+            label.textContent = original;
+            Notification.exception(err);
+            return;
+        }
+        window.location.reload();
     });
 };

@@ -36,7 +36,7 @@ class backup_ailanguageteacher_activity_structure_step extends backup_activity_s
 
         $root = new backup_nested_element('ailanguageteacher', ['id'], [
             'name', 'intro', 'introformat', 'targetlang', 'targetlocale', 'supportlang', 'cefrlevel', 'situations',
-            'imagestyle', 'showromanisation', 'allowstudy', 'allowpractice', 'allowtest', 'sequential', 'speaking',
+            'imagestyle', 'ttsvoice', 'showromanisation', 'allowstudy', 'allowpractice', 'allowtest', 'sequential', 'speaking',
             'passscore', 'repetitions', 'consecutive', 'maxspeaktries', 'testlistening', 'testspeaking', 'grade',
             'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'leaderboard', 'completionstudy',
             'completionmastery', 'completionfinish', 'timecreated', 'timemodified',

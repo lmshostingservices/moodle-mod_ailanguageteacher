@@ -40,42 +40,41 @@ namespace mod_ailanguageteacher\local;
  */
 final class unlock {
     /** Unlock plugin id at LMS Labs. */
-    const PLUGINID = 'ailanguageteacher';
+    public const PLUGINID = 'ailanguageteacher';
 
     /** Frankenstyle component. */
-    const COMPONENT = 'mod_ailanguageteacher';
+    public const COMPONENT = 'mod_ailanguageteacher';
 
     /** LMS Labs base URL. */
-    const BASE = 'https://lms-labs.com';
+    public const BASE = 'https://lms-labs.com';
 
     /** Access check route. */
-    const VERIFY = '/api/plugin-unlock/verify';
+    public const VERIFY = '/api/plugin-unlock/verify';
 
     /** Release catalogue route. */
-    const VERSIONS = '/api/plugin-versions';
+    public const VERSIONS = '/api/plugin-versions';
 
     /** Purchase route. */
-    const UNLOCK = '/api/plugin-unlock';
+    public const UNLOCK = '/api/plugin-unlock';
 
     /** Release statuses that allow a purchase. */
-    const AVAILABLE = ['ready', 'available', 'published', 'public'];
+    public const AVAILABLE = ['ready', 'available', 'published', 'public'];
 
     /** The only acquisition mode that may enter the credit-unlock flow. */
-    const CREDITMODE = 'credit-unlock';
+    public const CREDITMODE = 'credit-unlock';
 
     /** @var callable|null test seam: fn(array $request): array [status (0 = network error), body] */
     public static $transport = null;
 
     /**
-     * A route URL (config.php may force another base for staging).
+     * A route URL on the fixed LMS Labs host.
      *
      * @param string $path
      * @return string
      */
     public static function url(string $path): string {
-        global $CFG;
-        $base = $CFG->forced_plugin_settings[self::COMPONENT]['lmslabs_unlock_base'] ?? self::BASE;
-        return rtrim((string)$base, '/') . $path;
+        // Fixed host: the credentials in the body are only ever sent to lms-labs.com.
+        return self::BASE . $path;
     }
 
     /**
@@ -198,6 +197,61 @@ final class unlock {
     }
 
     /**
+     * Whether the plugin may be used on this site: LMS Labs has unlocked it (50 credits or a recognised Marketplace
+     * purchase), and no later check has said "locked". A check that got no definite answer keeps an unlocked site
+     * usable.
+     *
+     * @return bool
+     */
+    public static function active(): bool {
+        $state = self::state();
+        return $state['status'] === 'unlocked' || ($state['status'] === 'unknown' && !empty($state['wasunlocked']));
+    }
+
+    /**
+     * Stops a page or web service call when the plugin is not unlocked on this site.
+     *
+     * @throws \moodle_exception notactivated
+     */
+    public static function require_active(): void {
+        if (!self::active()) {
+            throw new \moodle_exception('notactivated', 'mod_ailanguageteacher', self::settings_url_for_admins());
+        }
+    }
+
+    /**
+     * The settings page (where activation is) for site administrators, '' for everyone else.
+     *
+     * @return string
+     */
+    public static function settings_url_for_admins(): string {
+        return has_capability('moodle/site:config', \context_system::instance())
+            ? (new \moodle_url('/admin/settings.php', ['section' => 'modsettingailanguageteacher']))->out(false) : '';
+    }
+
+    /**
+     * The notice shown instead of a page while the plugin is not unlocked.
+     *
+     * @param bool $teacher whether the viewer manages the activity (learners get a plain "not available yet")
+     * @return string HTML
+     */
+    public static function locked_notice(bool $teacher = true): string {
+        global $OUTPUT;
+        $url = self::settings_url_for_admins();
+        $key = $url !== '' ? 'notactivated_admin' : ($teacher ? 'notactivated_teacher' : 'notactivated_learner');
+        $text = get_string($key, 'mod_ailanguageteacher');
+        $html = $OUTPUT->notification($text, \core\output\notification::NOTIFY_WARNING, false);
+        if ($url !== '') {
+            $html .= \html_writer::link(
+                $url,
+                get_string('notactivated_open', 'mod_ailanguageteacher'),
+                ['class' => 'btn btn-primary']
+            );
+        }
+        return $html;
+    }
+
+    /**
      * An unlock whose outcome is not known yet, or null.
      *
      * @return array|null ['time', 'expected', 'sha']
@@ -230,6 +284,12 @@ final class unlock {
             ];
         } else {
             $state = ['status' => 'unknown', 'error' => self::error($status, $data)];
+            // An outage or a bad answer must not lock a site LMS Labs has already unlocked: only a definite
+            // "locked" answer clears this.
+            $before = self::state();
+            if ($before['status'] === 'unlocked' || !empty($before['wasunlocked'])) {
+                $state['wasunlocked'] = true;
+            }
         }
         $resolved = null;
         if (self::pending() && $state['status'] !== 'unknown') {
@@ -395,8 +455,10 @@ final class unlock {
             return ['outcome' => 'changed', 'error' => $release['ok'] ? '' : $release['reason']] + $result
                 + ['state' => $state, 'release' => $release];
         }
-        if (!set_config('unlockpending', json_encode(['time' => time(), 'expected' => $expected,
-                'sha' => $release['sha']]), self::COMPONENT)) {
+        if (
+            !set_config('unlockpending', json_encode(['time' => time(), 'expected' => $expected,
+                'sha' => $release['sha']]), self::COMPONENT)
+        ) {
             return ['outcome' => 'blocked', 'error' => 'pendingstorage'] + $result + ['state' => $state];
         }
         [$status, $data] = self::request('POST', self::url(self::UNLOCK), [
@@ -419,7 +481,7 @@ final class unlock {
                 ? (int)$data['creditsConsumed'] : null;
             $result['source'] = self::text($data['entitlementSource'] ?? '', 60);
             if ($already) {
-                // creditsConsumed is the original purchase: history, never a new debit.
+                // The creditsConsumed value is the original purchase: history, never a new debit.
                 $result['outcome'] = 'already';
                 $result['historic'] = $consumed;
             } else if ($consumed === 0 && in_array(strtolower($result['source']), ['marketplace', 'purchase'], true)) {
@@ -446,10 +508,12 @@ final class unlock {
         // A 2xx that explicitly says success:false with an error code is a definite refusal, not an unknown outcome.
         $definiterefusal = $status >= 200 && $status < 300 && $validflags
             && $data['success'] === false && !$already && $code !== '';
-        if (!$definiterefusal && ($status === 0 || $status === 408 || $status >= 500
+        if (
+            !$definiterefusal && ($status === 0 || $status === 408 || $status >= 500
                 || ($status >= 200 && $status < 300) || $data === null
                 || ($status >= 400 && $status < 500 && $code === ''
-                    && self::text($data['message'] ?? '', 160) === ''))) {
+                    && self::text($data['message'] ?? '', 160) === ''))
+        ) {
             // Unknown outcome (no answer, timeout, server error or an unreadable reply): keep the marker.
             return ['outcome' => 'uncertain', 'error' => self::error($status, $data)] + $result
                 + ['state' => self::state()];

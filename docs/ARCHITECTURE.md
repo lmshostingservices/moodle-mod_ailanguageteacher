@@ -25,7 +25,7 @@ Attempts have a `kind` (study, practice or test) and a `state` (inprogress or fi
 
 ## Speech
 
-The flow is `learner browser → Moodle PHP → LMS Labs speech API → Google Cloud`. Google credentials stay with LMS Labs; Moodle uses its LMS Labs Site ID and API key server-side only, resolved by `local\credentials` (LMS Labs Central Config `local_aiconfig` first, then the plugin's standalone pair; a pair is used only when complete and the two are never mixed). The LMS Labs service (`speech\lmslabs`) is disabled until LMS Labs supplies an implemented, tested contract and paid calls are approved: it reports itself unavailable, supports no locale and makes no network calls. Unit tests replace it through `speech\factory::$override`. The full design is in the project document "speech provider design (Google only)".
+The flow is `learner browser → Moodle PHP → LMS Labs speech API → Google Cloud`. Google credentials stay with LMS Labs; Moodle uses its LMS Labs Site ID and API key server-side only, resolved by `local\credentials` (LMS Labs Central Config `local_aiconfig` first, then the plugin's standalone pair; a pair is used only when complete and the two are never mixed). The LMS Labs service (`speech\lmslabs`) creates phrase voices on the approved text-to-speech route (Google Chirp 3 HD, 1 credit per delivered clip, only when a teacher asks) and reads the voice catalogue, which Moodle caches for an hour. Speech-to-text is not approved, so spoken answers are checked by the browser or by the learner. Unit tests replace it through `speech\factory::$override`. The full design is in the project document "speech provider design (Google only)".
 
 `audio::speaking_mode($locale)` chooses the mode:
 
@@ -33,7 +33,7 @@ The flow is `learner browser → Moodle PHP → LMS Labs speech API → Google C
 - `browser` when browser recognition is enabled. This is the browser's own feature, not a Moodle or LMS Labs service.
 - `self` otherwise: the learner listens back and compares.
 
-In `service` mode the browser records 16 kHz, 16-bit mono WAV (at most 8 s). `wav::validate()` checks the format, length and size in PHP before anything is sent, one transcription at a time runs per learner and phrase (a Moodle lock), and each call carries a new idempotency key. In `browser` mode the browser sends only its transcripts.
+In `service` mode the browser records 16 kHz, 16-bit mono WAV (at most 8 s). `wav::validate()` checks the format, length and size in PHP before anything is sent, one transcription at a time runs per learner and phrase (a Moodle lock), (this mode is not reachable until an LMS Labs speech-to-text route is approved). In `browser` mode the browser sends only its transcripts.
 
 Either way the result is a spoken-answer check, not pronunciation assessment: `matcher::best()` compares every transcript with the phrase and its accepted alternatives, and `matcher::recognised()` lists which words (or characters, for zh, ja, th and yue) were recognised in order. The match percentage decides pass or fail. Recogniser confidence is never used as a score. Silence (`nospeech`) or unclear speech (`unintelligible`) gets no mark and does not count: no stored result, no change to progress or mastery, and no Test try used.
 
@@ -41,7 +41,7 @@ Audio for a phrase comes from, in order: the teacher's recording, stored phrase 
 
 ## Safety rules kept in code
 
-- API keys are read only in PHP and sent only in request headers to their own service. They never appear in rendered HTML, JS, URLs or logs.
+- API keys are read only in PHP and sent only to lms-labs.com: in request headers for lessons, voices and the balance (redirects are never followed), and in the JSON body for activation, as the LMS Labs activation contract requires. They never appear in rendered HTML, JS, URLs or logs.
 - Paid calls are never retried automatically. LMS Labs generation stays off until the plugin's routes, schemas, entitlement and tariff are approved.
 - No `PARAM_RAW`. The pasted AI draft travels as PARAM_TEXT JSON, with `<` escaped as `\u003c` by the browser, and every field is cleaned on import.
 - Text from the database is output through Mustache escaping or `textContent`.

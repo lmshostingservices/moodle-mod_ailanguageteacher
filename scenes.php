@@ -15,7 +15,8 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Scene manager: pictures, order, and adding or removing scenes.
+ * Set-up steps 6 (a picture for every scene), 7 (voices for every phrase) and 8 (check each scene: place its phrases,
+ * order, remove).
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -24,13 +25,14 @@
 
 require(__DIR__ . '/../../config.php');
 
-use mod_ailanguageteacher\local\ai\factory;
-use mod_ailanguageteacher\local\lesson;
 use mod_ailanguageteacher\local\manager;
+use mod_ailanguageteacher\local\setuppath;
 
 $id = required_param('id', PARAM_INT);
 $action = optional_param('action', '', PARAM_ALPHA);
 $sceneid = optional_param('sceneid', 0, PARAM_INT);
+$steps = ['pictures' => setuppath::PICTURES, 'voices' => setuppath::VOICES, 'check' => setuppath::CHECK];
+$step = $steps[optional_param('step', 'check', PARAM_ALPHA)] ?? setuppath::CHECK;
 
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'ailanguageteacher');
 $instance = $DB->get_record('ailanguageteacher', ['id' => $cm->instance], '*', MUST_EXIST);
@@ -38,13 +40,22 @@ require_login($course, false, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/ailanguageteacher:manage', $context);
 
-$baseurl = new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id]);
+$baseurl = setuppath::url((int)$cm->id, $step);
 $PAGE->set_url($baseurl);
-$PAGE->set_title(format_string($instance->name) . ': ' . get_string('managescenes', 'mod_ailanguageteacher'));
+$PAGE->set_title(format_string($instance->name) . ': ' .
+    get_string('setupstep_' . setuppath::STEPS[$step - 1], 'mod_ailanguageteacher'));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->activityheader->disable();
-if ($node = $PAGE->settingsnav->find('ailanguageteacher_scenes', navigation_node::TYPE_SETTING)) {
+if ($node = $PAGE->settingsnav->find('ailanguageteacher_builder', navigation_node::TYPE_SETTING)) {
     $node->make_active();
+}
+
+// The whole plugin needs this site to be unlocked with LMS Labs (50 credits or a recognised Marketplace purchase).
+if (!\mod_ailanguageteacher\local\unlock::active()) {
+    echo $OUTPUT->header();
+    echo \mod_ailanguageteacher\local\unlock::locked_notice();
+    echo $OUTPUT->footer();
+    exit;
 }
 
 $scene = null;
@@ -57,6 +68,16 @@ if ($sceneid) {
     );
 }
 
+if ($action === 'voice') {
+    // The one voice used for all of this activity's phrase audio.
+    require_sesskey();
+    $voice = required_param('voice', PARAM_TEXT);
+    $names = array_column((new \mod_ailanguageteacher\local\speech\lmslabs())->voices((string)$instance->targetlocale), 'name');
+    if (in_array($voice, $names, true)) {
+        $DB->set_field('ailanguageteacher', 'ttsvoice', $voice, ['id' => $instance->id]);
+    }
+    redirect($baseurl);
+}
 if (($action === 'up' || $action === 'down') && $scene) {
     require_sesskey();
     manager::move_scene($scene, $action === 'up' ? -1 : 1);
@@ -111,47 +132,29 @@ if ($action === 'replace' && $scene) {
     exit;
 }
 
+// Scenes are created only in step 5, where every way of creating one is charged.
 $situations = manager::get_situations($instance->id);
-$situationoptions = [];
-foreach ($situations as $s) {
-    $situationoptions[$s->id] = format_string($s->name, true, ['context' => $context]);
-}
-$addform = new \mod_ailanguageteacher\form\add_scenes_form($baseurl, ['situations' => $situationoptions]);
-$addform->set_data(['id' => $cm->id]);
-if ($data = $addform->get_data()) {
-    $situationid = (int)$data->situationid;
-    if (!$situationid || !isset($situations[$situationid])) {
-        $situationid = manager::situation_id((int)$instance->id, (string)$data->situationname);
-    }
-    $count = manager::create_scenes_from_draft($instance, $context, (int)$data->images, $situationid);
-    if (!$count && trim((string)$data->title) !== '') {
-        manager::add_scene($instance, $situationid, (string)$data->title);
-        $count = 1;
-    }
-    manager::remove_empty_situations((int)$instance->id);
-    redirect(
-        $baseurl,
-        get_string('scenescreated', 'mod_ailanguageteacher', $count),
-        null,
-        $count ? \core\output\notification::NOTIFY_SUCCESS : \core\output\notification::NOTIFY_WARNING
-    );
-}
-
 $scenes = manager::get_scenes($instance->id);
 $phrases = manager::get_phrases(array_keys($scenes));
-$provider = factory::get();
-// Lesson text has its own approved route; picture generation does not.
-$canai = false;
+$state = setuppath::state($instance, $context);
 $groups = [];
 $i = 0;
 $total = count($scenes);
 $sesskey = sesskey();
+$novoice = array_flip($state['novoice']);
 foreach ($scenes as $s) {
     $i++;
     [$url] = manager::get_scene_image($context, (int)$s->id);
     $list = $phrases[$s->id];
     $pins = array_filter($list, fn($p) => empty($p->distractor));
     $placed = count(array_filter($pins, fn($p) => !empty($p->placed)));
+    $voiced = [];
+    foreach ($pins as $p) {
+        if (trim((string)$p->text) !== '') {
+            $voiced[] = ['id' => (int)$p->id, 'text' => format_string($p->text, true, ['context' => $context]),
+                'hasvoice' => !isset($novoice[(int)$p->id])];
+        }
+    }
     $key = (int)$s->situationid;
     if (!isset($groups[$key])) {
         $groups[$key] = ['name' => isset($situations[$key]) ? format_string(
@@ -168,10 +171,9 @@ foreach ($scenes as $s) {
         'noimage' => !$url,
         'phrases' => count($pins),
         'placed' => $placed,
-        'unplaced' => count($pins) - $placed,
-        'ready' => $url && $placed > 0,
-        'imageprompt' => lesson::image_prompt($instance, $s, $list),
-        'canai' => $canai,
+        'placedok' => $placed > 0,
+        'voices' => $voiced,
+        'novoices' => count(array_filter($voiced, fn($v) => !$v['hasvoice'])),
         'editurl' => (new moodle_url('/mod/ailanguageteacher/editor.php', ['id' => $cm->id, 'sceneid' => $s->id]))->out(false),
         'upurl' => $i > 1 ? (new moodle_url($baseurl, ['action' => 'up', 'sceneid' => $s->id, 'sesskey' => $sesskey]))
             ->out(false) : null,
@@ -182,17 +184,61 @@ foreach ($scenes as $s) {
     ];
 }
 
+$str = fn($k, $a = null) => get_string($k, 'mod_ailanguageteacher', $a);
+// Next opens only when the step is done (voices only when LMS Labs has voices for this language).
+$blocked = match ($step) {
+    setuppath::PICTURES => $state['nopicture'] ? $str('setup_needpictures', count($state['nopicture'])) : '',
+    setuppath::VOICES => $state['novoice'] ? $str('setup_needvoices', count($state['novoice'])) : '',
+    default => $state['unplaced'] ? $str('setup_needplaced', count($state['unplaced']))
+        : ($state['nopicture'] ? $str('setup_needpictures', count($state['nopicture'])) : ''),
+};
+if (!$total) {
+    $blocked = $str('setup_needscene');
+}
+
+// The voice catalogue (cached) for the Voices step.
+$voicedata = [];
+$canvoice = false;
+if ($step === setuppath::VOICES && $state['voices'] && has_capability('mod/ailanguageteacher:useai', $context)) {
+    try {
+        $names = array_column((new \mod_ailanguageteacher\local\speech\lmslabs())->voices((string)$instance->targetlocale), 'name');
+    } catch (\moodle_exception $e) {
+        $names = [];
+    }
+    $current = in_array((string)$instance->ttsvoice, $names, true) ? (string)$instance->ttsvoice : ($names[0] ?? '');
+    foreach ($names as $name) {
+        $voicedata[] = ['name' => $name, 'label' => preg_replace('/^.*-Chirp3-HD-/', '', $name),
+            'selected' => $name === $current];
+    }
+    $canvoice = (bool)$names;
+}
+
 $PAGE->requires->js_call_amd('mod_ailanguageteacher/scenes', 'init', ['#lt-scenes']);
 
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
+    'bar' => setuppath::bar($step),
+    'pictures' => $step === setuppath::PICTURES,
+    'voicesstep' => $step === setuppath::VOICES,
+    'check' => $step === setuppath::CHECK,
     'groups' => array_values($groups),
     'hasscenes' => $total > 0,
-    'country' => lesson::setting($instance),
-    'maxphrases' => manager::MAX_PHRASES,
     'count' => $total,
-    'viewurl' => (new moodle_url('/mod/ailanguageteacher/view.php', ['id' => $cm->id]))->out(false),
-    'builderurl' => (new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id]))->out(false),
-    'addform' => $addform->render(),
+    'cmid' => (int)$cm->id,
+    'canvoice' => $canvoice,
+    'novoiceservice' => !$state['voices'],
+    'voicelist' => $voicedata,
+    'voiceaction' => $baseurl->out(false),
+    'sesskey' => $sesskey,
+    'missingvoices' => count($state['novoice']),
+    'missingvoiceids' => implode(',', $state['novoice']),
+    'missingvoicecredits' => count($state['novoice']),
+    'nav' => [
+        'backurl' => setuppath::url((int)$cm->id, $step - 1)->out(false),
+        'backlabel' => $str('setup_back'),
+        'nexturl' => setuppath::url((int)$cm->id, $step + 1)->out(false),
+        'nextlabel' => $str('setup_next', $str('setupstep_' . setuppath::STEPS[$step])),
+        'blocked' => $blocked,
+    ],
 ]);
 echo $OUTPUT->footer();

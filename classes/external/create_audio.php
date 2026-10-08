@@ -8,11 +8,11 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Teacher-initiated speech synthesis.
@@ -28,29 +28,62 @@ use core_external\external_single_structure;
 use core_external\external_value;
 use mod_ailanguageteacher\local\audio;
 
-/** Teacher-only, explicit 1-credit synthesis action. */
+/**
+ * Creates one phrase voice with LMS Labs (1 credit when delivered). Teachers only, always an explicit action.
+ *
+ * @package    mod_ailanguageteacher
+ * @copyright  2026 LMS Hosting Services
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class create_audio extends base {
+    /**
+     * Parameters.
+     *
+     * @return external_function_parameters
+     */
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'phraseid' => new external_value(PARAM_INT, 'Phrase id'),
             'voice' => new external_value(PARAM_TEXT, 'Exact available voice name'),
             'variant' => new external_value(PARAM_ALPHA, 'normal, slow or example'),
+            'discard' => new external_value(
+                PARAM_BOOL,
+                'The teacher confirmed abandoning an unfinished request',
+                VALUE_DEFAULT,
+                false
+            ),
         ]);
     }
 
-    public static function execute(int $phraseid, string $voice, string $variant): array {
+    /**
+     * Creates the voice.
+     *
+     * @param int $phraseid
+     * @param string $voice exact catalogue voice name
+     * @param string $variant normal, slow or example
+     * @param bool $discard the teacher confirmed abandoning an unfinished request
+     * @return array
+     */
+    public static function execute(int $phraseid, string $voice, string $variant, bool $discard = false): array {
         global $USER;
-        self::validate_parameters(self::execute_parameters(), compact('phraseid', 'voice', 'variant'));
+        self::validate_parameters(self::execute_parameters(), compact('phraseid', 'voice', 'variant', 'discard'));
         [, , $instance, $context, $phrase] = self::load_phrase($phraseid);
         require_capability('mod/ailanguageteacher:useai', $context);
-        if (!confirm_sesskey() || !in_array($variant, audio::VARIANTS, true) ||
+        if (
+            !in_array($variant, audio::VARIANTS, true) ||
                 !in_array($voice, array_column((new \mod_ailanguageteacher\local\speech\lmslabs())
-                    ->voices($instance->targetlocale), 'name'), true)) {
+                    ->voices($instance->targetlocale), 'name'), true)
+        ) {
             throw new \moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
         }
-        return ['url' => audio::create($instance, $context, $phrase, $variant, (int)$USER->id, $voice)];
+        return ['url' => audio::create($instance, $context, $phrase, $variant, (int)$USER->id, $voice, $discard)];
     }
 
+    /**
+     * Return structure.
+     *
+     * @return external_single_structure
+     */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure(['url' => new external_value(PARAM_URL, 'Saved audio URL')]);
     }

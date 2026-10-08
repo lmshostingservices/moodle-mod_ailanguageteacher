@@ -8,29 +8,51 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * Persisted outbound operation claims.
- *
- * @package mod_ailanguageteacher
- * @copyright 2026 LMS Hosting Services
- * @license https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 namespace mod_ailanguageteacher\local;
 
 /**
- * Moodle's durable outbound claim. Never rotate a key on an ambiguous response.
+ * Moodle's durable record of each paid LMS Labs request (claim), saved with its key before anything is sent.
+ *
+ * States: pending (sent, or about to be; the same key is used for every try), complete, expired (LMS Labs no longer
+ * has it), failed (LMS Labs refused it and charged nothing) and abandoned (the teacher chose to start again). A key is
+ * never rotated on an ambiguous answer: only a refusal, an expiry or the teacher's explicit "start again" ends a
+ * pending request.
+ *
+ * @package    mod_ailanguageteacher
+ * @copyright  2026 LMS Hosting Services
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class operation {
-    public static function claim(int $aid, int $userid, string $kind, int $itemid, array $body,
-            bool $new = false): \stdClass {
+    /**
+     * The request to send for this activity, user, kind and item: the pending one (same key), a recent complete one
+     * (lesson replay), or a new one.
+     *
+     * @param int $aid activity id
+     * @param int $userid
+     * @param string $kind lesson, import or tts
+     * @param int $itemid
+     * @param array $body exact JSON body
+     * @param bool $new ask for a new lesson draft even when a recent identical one exists
+     * @param bool $discard the teacher confirmed that an unfinished request with different content may be abandoned
+     * @return \stdClass
+     */
+    public static function claim(
+        int $aid,
+        int $userid,
+        string $kind,
+        int $itemid,
+        array $body,
+        bool $new = false,
+        bool $discard = false
+    ): \stdClass {
         global $DB;
-        $hash = hash('sha256', json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+        $hash = self::hash($body);
         $lock = \core\lock\lock_config::get_lock_factory('mod_ailanguageteacher_operation')
             ->get_lock("$aid:$userid:$kind:$itemid", 10);
         if (!$lock) {
@@ -42,32 +64,28 @@ final class operation {
                 'state' => 'pending',
             ]);
             if ($row) {
-                if ($row->bodyhash !== $hash) {
+                if ($row->bodyhash === $hash) {
+                    return $row;
+                }
+                if (!$discard) {
                     throw new \moodle_exception('operationconflict', 'mod_ailanguageteacher');
                 }
-                return $row;
+                self::finish($row, 'abandoned');
             }
             $old = $DB->get_records('ailanguageteacher_operation', [
                 'ailanguageteacherid' => $aid, 'userid' => $userid, 'kind' => $kind,
                 'itemid' => $itemid, 'state' => 'complete',
             ], 'id DESC', '*', 0, 1);
             $old = $old ? reset($old) : null;
-            if ($old && $kind === 'lesson' && !$new) {
-                if ($old->timecreated + DAYSECS <= time()) {
-                    $DB->update_record('ailanguageteacher_operation',
-                        (object)['id' => $old->id, 'result' => null, 'body' => '', 'state' => 'expired']);
-                    throw new \moodle_exception('operationexpired', 'mod_ailanguageteacher');
-                }
-                if ($old->bodyhash === $hash) {
-                    return $old;
-                }
+            if ($old && $kind === 'lesson' && !$new && $old->bodyhash === $hash && $old->timecreated + DAYSECS > time()) {
+                return $old;
             }
-            if ($kind === 'lesson') {
+            if ($kind === 'lesson' || $kind === 'import') {
                 lesson::check_ai_rate($userid);
             }
             $row = (object)['ailanguageteacherid' => $aid, 'userid' => $userid, 'kind' => $kind,
                 'itemid' => $itemid, 'bodyhash' => $hash,
-                'body' => $kind === 'tts' ? '' : json_encode($body),
+                'body' => $kind === 'tts' ? '' : json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'idemkey' => \core\uuid::generate(), 'state' => 'pending', 'result' => null,
                 'timecreated' => time()];
             $row->id = $DB->insert_record('ailanguageteacher_operation', $row);
@@ -77,6 +95,22 @@ final class operation {
         }
     }
 
+    /**
+     * The hash a request body is matched with.
+     *
+     * @param array $body
+     * @return string
+     */
+    public static function hash(array $body): string {
+        return hash('sha256', json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+    }
+
+    /**
+     * Marks a request delivered, with what it produced.
+     *
+     * @param \stdClass $row
+     * @param string|null $result
+     */
     public static function complete(\stdClass $row, ?string $result = null): void {
         global $DB;
         $DB->update_record('ailanguageteacher_operation', (object)[
@@ -84,10 +118,58 @@ final class operation {
         ]);
     }
 
+    /**
+     * Marks a request gone at LMS Labs (410).
+     *
+     * @param \stdClass $row
+     */
     public static function expired(\stdClass $row): void {
+        self::finish($row, 'expired');
+    }
+
+    /**
+     * Ends a request that LMS Labs refused (nothing was charged), so the next click is a new request.
+     *
+     * @param \stdClass $row
+     */
+    public static function failed(\stdClass $row): void {
+        self::finish($row, 'failed');
+    }
+
+    /**
+     * Ends a request with a final state; its key is kept for reference.
+     *
+     * @param \stdClass $row
+     * @param string $state
+     */
+    protected static function finish(\stdClass $row, string $state): void {
         global $DB;
         $DB->update_record('ailanguageteacher_operation', (object)[
-            'id' => $row->id, 'state' => 'expired', 'result' => null, 'body' => '',
+            'id' => $row->id, 'state' => $state, 'result' => null, 'body' => '',
         ]);
+    }
+
+    /**
+     * Records the answer to a request that did not deliver, then throws the teacher-facing message.
+     *
+     * @param \stdClass $row
+     * @param int $status
+     * @param string $body
+     * @param array $headers
+     * @throws \moodle_exception always
+     */
+    public static function not_delivered(\stdClass $row, int $status, string $body, array $headers = []): void {
+        $outcome = remote::outcome($status, $body);
+        if ($outcome === 'gone') {
+            self::expired($row);
+            throw new \moodle_exception(
+                $row->kind === 'tts' ? 'speechresultnotretained' : 'operationexpired',
+                'mod_ailanguageteacher'
+            );
+        }
+        if ($outcome === 'refused') {
+            self::failed($row);
+        }
+        remote::fail($status, $body, $headers);
     }
 }

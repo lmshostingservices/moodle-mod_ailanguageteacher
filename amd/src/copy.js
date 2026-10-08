@@ -38,6 +38,11 @@ export const init = (selector) => {
             try {
                 await navigator.clipboard.writeText(target.value);
             } catch (e) {
+                // The fallback needs the text visible: open a closed "Show the prompt" section first.
+                const details = target.closest('details');
+                if (details) {
+                    details.open = true;
+                }
                 target.select();
                 document.execCommand('copy');
             }

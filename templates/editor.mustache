@@ -17,11 +17,16 @@
 {{!
     @template mod_ailanguageteacher/editor
 
-    Scene editor container. The editor is rendered into it by JavaScript.
+    Set-up step 8, one scene: the step bar and the scene editor (rendered by JavaScript).
 
     Example context (json):
-    {"config": "{}", "noimage": true, "replaceurl": "#"}
+    {"config": "{}", "noimage": true, "replaceurl": "#",
+     "bar": {"current": 8, "total": 9, "steps": [{"number": 8, "name": "Check the scenes", "done": false, "current": true, "dot": 0}]}}
 }}
+<div class="lt-wizard lt-setup-head">
+    <h2 class="h3">{{#str}} setup_title, mod_ailanguageteacher {{/str}}</h2>
+    {{#bar}}{{> mod_ailanguageteacher/setup_steps}}{{/bar}}
+</div>
 {{#noimage}}
 <div class="alert alert-warning">{{#str}} editor_noimage, mod_ailanguageteacher {{/str}} <a href="{{replaceurl}}">{{#str}} uploadimage, mod_ailanguageteacher {{/str}}</a></div>
 {{/noimage}}

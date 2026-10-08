@@ -36,36 +36,60 @@ class lesson {
     /** @var int Most scenes in one draft. */
     public const MAX_SCENES = 40;
 
-    /** Dedicated text schema, not the older scene/phrase JSON prompt. */
+    /**
+     * The body of an LMS Labs lesson draft request, always in English.
+     *
+     * @param stdClass $instance
+     * @return array {brief, locale, level, topic}
+     */
     public static function draft_request(stdClass $instance): array {
         $level = in_array($instance->cefrlevel, ['A1', 'A2'], true) ? 'beginner' :
             (in_array($instance->cefrlevel, ['B1', 'B2'], true) ? 'intermediate' : 'advanced');
-        $situations = self::chosen_situations($instance);
-        $brief = 'Teach a short ' . languages::name($instance->targetlang) . ' lesson for ' .
-            languages::name($instance->supportlang) . ' speakers. Situation: ' .
+        // Always English, whatever the teacher's Moodle language, so the same choices always send the same request.
+        $situations = self::chosen_situations($instance, 'en');
+        $brief = 'Teach a short ' . languages::name($instance->targetlang, 'en') . ' lesson for ' .
+            languages::name($instance->supportlang, 'en') . ' speakers. Situation: ' .
             ($situations[0] ?? 'everyday conversation') . '. CEFR ' . $instance->cefrlevel . '.';
         return ['brief' => $brief, 'locale' => (string)$instance->targetlocale, 'level' => $level,
             'topic' => \core_text::substr($situations[0] ?? 'Everyday conversation', 0, 200)];
     }
 
-    /** Map every approved field to an editable scene/phrase, without pretending it is a scene-generation schema. */
+    /**
+     * Maps a delivered LMS Labs draft to one editable scene with its phrases.
+     *
+     * @param array $draft {title, objective, explanation, vocabulary[{term, meaning}], practice[{prompt, answer}]}
+     * @param stdClass $instance
+     * @return array lesson draft (scenes)
+     * @throws moodle_exception lessoninvalid when the draft cannot be used
+     */
     public static function from_approved(array $draft, stdClass $instance): array {
         foreach (['title', 'objective', 'explanation', 'vocabulary', 'practice'] as $field) {
             if (!isset($draft[$field])) {
                 throw new moodle_exception('lessoninvalid', 'mod_ailanguageteacher');
             }
         }
+        if (!is_array($draft['vocabulary']) || !is_array($draft['practice'])) {
+            throw new moodle_exception('lessoninvalid', 'mod_ailanguageteacher');
+        }
+        $text = fn($v) => is_scalar($v) ? (string)$v : '';
         $phrases = [];
         foreach ($draft['vocabulary'] as $pair) {
-            $phrases[] = ['text' => $pair['term'], 'translation' => $pair['meaning'],
-                'usagenote' => $draft['explanation'], 'prompt' => $draft['objective']];
+            if (is_array($pair) && $text($pair['term'] ?? '') !== '') {
+                $phrases[] = ['text' => $text($pair['term']), 'translation' => $text($pair['meaning'] ?? ''),
+                    'usagenote' => $text($draft['explanation']), 'prompt' => $text($draft['objective'])];
+            }
         }
         foreach ($draft['practice'] as $pair) {
-            $phrases[] = ['text' => $pair['answer'], 'prompt' => $pair['prompt'],
-                'usagenote' => $draft['explanation']];
+            if (is_array($pair) && $text($pair['answer'] ?? '') !== '') {
+                $phrases[] = ['text' => $text($pair['answer']), 'prompt' => $text($pair['prompt'] ?? ''),
+                    'usagenote' => $text($draft['explanation'])];
+            }
+        }
+        if (!$phrases) {
+            throw new moodle_exception('lessoninvalid', 'mod_ailanguageteacher');
         }
         return ['scenes' => [['situation' => self::chosen_situations($instance)[0] ?? '',
-            'title' => $draft['title'], 'context' => $draft['objective'] . "\n" . $draft['explanation'],
+            'title' => $text($draft['title']), 'context' => $text($draft['objective']) . "\n" . $text($draft['explanation']),
             'imageprompt' => '', 'phrases' => $phrases, 'distractors' => []]]];
     }
 
@@ -76,14 +100,15 @@ class lesson {
      * The situations chosen in the builder, as display names.
      *
      * @param stdClass $instance
+     * @param string|null $lang language for built-in situation names (null: the current language)
      * @return string[]
      */
-    public static function chosen_situations(stdClass $instance): array {
+    public static function chosen_situations(stdClass $instance, ?string $lang = null): array {
         $data = json_decode((string)$instance->situations, true) ?: [];
         $names = [];
         foreach ($data['keys'] ?? [] as $key) {
             if (languages::is_situation((string)$key)) {
-                $names[] = languages::situation_name((string)$key);
+                $names[] = languages::situation_name((string)$key, $lang);
             }
         }
         foreach ($data['custom'] ?? [] as $custom) {

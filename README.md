@@ -13,7 +13,23 @@ Teachers build a lesson with a four-step wizard:
 3. Choose the learners' language, used for meanings, notes and cues.
 4. Choose the CEFR level. For English, approximate IELTS bands are shown.
 
-The builder offers an explicit 3-credit short lesson draft through the dedicated LMS Labs text route. Its objective, explanation, vocabulary and practice prompts are converted into editable scene and phrase fields. The teacher reviews the draft, edits its JSON if needed, and imports it as Moodle content. The manual prompt-and-paste path remains available.
+**Activation.** The whole plugin needs the site to be unlocked with LMS Labs, either with 50 credits or free when LMS Labs has a record of a Moodle Marketplace purchase. Do this in the AI Language Teacher settings: press "Check access", then "Unlock…".
+
+**Set up the lesson.** Teachers follow nine steps, moved through with Back and Next only. Next opens when the step is done.
+
+1. Language.
+2. Situations.
+3. Learners' language.
+4. Level.
+5. **Create the scenes**, in one of two ways. Both cost 3 LMS Labs credits per scene and are confirmed first.
+   - "Let LMS Labs AI write it": a short lesson scene from your choices, which you check before it is added.
+   - "Use an AI assistant": copy the prompt into ChatGPT or another assistant, paste the reply back in and preview it.
+6. **Pictures:** upload a picture for each scene.
+7. **Voices:** choose one LMS Labs Chirp 3 HD voice, then "Create missing voices" (1 credit per phrase). Slow listening plays the same voice slowed down.
+8. **Check the scenes:** place each phrase on its picture.
+9. **Finish:** see what is ready, preview as a learner, and go back to the course.
+
+"Set up the lesson" in the activity menu reopens the path at the first step that is not done yet.
 
 Each picture shows one moment and holds at most two phrases, such as a greeting and its reply. A new moment, such as saying goodbye, gets its own picture, and learners move through a situation's pictures one after another. If an AI reply puts more phrases in one scene, the import splits them across extra scenes instead of dropping them. Picture descriptions are set in the country of the chosen variety: es-ES gives Spain and es-MX gives Mexico, so people, places and everyday details look local.
 

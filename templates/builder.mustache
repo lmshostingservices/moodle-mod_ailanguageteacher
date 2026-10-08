@@ -17,11 +17,11 @@
 {{!
     @template mod_ailanguageteacher/builder
 
-    Lesson builder steps 1 to 4: language taught, situations, learners' language, level.
+    Set-up steps 1 to 4: language, situations, learners, level. Back and Next move between them.
 
     Example context (json):
     {
-        "cmid": 1, "action": "#", "sesskey": "abc", "hasscenes": false, "buildurl": "#", "forcelang": false,
+        "cmid": 1, "action": "#", "sesskey": "abc", "bar": {"current": 1, "total": 9, "steps": [{"number": 1, "name": "Language", "done": false, "current": true, "dot": 1}]}, "forcelang": false,
         "illustration": true, "photo": false,
         "languages": [{"code": "en", "name": "English", "endonym": "English", "showendonym": false, "selected": true,
             "multilocale": true, "locales": [{"locale": "en-AU", "name": "English (Australia)", "selected": true}]}],
@@ -35,16 +35,9 @@
 <form id="lt-wizard" class="lt-wizard" method="post" action="{{action}}">
     <input type="hidden" name="sesskey" value="{{sesskey}}">
     <input type="hidden" name="savechoices" value="1">
-    <div class="lt-wizard-head">
-        <h2 class="h3">{{#str}} buildlesson, mod_ailanguageteacher {{/str}}</h2>
-        <ol class="lt-wizard-steps" aria-label="{{#str}} builder_steps, mod_ailanguageteacher {{/str}}">
-            <li data-stepdot="1"><span>1</span>{{#str}} step_language, mod_ailanguageteacher {{/str}}</li>
-            <li data-stepdot="2"><span>2</span>{{#str}} step_situations, mod_ailanguageteacher {{/str}}</li>
-            <li data-stepdot="3"><span>3</span>{{#str}} step_learners, mod_ailanguageteacher {{/str}}</li>
-            <li data-stepdot="4"><span>4</span>{{#str}} step_level, mod_ailanguageteacher {{/str}}</li>
-            <li><span>5</span>{{#str}} step_build, mod_ailanguageteacher {{/str}}</li>
-        </ol>
-        {{#hasscenes}}<a class="lt-btn lt-btn-ghost lt-btn-sm" href="{{buildurl}}">{{#str}} builder_skip, mod_ailanguageteacher {{/str}}</a>{{/hasscenes}}
+    <div class="lt-setup-head">
+        <h2 class="h3">{{#str}} setup_title, mod_ailanguageteacher {{/str}}</h2>
+        {{#bar}}{{> mod_ailanguageteacher/setup_steps}}{{/bar}}
     </div>
 
     <fieldset class="lt-wstep" data-step="1">
@@ -82,7 +75,7 @@
         <div class="lt-sitgroups">
             {{#groups}}
             <div class="lt-sitgroup">
-                <h4>{{name}}</h4>
+                <h3 class="lt-sitgroup-title">{{name}}</h3>
                 {{#items}}
                 <label class="lt-check-row lt-sit"><input type="checkbox" name="situations[]" value="{{key}}" {{#checked}}checked{{/checked}}><span>{{name}}</span></label>
                 {{/items}}
@@ -90,7 +83,7 @@
             {{/groups}}
         </div>
         <div class="lt-panel lt-custom">
-            <h4>{{#str}} q_custom, mod_ailanguageteacher {{/str}}</h4>
+            <h3 class="lt-sitgroup-title">{{#str}} q_custom, mod_ailanguageteacher {{/str}}</h3>
             <p class="lt-mini">{{#str}} q_custom_help, mod_ailanguageteacher {{/str}}</p>
             {{#custom}}
             <input type="text" class="lt-input" name="custom[]" value="{{value}}" maxlength="120" data-custom="{{index}}" aria-label="{{#str}} q_custom, mod_ailanguageteacher {{/str}} {{index}}" placeholder="{{#str}} q_custom_placeholder, mod_ailanguageteacher {{/str}}" {{#hidden}}hidden{{/hidden}}>

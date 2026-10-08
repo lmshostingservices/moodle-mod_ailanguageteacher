@@ -19,10 +19,16 @@ namespace mod_ailanguageteacher\external;
 use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
+use mod_ailanguageteacher\local\ai\lmslabs;
 use mod_ailanguageteacher\local\lesson;
+use mod_ailanguageteacher\local\operation;
+use moodle_exception;
 
 /**
- * Creates scenes and phrases from a lesson draft (AI output or JSON pasted by the teacher).
+ * Creates scenes and phrases from a lesson draft.
+ *
+ * A draft LMS Labs AI delivered (already charged) is created free, once. Scenes written with the teacher's own AI
+ * assistant are charged like LMS Labs drafts, 3 credits per scene, and created only after LMS Labs confirms.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -38,6 +44,18 @@ class import_lesson extends base {
         return new external_function_parameters([
             'cmid' => new external_value(PARAM_INT, 'Course module id'),
             'draft' => new external_value(PARAM_TEXT, 'Lesson draft JSON'),
+            'draftid' => new external_value(
+                PARAM_INT,
+                'The delivered LMS Labs draft this comes from (0: own AI assistant)',
+                VALUE_DEFAULT,
+                0
+            ),
+            'discard' => new external_value(
+                PARAM_BOOL,
+                'The teacher confirmed abandoning an unfinished request',
+                VALUE_DEFAULT,
+                false
+            ),
         ]);
     }
 
@@ -46,12 +64,51 @@ class import_lesson extends base {
      *
      * @param int $cmid
      * @param string $draft
+     * @param int $draftid
+     * @param bool $discard
      * @return array
      */
-    public static function execute(int $cmid, string $draft): array {
-        $params = self::validate_parameters(self::execute_parameters(), ['cmid' => $cmid, 'draft' => $draft]);
-        [, , $instance] = self::load_cm($params['cmid'], 'manage');
-        return lesson::import($instance, lesson::parse($params['draft']));
+    public static function execute(int $cmid, string $draft, int $draftid = 0, bool $discard = false): array {
+        global $DB, $USER;
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            ['cmid' => $cmid, 'draft' => $draft, 'draftid' => $draftid, 'discard' => $discard]
+        );
+        [, , $instance, $context] = self::load_cm($params['cmid'], 'manage');
+        $data = lesson::clean(lesson::parse($params['draft']));
+        if (!$data['scenes']) {
+            throw new moodle_exception('lessonempty', 'mod_ailanguageteacher');
+        }
+        if ($params['draftid']) {
+            // A delivered LMS Labs draft: already paid for, created once, with no more scenes than it had.
+            $op = $DB->get_record('ailanguageteacher_operation', ['id' => $params['draftid'],
+                'ailanguageteacherid' => $instance->id, 'userid' => $USER->id, 'kind' => 'lesson', 'state' => 'complete']);
+            $delivered = $op ? count(json_decode((string)$op->result, true)['scenes'] ?? []) : 0;
+            if (!$op || count($data['scenes']) > $delivered) {
+                throw new moodle_exception('draftused', 'mod_ailanguageteacher');
+            }
+            $result = lesson::import($instance, $data);
+            $DB->update_record('ailanguageteacher_operation', (object)['id' => $op->id, 'state' => 'imported',
+                'body' => '', 'result' => null]);
+            return $result + ['charged' => 0, 'balance' => -1];
+        }
+        // The teacher's own AI assistant: 3 credits per scene, confirmed by LMS Labs before anything is created.
+        require_capability('mod/ailanguageteacher:useai', $context);
+        if (\mod_ailanguageteacher\local\credentials::find() === null) {
+            throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');
+        }
+        $body = ['sceneCount' => count($data['scenes']), 'titles' => array_map(
+            fn($s) => \core_text::substr(str_replace(['<', '>'], '', (string)$s['title']), 0, 200),
+            $data['scenes']
+        )];
+        $op = operation::claim((int)$instance->id, (int)$USER->id, 'import', 0, $body, false, $params['discard']);
+        $charge = (new lmslabs())->charge_import($body, $op);
+        $transaction = $DB->start_delegated_transaction();
+        $result = lesson::import($instance, $data);
+        operation::complete($op, json_encode($charge));
+        $transaction->allow_commit();
+        lesson::log_ai((int)$instance->id, (int)$USER->id, 'import', 'ok');
+        return $result + ['charged' => $charge['charged'], 'balance' => $charge['balance'] ?? -1];
     }
 
     /**
@@ -63,6 +120,8 @@ class import_lesson extends base {
         return new external_single_structure([
             'scenes' => new external_value(PARAM_INT, 'Scenes created'),
             'phrases' => new external_value(PARAM_INT, 'Phrases created'),
+            'charged' => new external_value(PARAM_INT, 'LMS Labs credits charged for these scenes'),
+            'balance' => new external_value(PARAM_INT, 'LMS Labs credits left (-1: not reported)'),
         ]);
     }
 }

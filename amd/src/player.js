@@ -1386,10 +1386,30 @@ class Player {
                 url = '';
             }
         }
+        // No separate slow recording: play the paid normal voice slowed down, rather than the browser's voice.
+        let slowfile = !!url && variant === 'slow';
+        if (!url && variant === 'slow') {
+            slowfile = false;
+            url = detail.audio || '';
+            if (!url && this.config.hasservicetts) {
+                const normal = `${detail.phraseid}:normal`;
+                if (this.audioCache.has(normal)) {
+                    url = this.audioCache.get(normal);
+                } else {
+                    try {
+                        const res = await Ajax.call([{methodname: 'mod_ailanguageteacher_get_audio', args: {
+                            cmid: this.config.cmid, ref: `p${detail.phraseid}`, variant: 'normal'}}])[0];
+                        url = res.url;
+                        this.audioCache.set(normal, url);
+                    } catch (err) {
+                        url = '';
+                    }
+                }
+            }
+        }
         const text = variant === 'example' ? detail.example : detail.text;
         try {
-            await Speech.play({url, text, locale: this.config.locale, slow: variant === 'slow',
-                slowfile: !!url && variant === 'slow' && url !== detail.audio});
+            await Speech.play({url, text, locale: this.config.locale, slow: variant === 'slow', slowfile});
         } catch (err) {
             this.say(S.audiounavailable);
         }

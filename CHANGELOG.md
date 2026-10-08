@@ -1,5 +1,54 @@
 # Changelog
 
+All notable changes to mod_ailanguageteacher are recorded here.
+
+## [v1.2.0] - 2026-10-08
+
+Builds on the live 1.0.3, which it replaces. The number 1.1.0 is skipped because an earlier, withdrawn test build used it. Tariffs are unchanged: 50 credits to unlock, 3 per scene, 1 per phrase voice.
+
+### Changed
+
+- **Activation is now part of the plugin settings page.** The separate activation page is gone; in 1.0.3 it failed with an error when opened. The settings page shows the last known access, where the Site ID and API key come from, the balance, and "Check access" and "Unlock…". Opening the settings page never calls LMS Labs and never spends credits. The live price is checked and confirmed on the unlock step.
+- **The whole plugin needs this site to be unlocked with LMS Labs**, either with 50 credits or free when LMS Labs has a record of a Moodle Marketplace purchase. Until then teachers cannot set up lessons and learners see "This activity is not available yet". An unlocked site stays usable when LMS Labs cannot be reached; only a definite "locked" answer locks it again.
+- **One set-up path in nine steps**, moved through with Back and Next only:
+  1. Language.
+  2. Situations.
+  3. Learners' language.
+  4. Level.
+  5. Create the scenes.
+  6. Pictures.
+  7. Voices.
+  8. Check the scenes.
+  9. Finish.
+
+  A step bar shows where the teacher is ("Step 7 of 9"). Next stays closed until the step is done, and says why. "Set up the lesson" replaces "Build lesson" and "Scenes" in the menu, and opens at the first step that is not done yet.
+- **Step 5 has two cards:**
+  - "Let LMS Labs AI write it": 3 credits per delivered scene, confirmed first.
+  - "Use an AI assistant": copy the prompt into ChatGPT or another assistant and paste the reply. These scenes now cost 3 credits each too, the same as LMS Labs scenes. Only the number of scenes and their titles go to LMS Labs (`POST /api/moodle/ai-language-teacher/lessons/import`), and the scenes are created only after LMS Labs confirms. This route has been requested from LMS Labs; until it is live the teacher is told it is not available yet.
+  - A scene LMS Labs AI delivered is created free, once.
+- **The free "Add scenes" upload is gone**, and so are the copy-paste picture prompts for other AI tools. Every scene is created in step 5. Teachers upload their own picture for each scene in step 6; LMS Labs AI pictures for Language Teacher have been requested.
+- **Voices step.** The teacher chooses one LMS Labs Chirp 3 HD voice for the lesson; it is stored in the new `ttsvoice` field. "Create missing voices" then makes every missing phrase voice, one after another, at 1 credit each, confirmed first. The per-phrase "Create voice" in the editor uses the same voice, with no browser pop-up.
+- **Slow listening uses the paid voice, slowed down**, instead of the browser's voice, at no extra cost.
+- **The voice catalogue is kept in Moodle's cache for an hour** (a failure for five minutes), so learner pages no longer wait on LMS Labs.
+
+### Fixed
+
+- **Stuck requests.**
+  - A refusal from LMS Labs (no credits, no entitlement, invalid input and so on) now ends the stored request, so the next click is a new request. In 1.0.3 the request stayed pending for ever.
+  - "Still working" (202, honouring Retry-After) and "no answer" keep the same key, so the same button asks again and can never charge twice.
+  - When an unfinished request had different content, the teacher can now choose to start again. In 1.0.3 the message said "Finish or reconcile it" with no way to do either.
+  - A delivered draft or voice that cannot be used is ended rather than replayed, and the teacher is told to contact support.
+- **Credentials never follow a redirect.** The LMS Labs transport and the balance check no longer follow redirects, so the Site ID and API key headers can only reach lms-labs.com. The unlock address is fixed to lms-labs.com; the `config.php` override is removed.
+- **Phrase voice requests ask for MP3** (`Accept: audio/mpeg, application/json`), not only JSON.
+- **Lesson draft requests are always written in English**, whatever the teacher's Moodle language, so the same choices always send the same request.
+- **Draft checks.** A draft with malformed vocabulary or practice entries is rejected cleanly.
+- **Code and docs.**
+  - Moodle code-checker errors fixed (176 errors and 9 warnings in 1.0.3).
+  - The scheduled task name is a language string.
+  - The out-of-date phrase-voice cache test is rewritten for the current behaviour.
+  - The changelog order and the upgrade docblock are corrected.
+- **Privacy.** The privacy metadata now declares the stored files, the scene titles and Site ID sent to LMS Labs, and the learner's browser speech recognition.
+
 ## [v1.0.3] - 2026-09-28
 
 ### Added
@@ -7,8 +56,6 @@
 - Administrator-only activation page with free access verification, live release/credit-price review and explicit POST confirmation before one-time site unlock.
 - Durable pending marker and verification-first recovery for uncertain unlock responses; show unlimited/low balances, Marketplace restorations and server conflict messages without claiming a new debit for prior purchases.
 - Activation uses the existing complete LMS Labs credential pair. Phrase request keys, 410 recovery, text drafting (3 credits) and speech (1 credit) are unchanged; no speech-to-text route is added.
-
-All notable changes to mod_ailanguageteacher are recorded here.
 
 ## [v1.0.2] - 2026-09-28
 

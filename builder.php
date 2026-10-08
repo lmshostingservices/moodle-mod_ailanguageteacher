@@ -28,9 +28,11 @@ use mod_ailanguageteacher\local\ai\factory;
 use mod_ailanguageteacher\local\languages;
 use mod_ailanguageteacher\local\lesson;
 use mod_ailanguageteacher\local\manager;
+use mod_ailanguageteacher\local\setuppath;
 
 $id = required_param('id', PARAM_INT);
 $step = optional_param('step', '', PARAM_ALPHA);
+$start = optional_param('start', 1, PARAM_INT);
 
 [$course, $cm] = get_course_and_cm_from_cmid($id, 'ailanguageteacher');
 $instance = $DB->get_record('ailanguageteacher', ['id' => $cm->instance], '*', MUST_EXIST);
@@ -40,11 +42,19 @@ require_capability('mod/ailanguageteacher:manage', $context);
 
 $baseurl = new moodle_url('/mod/ailanguageteacher/builder.php', ['id' => $cm->id]);
 $PAGE->set_url($baseurl);
-$PAGE->set_title(format_string($instance->name) . ': ' . get_string('buildlesson', 'mod_ailanguageteacher'));
+$PAGE->set_title(format_string($instance->name) . ': ' . get_string('setup_title', 'mod_ailanguageteacher'));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->activityheader->disable();
 if ($node = $PAGE->settingsnav->find('ailanguageteacher_builder', navigation_node::TYPE_SETTING)) {
     $node->make_active();
+}
+
+// The whole plugin needs this site to be unlocked with LMS Labs (50 credits or a recognised Marketplace purchase).
+if (!\mod_ailanguageteacher\local\unlock::active()) {
+    echo $OUTPUT->header();
+    echo \mod_ailanguageteacher\local\unlock::locked_notice();
+    echo $OUTPUT->footer();
+    exit;
 }
 
 $saved = json_decode((string)$instance->situations, true) ?: [];
@@ -97,16 +107,61 @@ if (optional_param('savechoices', 0, PARAM_BOOL)) {
 $instance = $DB->get_record('ailanguageteacher', ['id' => $cm->instance], '*', MUST_EXIST);
 $saved = json_decode((string)$instance->situations, true) ?: [];
 $str = fn($k, $a = null) => get_string($k, 'mod_ailanguageteacher', $a);
+$nav = fn(int $back, ?int $next, string $blocked = '') => ['nav' => [
+    'backurl' => setuppath::url((int)$cm->id, $back)->out(false),
+    'backlabel' => $str('setup_back'),
+    'nexturl' => $next ? setuppath::url((int)$cm->id, $next)->out(false) : null,
+    'nextlabel' => $next ? $str('setup_next', $str('setupstep_' . setuppath::STEPS[$next - 1])) : '',
+    'blocked' => $blocked,
+]];
+
+if ($step === 'resume') {
+    redirect(setuppath::url((int)$cm->id, setuppath::resume_step(
+        setuppath::state($instance, $context),
+        !empty($saved['keys']) || !empty($saved['custom'])
+    )));
+}
+
+if ($step === 'finish') {
+    $state = setuppath::state($instance, $context);
+    $todo = [];
+    if (!$state['scenes']) {
+        $todo[] = $str('finish_noscenes');
+    }
+    if ($state['nopicture']) {
+        $todo[] = $str('finish_nopicture', count($state['nopicture']));
+    }
+    if ($state['novoice']) {
+        $todo[] = $str('finish_novoice', count($state['novoice']));
+    }
+    if ($state['unplaced']) {
+        $todo[] = $str('finish_unplaced', count($state['unplaced']));
+    }
+    $data = [
+        'bar' => setuppath::bar(setuppath::FINISH),
+        'title' => $str('setupstep_finish'),
+        'ready' => $state['ready'],
+        'scenes' => $state['scenes'],
+        'allready' => !$todo,
+        'todo' => $todo,
+        'viewurl' => (new moodle_url('/mod/ailanguageteacher/view.php', ['id' => $cm->id]))->out(false),
+        'courseurl' => course_get_url($course, $cm->sectionnum)->out(false),
+    ] + $nav(setuppath::CHECK, null);
+    echo $OUTPUT->header();
+    echo $OUTPUT->render_from_template('mod_ailanguageteacher/setup_finish', $data);
+    echo $OUTPUT->footer();
+    exit;
+}
 
 if ($step === 'build') {
     $provider = factory::get();
     $balance = $provider->balance();
     $scenes = manager::get_scenes($instance->id);
     $names = lesson::chosen_situations($instance);
+    // Both ways of creating scenes go through LMS Labs (3 credits per scene), so both need it.
+    $canai = $provider->can_generate() && has_capability('mod/ailanguageteacher:useai', $context);
     $templatedata = [
         'cmid' => (int)$cm->id,
-        'backurl' => $baseurl->out(false),
-        'scenesurl' => (new moodle_url('/mod/ailanguageteacher/scenes.php', ['id' => $cm->id]))->out(false),
         'summary' => [
             'target' => languages::locale_name($instance->targetlocale),
             'support' => languages::name($instance->supportlang),
@@ -114,13 +169,19 @@ if ($step === 'build') {
             'situations' => $names ? implode(', ', $names) : $str('situation_general'),
             'options' => $str('builder_options', lesson::options($instance)),
         ],
-        'canai' => $provider->can_generate() && has_capability('mod/ailanguageteacher:useai', $context),
+        'canai' => $canai,
+        'canimport' => $canai,
+        'draftcredits' => \mod_ailanguageteacher\local\ai\lmslabs::TEXT_CREDITS,
+        'importcredits' => \mod_ailanguageteacher\local\ai\lmslabs::TEXT_CREDITS,
+        'bar' => setuppath::bar(setuppath::CREATE),
+        'nexturl' => setuppath::url((int)$cm->id, setuppath::PICTURES)->out(false),
         'hasbalance' => $balance !== null,
         'balance' => $balance === null ? '' : ($balance['unlimited'] ? $str('balance_unlimited')
             : $str('balance_credits', $balance['credits'])),
         'prompt' => lesson::prompt($instance),
         'existing' => count($scenes),
     ];
+    $templatedata += $nav(4, setuppath::PICTURES, $scenes ? '' : $str('setup_needscene'));
     $PAGE->requires->js_call_amd('mod_ailanguageteacher/builder', 'initBuild', ['#lt-build']);
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('mod_ailanguageteacher/builder_build', $templatedata);
@@ -185,10 +246,9 @@ $templatedata = [
     'illustration' => $instance->imagestyle !== 'photo',
     'photo' => $instance->imagestyle === 'photo',
     'forcelang' => !empty($cm->lang),
-    'hasscenes' => (bool)manager::get_scenes($instance->id),
-    'buildurl' => (new moodle_url($baseurl, ['step' => 'build']))->out(false),
+    'bar' => setuppath::bar(max(1, min(4, $start))),
 ];
-$PAGE->requires->js_call_amd('mod_ailanguageteacher/builder', 'initWizard', ['#lt-wizard']);
+$PAGE->requires->js_call_amd('mod_ailanguageteacher/builder', 'initWizard', ['#lt-wizard', max(1, min(4, $start))]);
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_ailanguageteacher/builder', $templatedata);
 echo $OUTPUT->footer();

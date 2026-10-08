@@ -17,90 +17,106 @@
 {{!
     @template mod_ailanguageteacher/scenes
 
-    Scene manager, grouped by situation.
+    Set-up step 6 (pictures), 7 (voices) or 8 (check each scene), one card per scene in learning order.
 
     Example context (json):
     {
-        "hasscenes": true, "count": 1, "viewurl": "#", "builderurl": "#", "addform": "<form></form>",
-        "country": "Mexico", "maxphrases": 2,
-        "groups": [{"name": "Greetings", "cards": [{"id": 1, "number": 1, "title": "Arriving", "image": "", "noimage": true,
-            "phrases": 2, "placed": 0, "unplaced": 2, "ready": false, "imageprompt": "A home entrance", "canai": false,
-            "editurl": "#", "replaceurl": "#", "deleteurl": "#"}]}]
+        "bar": {"current": 7, "total": 9, "steps": [{"number": 7, "name": "Voices", "done": false, "current": true, "dot": 0}]},
+        "pictures": false, "voicesstep": true, "check": false, "hasscenes": true, "count": 1, "cmid": 1,
+        "canvoice": true, "novoiceservice": false, "voiceaction": "#", "sesskey": "abc",
+        "voicelist": [{"name": "en-AU-Chirp3-HD-Kore", "label": "Kore", "selected": true}],
+        "missingvoices": 1, "missingvoiceids": "4", "missingvoicecredits": 1,
+        "groups": [{"name": "Greetings", "cards": [{"id": 1, "number": 1, "title": "At reception", "image": "",
+            "noimage": true, "phrases": 1, "placed": 0, "placedok": false, "novoices": 1,
+            "voices": [{"id": 4, "text": "Good morning", "hasvoice": false}],
+            "editurl": "#", "replaceurl": "#", "deleteurl": "#", "upurl": null, "downurl": null}]}],
+        "nav": {"backurl": "#", "backlabel": "Back", "nexturl": "#", "nextlabel": "Next: Check the scenes", "blocked": ""}
     }
 }}
-<div id="lt-scenes" class="lt-slides">
-    <div class="lt-ed-toolbar">
-        <h2 class="h3 mb-0 lt-grow">{{#str}} managescenes, mod_ailanguageteacher {{/str}} <span class="lt-counter-pill">{{count}}</span></h2>
-        <a class="lt-btn lt-btn-ghost" href="{{builderurl}}">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
-            {{#str}} buildlesson, mod_ailanguageteacher {{/str}}
-        </a>
-        <a class="lt-btn lt-btn-ghost" href="{{viewurl}}">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
-            {{#str}} previewstudent, mod_ailanguageteacher {{/str}}
-        </a>
+<div id="lt-scenes" class="lt-wizard lt-slides" data-cmid="{{cmid}}">
+    <div class="lt-setup-head">
+        <h2 class="h3">{{#str}} setup_title, mod_ailanguageteacher {{/str}}</h2>
+        {{#bar}}{{> mod_ailanguageteacher/setup_steps}}{{/bar}}
     </div>
+
+    {{#pictures}}
+    <div class="lt-wstep">
+        <h3 class="lt-wstep-title">{{#str}} pictures_title, mod_ailanguageteacher {{/str}}</h3>
+        <p class="lt-mini mb-0">{{#str}} pictures_intro, mod_ailanguageteacher {{/str}}</p>
+    </div>
+    {{/pictures}}
+
+    {{#voicesstep}}
+    <div class="lt-wstep">
+        <h3 class="lt-wstep-title">{{#str}} voices_title, mod_ailanguageteacher {{/str}}</h3>
+        {{#canvoice}}
+        <p class="lt-mini">{{#str}} voices_intro, mod_ailanguageteacher {{/str}}</p>
+        <form method="post" action="{{voiceaction}}" class="lt-voicepick">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="action" value="voice">
+            <label for="lt-voice"><strong>{{#str}} voices_choose, mod_ailanguageteacher {{/str}}</strong></label>
+            <select id="lt-voice" name="voice" class="custom-select form-select" data-region="voice">
+                {{#voicelist}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/voicelist}}
+            </select>
+            <button type="submit" class="lt-btn lt-btn-ghost lt-btn-sm">{{#str}} voices_save, mod_ailanguageteacher {{/str}}</button>
+        </form>
+        {{#missingvoices}}
+        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" data-phrases="{{missingvoiceids}}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
+            <span>{{#str}} voices_createall, mod_ailanguageteacher, { "count": {{missingvoices}}, "credits": {{missingvoicecredits}} } {{/str}}</span>
+        </button>
+        {{/missingvoices}}
+        {{^missingvoices}}<p class="lt-ok mb-0">{{#str}} voices_alldone, mod_ailanguageteacher {{/str}}</p>{{/missingvoices}}
+        {{/canvoice}}
+        {{#novoiceservice}}<p class="lt-note mb-0">{{#str}} voices_none, mod_ailanguageteacher {{/str}}</p>{{/novoiceservice}}
+    </div>
+    {{/voicesstep}}
+
+    {{#check}}
+    <div class="lt-wstep">
+        <h3 class="lt-wstep-title">{{#str}} check_title, mod_ailanguageteacher {{/str}}</h3>
+        <p class="lt-mini mb-0">{{#str}} check_intro, mod_ailanguageteacher {{/str}}</p>
+    </div>
+    {{/check}}
+
     {{^hasscenes}}<p class="lt-note">{{#str}} noscenesyet, mod_ailanguageteacher {{/str}}</p>{{/hasscenes}}
     {{#groups}}
     <h3 class="lt-group-title">{{name}}</h3>
     <div class="lt-slides-grid">
         {{#cards}}
         <div class="lt-slidecard" data-scene="{{id}}">
-            <a class="lt-slidecard-thumb" href="{{editurl}}">
+            <div class="lt-slidecard-thumb">
                 {{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}
                 {{#noimage}}<span class="lt-slidecard-noimage">{{#str}} noimageyet, mod_ailanguageteacher {{/str}}</span>{{/noimage}}
                 <span class="lt-slidecard-no">{{#str}} scenex, mod_ailanguageteacher, {{number}} {{/str}}</span>
-            </a>
+            </div>
             <div class="lt-slidecard-body">
                 <h4 class="lt-slidecard-title">{{title}}</h4>
-                <div class="lt-slidecard-meta {{^ready}}is-warn{{/ready}}">
+                {{#pictures}}
+                <div class="lt-slidecard-meta {{#noimage}}is-warn{{/noimage}}">{{#noimage}}{{#str}} sceneneedsimage, mod_ailanguageteacher {{/str}}{{/noimage}}{{^noimage}}{{#str}} scenehasimage, mod_ailanguageteacher {{/str}}{{/noimage}}</div>
+                <a class="lt-btn {{#noimage}}lt-btn-primary{{/noimage}}{{^noimage}}lt-btn-ghost{{/noimage}} lt-btn-sm w-100" href="{{replaceurl}}">{{#noimage}}{{#str}} uploadownimage, mod_ailanguageteacher {{/str}}{{/noimage}}{{^noimage}}{{#str}} replaceownimage, mod_ailanguageteacher {{/str}}{{/noimage}}</a>
+                {{/pictures}}
+                {{#voicesstep}}
+                <ul class="lt-voicelist">
+                    {{#voices}}<li class="{{^hasvoice}}is-warn{{/hasvoice}}" data-phrase="{{id}}"><span>{{text}}</span> <span class="lt-mini">{{#hasvoice}}{{#str}} voice_ready, mod_ailanguageteacher {{/str}}{{/hasvoice}}{{^hasvoice}}{{#str}} voice_missing, mod_ailanguageteacher {{/str}}{{/hasvoice}}</span></li>{{/voices}}
+                </ul>
+                {{/voicesstep}}
+                {{#check}}
+                <div class="lt-slidecard-meta {{^placedok}}is-warn{{/placedok}}">
                     {{#str}} phrasesummary, mod_ailanguageteacher, { "phrases": {{phrases}}, "placed": {{placed}} } {{/str}}
                 </div>
                 <div class="lt-slidecard-actions">
-                    <a class="lt-btn lt-btn-primary lt-btn-sm" href="{{editurl}}">{{#str}} editphrases, mod_ailanguageteacher {{/str}}</a>
+                    <a class="lt-btn {{^placedok}}lt-btn-primary{{/placedok}}{{#placedok}}lt-btn-ghost{{/placedok}} lt-btn-sm" href="{{editurl}}">{{#str}} editphrases, mod_ailanguageteacher {{/str}}</a>
                     {{#upurl}}<a class="lt-iconbtn" href="{{upurl}}" title="{{#str}} moveleft, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} moveleft, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></a>{{/upurl}}
                     {{#downurl}}<a class="lt-iconbtn" href="{{downurl}}" title="{{#str}} moveright, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} moveright, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>{{/downurl}}
-                    <a class="lt-iconbtn" href="{{replaceurl}}" title="{{#str}} uploadimage, mod_ailanguageteacher {{/str}}" aria-label="{{#str}} uploadimage, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M8 15l3-3 2 2 3-3"/></svg></a>
                     <a class="lt-iconbtn" href="{{deleteurl}}" title="{{#str}} delete {{/str}}" aria-label="{{#str}} delete {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></a>
                 </div>
-                <details class="lt-imagehelp">
-                    <summary>{{#str}} imagehelp, mod_ailanguageteacher {{/str}}</summary>
-                    {{#canai}}
-                    <button type="button" class="lt-btn lt-btn-primary lt-btn-sm w-100" data-action="genimage" data-scene="{{id}}">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
-                        <span>{{#str}} generateimage, mod_ailanguageteacher {{/str}}</span>
-                    </button>
-                    {{/canai}}
-                    <p class="lt-mini">{{#str}} imageprompt_help, mod_ailanguageteacher {{/str}}</p>
-                    <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm lt-copy" data-target="#lt-prompt-{{id}}" data-done="{{#str}} copied, mod_ailanguageteacher {{/str}}">
-                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
-                        <span>{{#str}} copyimageprompt, mod_ailanguageteacher {{/str}}</span>
-                    </button>
-                    <textarea id="lt-prompt-{{id}}" class="lt-textarea lt-prompt-text" readonly rows="6" aria-label="{{#str}} copyimageprompt, mod_ailanguageteacher {{/str}}">{{imageprompt}}</textarea>
-                </details>
+                {{/check}}
             </div>
         </div>
         {{/cards}}
     </div>
     {{/groups}}
 
-    <div class="lt-panel">
-        <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg>{{#str}} addscenes, mod_ailanguageteacher {{/str}}</h4>
-        <p class="lt-mini">{{#str}} addscenes_help, mod_ailanguageteacher {{/str}}</p>
-        <div class="lt-tips">
-            <div class="lt-tips-head">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 9h18M8 5v4"/></svg>
-                <strong>{{#str}} imagetips_title, mod_ailanguageteacher {{/str}}</strong>
-            </div>
-            <ul>
-                <li>{{#str}} imagetip_size, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} imagetip_people, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} imagetip_notext, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} imagetip_space, mod_ailanguageteacher {{/str}}</li>
-                <li>{{#str}} imagetip_moment, mod_ailanguageteacher, {{maxphrases}} {{/str}}</li>
-                <li>{{#str}} imagetip_culture, mod_ailanguageteacher, {{country}} {{/str}}</li>
-            </ul>
-        </div>
-        {{{addform}}}
-    </div>
+    {{> mod_ailanguageteacher/setup_nav}}
 </div>

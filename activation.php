@@ -15,11 +15,11 @@
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * AI Language Teacher activation (administrators only): access check and one-time unlock with LMS Labs credits.
+ * AI Language Teacher activation actions (administrators only). The panel itself is in the plugin settings page.
  *
- * GET shows the stored access state and the live release price (no credits are spent on page load).
- * Every action is a POST with sesskey: check (free), review (free: shows the confirmation), unlock (spends credits,
- * only with confirm=1 and the exact price and release the administrator saw).
+ * Every action is a POST with sesskey and returns to the settings page: check (free), review (free: shows the
+ * confirmation with the live price), unlock (spends credits, only with confirm=1 and the exact price and release the
+ * administrator saw). A GET without an action goes to the settings page; nothing is ever bought on page load.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -33,12 +33,17 @@ use mod_ailanguageteacher\local\unlock;
 use mod_ailanguageteacher\local\credentials;
 
 require_login();
-admin_externalpage_setup('mod_ailanguageteacher_activation');
 require_capability('moodle/site:config', context_system::instance());
-
-$action = optional_param('action', '', PARAM_ALPHA);
-$pageurl = new moodle_url('/mod/ailanguageteacher/activation.php');
-$PAGE->set_url($pageurl);
+// The buttons in the settings page send the action as their own value ("action" is taken by the settings form).
+$action = optional_param('activationaction', '', PARAM_ALPHA) ?: optional_param('action', '', PARAM_ALPHA);
+$pageurl = new moodle_url('/admin/settings.php', ['section' => 'modsettingailanguageteacher']);
+$PAGE->set_context(context_system::instance());
+$PAGE->set_url(new moodle_url('/mod/ailanguageteacher/activation.php'));
+$PAGE->set_pagelayout('admin');
+$PAGE->set_title(get_string('activation', 'mod_ailanguageteacher'));
+if (!in_array($action, ['check', 'review', 'unlock'], true)) {
+    redirect($pageurl);
+}
 $str = fn($k, $a = null) => get_string($k, 'mod_ailanguageteacher', $a);
 
 if ($action !== '') {
@@ -49,12 +54,7 @@ if ($action !== '') {
     require_sesskey();
 }
 
-/**
- * A balance for display.
- *
- * @param array $state
- * @return string
- */
+// A balance for display.
 $balancetext = function (array $state) use ($str): string {
     if (!empty($state['unlimited'])) {
         return $str('act_balance_unlimited');
@@ -63,12 +63,7 @@ $balancetext = function (array $state) use ($str): string {
         : $str('act_balance_unknown');
 };
 
-/**
- * A readable error (never contains request data).
- *
- * @param string $error
- * @return string
- */
+// A readable error (never contains request data).
 $errortext = function (string $error) use ($str): string {
     if ($error === 'nocredentials' || $error === 'network') {
         return $str('act_err_' . $error);
@@ -76,27 +71,19 @@ $errortext = function (string $error) use ($str): string {
     return $error;
 };
 
-/**
- * Why unlocking is not offered.
- *
- * @param string $blocked
- * @param array $state
- * @param array $release
- * @return string
- */
-$blockedtext = function (string $blocked, array $state, array $release) use ($str): string {
-    return $str('act_blocked_' . $blocked);
-};
-
-/**
- * Why the release/price is not confirmed.
- *
- * @param array $release
- * @return string
- */
+// Why the release/price is not confirmed.
 $reasontext = function (array $release) use ($str): string {
     $a = $release['reason'] === 'mode' ? $release['mode'] : $release['availability'];
     return $str('act_reason_' . $release['reason'], s($a !== '' ? $a : '-'));
+};
+
+// Why unlocking is not offered (with the catalogue reason when the release or price is not confirmed).
+$blockedtext = function (string $blocked, array $state, array $release) use ($str, $reasontext): string {
+    $text = $str('act_blocked_' . $blocked);
+    if ($blocked === 'release' && !empty($release['reason'])) {
+        $text .= ' ' . $str('act_price_unavailable', $reasontext($release));
+    }
+    return $text;
 };
 
 if ($action === 'check') {
@@ -188,17 +175,21 @@ if ($action === 'review') {
     // Free: a fresh access check and the live price. Nothing is bought here.
     $r = unlock::review();
     if (!$r['canbuy']) {
-        echo $OUTPUT->notification($str('act_msg_blocked', $blockedtext($r['blocked'], $r['state'], $r['release'])),
-            \core\output\notification::NOTIFY_WARNING);
+        echo $OUTPUT->notification(
+            $str('act_msg_blocked', $blockedtext($r['blocked'], $r['state'], $r['release'])),
+            \core\output\notification::NOTIFY_WARNING
+        );
         echo $OUTPUT->continue_button($pageurl);
         echo $OUTPUT->footer();
         exit;
     }
     $release = $r['release'];
-    $confirmurl = new moodle_url($pageurl, ['action' => 'unlock', 'confirm' => 1, 'expected' => $release['price'],
-        'sha' => $release['sha']]);
-    $warning = $r['warning'] === 'insufficient' ? ' ' . $str('act_warn_insufficient',
-        ['price' => $release['price'], 'balance' => $balancetext($r['state'])]) : '';
+    $confirmurl = new moodle_url('/mod/ailanguageteacher/activation.php', ['action' => 'unlock', 'confirm' => 1,
+        'expected' => $release['price'], 'sha' => $release['sha']]);
+    $warning = $r['warning'] === 'insufficient' ? ' ' . $str(
+        'act_warn_insufficient',
+        ['price' => $release['price'], 'balance' => $balancetext($r['state'])]
+    ) : '';
     $message = $str('act_confirm', [
         'price' => $release['price'],
         'balance' => $balancetext($r['state']),
@@ -212,89 +203,3 @@ if ($action === 'review') {
     echo $OUTPUT->footer();
     exit;
 }
-
-// Status page (GET): stored access state + live release price. No credits are spent here.
-$source = credentials::source();
-$state = unlock::state();
-$release = unlock::release();
-$pending = unlock::pending();
-
-echo html_writer::tag('p', $str('act_intro'));
-echo $OUTPUT->notification($str('act_notproof'), \core\output\notification::NOTIFY_INFO, false);
-
-$table = new html_table();
-$table->attributes['class'] = 'generaltable activation';
-$sourcecell = s($str('act_source_' . $source));
-if (credentials::central_installed()) {
-    $sourcecell .= ' ' . html_writer::link(new moodle_url('/admin/settings.php', ['section' => 'local_aiconfig']),
-        $str('act_configurecentral'));
-} else {
-    $sourcecell .= ' ' . html_writer::span(s($str('act_nocentral')), 'text-muted');
-}
-$sourcecell .= ' ' . html_writer::link(new moodle_url('/admin/settings.php', ['section' => 'modsettingailanguageteacher']),
-    $str('act_configurelocal'));
-
-$accesscell = html_writer::tag('strong', s($str('act_status_' . $state['status'])));
-$details = [];
-if (!empty($state['checkedat'])) {
-    $details[] = $str('act_checkedat', userdate($state['checkedat']));
-}
-if (!empty($state['unlockedat'])) {
-    $details[] = $str('act_unlockedat', userdate($state['unlockedat']));
-}
-if (!empty($state['source'])) {
-    $details[] = $str('act_entitlementsource', s($state['source']));
-}
-if ($state['status'] === 'unknown' && !empty($state['error'])) {
-    $details[] = $errortext($state['error']);
-}
-if ($details) {
-    $accesscell .= html_writer::div(s(implode(' · ', $details)), 'text-muted small');
-}
-
-if ($release['ok']) {
-    $pricecell = html_writer::tag('strong', s($str('act_price_live', $release['price'])))
-        . html_writer::div(s($str('act_release', ['version' => $release['version'] !== '' ? $release['version'] : '-',
-            'sha' => $release['sha']])), 'text-muted small');
-} else {
-    $pricecell = s($str('act_price_unavailable', $reasontext($release)));
-}
-
-$table->data = [
-    [$str('act_source'), $sourcecell],
-    [$str('act_access'), $accesscell],
-    [$str('act_balance'), s($balancetext($state))],
-    [$str('act_price'), $pricecell],
-];
-echo html_writer::table($table);
-
-if ($pending) {
-    echo $OUTPUT->notification($str('act_pendingnote', userdate($pending['time'])) . ' ' . $str('act_blocked_pending'),
-        \core\output\notification::NOTIFY_WARNING, false);
-}
-
-// Why "Unlock" is not available right now (the review step checks again before anything is bought).
-$blocked = '';
-if ($source === 'missing') {
-    $blocked = 'nocredentials';
-} else if ($pending) {
-    $blocked = 'pending';
-} else if ($state['status'] === 'unlocked') {
-    $blocked = 'unlocked';
-} else if (!$release['ok']) {
-    $blocked = 'release';
-}
-
-$check = new single_button(new moodle_url($pageurl, ['action' => 'check']), $str('act_check'), 'post');
-$check->disabled = $source === 'missing';
-$buy = new single_button(new moodle_url($pageurl, ['action' => 'review']), $str('act_unlock'), 'post',
-    single_button::BUTTON_PRIMARY);
-$buy->disabled = $blocked !== '';
-echo html_writer::div($OUTPUT->render($check) . ' ' . $OUTPUT->render($buy), 'd-flex gap-2 activation-actions');
-if ($blocked !== '') {
-    echo html_writer::div(s($blockedtext($blocked, $state, $release)), 'text-muted mt-2');
-} else if ($release['ok'] && unlock::low($state, (int)$release['price'])) {
-    echo html_writer::div(s($str('act_warn_insufficient', ['price' => $release['price'],
-        'balance' => $balancetext($state)])), 'text-warning mt-2');
-}
-echo $OUTPUT->footer();
