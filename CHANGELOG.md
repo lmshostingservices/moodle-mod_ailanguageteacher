@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.7] - 2026-10-11
+
+### Changed
+
+- **No voice is made while its price is unknown.** When the LMS Labs voice list does not publish a price per voice (`tariff.tts`), Moodle now waits as it does for a different price, instead of going ahead: a voice sent without a ceiling to an older LMS Labs could cost more than the teacher was shown (LMS Labs' recommendation of 11 Oct 2026). LMS Labs publishes `tariff.tts: 2` in development.
+
 ## [v1.3.6] - 2026-10-11
 
 ### Changed

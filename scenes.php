@@ -239,7 +239,7 @@ $PAGE->requires->js_call_amd('mod_ailanguageteacher/scenes', 'init', ['#lt-scene
 
 // LMS Labs still publishes another price per voice: nothing new is made until it publishes the approved one.
 $held = \mod_ailanguageteacher\local\audio::price_hold();
-$pricehold = $held === null ? '' : get_string('voices_pricehold', 'mod_ailanguageteacher', [
+$pricehold = $held === null ? '' : get_string($held ? 'voices_pricehold' : 'voices_priceunknown', 'mod_ailanguageteacher', [
     'published' => $held,
     'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
 ]);

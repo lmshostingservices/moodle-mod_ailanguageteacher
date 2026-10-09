@@ -107,16 +107,18 @@ class audio {
     }
 
     /**
-     * The price LMS Labs publishes per voice when it differs from the approved price, or null when it matches (or
-     * LMS Labs publishes none). While it differs, no new voice is asked for: the teacher would be charged a price
-     * they were not shown.
+     * Why no new voice may be asked for: the price LMS Labs publishes per voice when it differs from the approved
+     * price, 0 when LMS Labs publishes no price (it is then unknown, and a voice sent without a ceiling could cost
+     * more), or null when it publishes the approved price. The teacher is never charged a price they were not shown.
      *
      * @return int|null
      */
     public static function price_hold(): ?int {
         $price = (string)get_config('mod_ailanguageteacher', 'speechprice');
-        return $price !== '' && (int)$price !== \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS
-            ? (int)$price : null;
+        if ($price === '' || !ctype_digit($price)) {
+            return 0;
+        }
+        return (int)$price !== \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS ? (int)$price : null;
     }
 
     /**
@@ -347,8 +349,13 @@ class audio {
             if ($op === null) {
                 // A new voice is asked for only at the approved price (an unresolved one is still asked about).
                 if (($published = self::price_hold()) !== null) {
-                    throw new \moodle_exception('voices_pricehold', 'mod_ailanguageteacher', '', ['published' => $published,
-                        'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS]);
+                    throw new \moodle_exception(
+                        $published ? 'voices_pricehold' : 'voices_priceunknown',
+                        'mod_ailanguageteacher',
+                        '',
+                        ['published' => $published,
+                        'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS]
+                    );
                 }
                 $op = operation::claim((int)$instance->id, $userid, 'tts', $itemid, $body);
             }

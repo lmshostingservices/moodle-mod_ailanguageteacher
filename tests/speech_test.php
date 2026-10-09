@@ -92,6 +92,8 @@ final class speech_test extends \advanced_testcase {
      * @return object
      */
     protected function fake(array $reply = []): object {
+        // LMS Labs has published the approved price per voice (otherwise no voice is made).
+        set_config('speechprice', (string)\mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS, 'mod_ailanguageteacher');
         $this->fake = new class ($reply) implements service {
             /** @var array calls made */
             public $calls = ['tts' => [], 'stt' => []];

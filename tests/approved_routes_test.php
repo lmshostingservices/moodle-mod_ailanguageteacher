@@ -62,7 +62,7 @@ final class approved_routes_test extends \advanced_testcase {
             if (str_ends_with($url, '/capabilities')) {
                 return [200, json_encode(['locales' => [
                     ['locale' => 'en-AU', 'voices' => [['name' => 'en-AU-Chirp3-HD-Kore']]],
-                ]]), []];
+                ], 'tariff' => ['tts' => 2]]), []];
             }
             if (str_ends_with($url, '/speech/tts')) {
                 return [410, '{"error":"RESULT_NOT_RETAINED","requestId":"fixture"}', []];

@@ -205,6 +205,18 @@ final class remakes_test extends \advanced_testcase {
             $this->assertSame('voices_pricehold', $e->errorcode);
         }
         $this->assertSame([], $this->sent);
+        // No published price: unknown, so nothing new is made either.
+        $tariff = null;
+        \cache::make('mod_ailanguageteacher', 'speechcatalog')->purge();
+        (new \mod_ailanguageteacher\local\speech\lmslabs())->capabilities();
+        $this->assertSame(0, audio::price_hold());
+        try {
+            audio::create($instance, $context, $phrase, 'normal', (int)$teacher->id, 'en-AU-Chirp3-HD-Kore');
+            $this->fail('No voice may be made while its price is unknown.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('voices_priceunknown', $e->errorcode);
+        }
+        $this->assertSame([], $this->sent);
         // A request stored by 1.3.5 with a ceiling of 5 is still found and asked about unchanged.
         $old = ['text' => 'Good morning', 'locale' => 'en-AU', 'speed' => 'normal', 'voice' => 'en-AU-Chirp3-HD-Kore',
             'clipRef' => audio::clipref($instance, $phrase, 'normal'), 'maxCredits' => 5];

@@ -896,6 +896,7 @@ $string['voice_ready'] = 'voice ready';
 $string['voices_alldone'] = 'Every phrase has a voice.';
 $string['voices_choose'] = 'Voice';
 $string['voices_pricehold'] = 'Voices are waiting for LMS Labs: it still charges {$a->published} credits per voice, and the approved price is {$a->approved}. No voice is made until LMS Labs charges {$a->approved}, so you are never charged a price you were not shown. Voices already made keep playing.';
+$string['voices_priceunknown'] = 'Voices are waiting for LMS Labs: its voice list does not say what a voice costs, and the approved price is {$a->approved} credits. No voice is made until LMS Labs publishes its price, so you are never charged a price you were not shown. Voices already made keep playing.';
 $string['voices_busy'] = 'The voices are being made. Wait until they finish.';
 $string['voices_confirm'] = 'Create {$a->count} phrase voices? LMS Labs charges 2 credits for each voice it creates, up to {$a->credits} credits. They are made one after another and saved in Moodle.';
 $string['voices_createall'] = 'Create missing voices: {$a->count} ({$a->credits} credits)';
