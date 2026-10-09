@@ -60,7 +60,8 @@ class lmslabs implements service {
         }
         $cache = \cache::make('mod_ailanguageteacher', 'speechcatalog');
         $credentials = \mod_ailanguageteacher\local\credentials::find();
-        $key = sha1((string)($credentials['siteid'] ?? ''));
+        // The key names the catalogue format: a new format (1.3.3: the tariff) is read again, never a stale copy.
+        $key = sha1('tariff|' . (string)($credentials['siteid'] ?? ''));
         $cached = $cache->get($key);
         if (is_array($cached) && ($cached['time'] ?? 0) > time() - ($cached['locales'] ? self::CATALOG_TTL : self::CATALOG_RETRY)) {
             if (!$cached['locales']) {

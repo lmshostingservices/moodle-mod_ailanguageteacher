@@ -86,8 +86,8 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2026101001, 'ailanguageteacher');
     }
     if ($oldversion < 2026101003) {
-        // Free voice remakes: read the voice catalogue again so its tariff (clipRefSupported) is known.
-        \cache_helper::purge_by_definition('mod_ailanguageteacher', 'speechcatalog');
+        // Free voice remakes: the voice catalogue is read again (its cache key changed) so its tariff is known.
+        // Caches are never touched here: during an upgrade a cache definition may not be registered yet.
         unset_config('speechremakes', 'mod_ailanguageteacher');
         upgrade_mod_savepoint(true, 2026101003, 'ailanguageteacher');
     }

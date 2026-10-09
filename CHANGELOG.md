@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.4] - 2026-10-11
+
+### Fixed
+
+- The upgrade no longer purges a cache. On some sites (seen on Moodle 4.4) the voice catalogue cache could not be purged during the web upgrade, which stopped the upgrade with an error. The catalogue is now read again because its cache key changed. A site whose upgrade stopped can simply run the upgrade again with this version.
+
 ## [v1.3.3] - 2026-10-11
 
 Follows the LMS Labs response of 9 Oct 2026 on free voice remakes (approved by Jamie: 10 free remakes per voice in a rolling 30 days).
