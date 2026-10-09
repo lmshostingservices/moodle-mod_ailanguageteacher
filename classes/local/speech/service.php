@@ -70,7 +70,7 @@ interface service {
      * @param string $speed 'normal' or 'slow'
      * @param string $idemkey idempotency key for this operation
      * @param string|null $clipref the voice's place, for free remakes (sent with $maxcredits only)
-     * @param int|null $maxcredits the most the teacher confirmed: 0 or 5
+     * @param int|null $maxcredits the most the teacher confirmed: 0 or the price per voice
      * @return array ['audio' => bytes, 'mimetype' => string, 'requestid' => string]
      */
     public function synthesise(

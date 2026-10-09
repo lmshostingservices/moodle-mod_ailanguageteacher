@@ -53,8 +53,8 @@ final class remakes_test extends \advanced_testcase {
         remote::$transport = function ($url, $headers, $body) {
             if (str_ends_with($url, '/capabilities')) {
                 return [200, json_encode(['locales' => [['locale' => 'en-AU', 'voices' => [['name' => 'en-AU-Chirp3-HD-Kore']]]],
-                    'tariff' => $this->supported ? ['tts' => 5, 'ttsRemake' => 0, 'ttsRemakeLimit' => 10,
-                    'ttsRemakeWindowDays' => 30, 'clipRefSupported' => true, 'maxCreditsRequired' => true] : ['tts' => 5]]), []];
+                    'tariff' => $this->supported ? ['tts' => 2, 'ttsRemake' => 0, 'ttsRemakeLimit' => 10,
+                    'ttsRemakeWindowDays' => 30, 'clipRefSupported' => true, 'maxCreditsRequired' => true] : ['tts' => 2]]), []];
             }
             $this->sent[] = ['url' => $url, 'body' => json_decode((string)$body, true), 'headers' => $headers];
             if (str_ends_with($url, '/speech/quote')) {
@@ -110,13 +110,13 @@ final class remakes_test extends \advanced_testcase {
         [$instance, $context, $phrase, $teacher] = $this->activity();
         (new \mod_ailanguageteacher\local\speech\lmslabs())->capabilities();
         $this->assertSame(['limit' => 10, 'days' => 30], audio::remakes());
-        $this->answers = [$this->mp3(5)];
+        $this->answers = [$this->mp3(2)];
         $url = audio::create($instance, $context, $phrase, 'normal', (int)$teacher->id, 'en-AU-Chirp3-HD-Kore');
         $this->assertNotSame('', $url);
         $first = end($this->sent)['body'];
         $this->assertSame(['text', 'locale', 'speed', 'voice', 'clipRef', 'maxCredits'], array_keys($first));
         $this->assertMatchesRegularExpression('/^[0-9a-f]{64}$/', $first['clipRef']);
-        $this->assertSame(5, $first['maxCredits']);
+        $this->assertSame(2, $first['maxCredits']);
         // The made voice is found again (its stored request had a clip reference).
         $this->assertSame($url, audio::existing_url($instance, $context, $phrase, 'normal'));
         // The phrase changes: same place, free price, sent with a ceiling of 0.
@@ -171,10 +171,48 @@ final class remakes_test extends \advanced_testcase {
         $this->supported = false;
         (new \mod_ailanguageteacher\local\speech\lmslabs())->capabilities();
         $this->assertNull(audio::remakes());
-        $this->assertSame(5, audio::quote($instance, $phrase, 'normal'));
+        $this->assertSame(2, audio::quote($instance, $phrase, 'normal'));
         $this->answers = [$this->mp3(5)];
         audio::create($instance, $context, $phrase, 'normal', (int)$teacher->id, 'en-AU-Chirp3-HD-Kore', false, 0);
         $this->assertSame(['text', 'locale', 'speed', 'voice'], array_keys(end($this->sent)['body']));
         $this->assertCount(1, $this->sent);
+    }
+
+    /**
+     * While LMS Labs publishes another price per voice than the approved 2 credits, no new voice is asked for; a
+     * voice asked for before (stored with the old ceiling of 5) is still asked about with exactly its old body.
+     */
+    public function test_price_hold(): void {
+        global $DB;
+        [$instance, $context, $phrase, $teacher] = $this->activity();
+        $this->assertSame(2, \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS);
+        $this->supported = true;
+        $tariff = 5;
+        remote::$transport = function ($url, $headers, $body) use (&$tariff) {
+            if (str_ends_with($url, '/capabilities')) {
+                return [200, json_encode(['locales' => [['locale' => 'en-AU', 'voices' => [['name' => 'en-AU-Chirp3-HD-Kore']]]],
+                    'tariff' => ['tts' => $tariff, 'clipRefSupported' => true, 'maxCreditsRequired' => true]]), []];
+            }
+            $this->sent[] = ['url' => $url, 'body' => json_decode((string)$body, true), 'headers' => $headers];
+            return array_shift($this->answers);
+        };
+        (new \mod_ailanguageteacher\local\speech\lmslabs())->capabilities();
+        $this->assertSame(5, audio::price_hold());
+        try {
+            audio::create($instance, $context, $phrase, 'normal', (int)$teacher->id, 'en-AU-Chirp3-HD-Kore');
+            $this->fail('No voice may be made at a price the teacher was not shown.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('voices_pricehold', $e->errorcode);
+        }
+        $this->assertSame([], $this->sent);
+        // A request stored by 1.3.5 with a ceiling of 5 is still found and asked about unchanged.
+        $old = ['text' => 'Good morning', 'locale' => 'en-AU', 'speed' => 'normal', 'voice' => 'en-AU-Chirp3-HD-Kore',
+            'clipRef' => audio::clipref($instance, $phrase, 'normal'), 'maxCredits' => 5];
+        $claim = operation::claim((int)$instance->id, (int)$teacher->id, 'tts', (int)$phrase->id * 3, $old);
+        $this->answers = [$this->mp3(5)];
+        audio::create($instance, $context, $phrase, 'normal', (int)$teacher->id, 'en-AU-Chirp3-HD-Kore');
+        $this->assertSame($old, end($this->sent)['body']);
+        $this->assertContains('Idempotency-Key: ' . $claim->idemkey, end($this->sent)['headers']);
+        $this->assertSame('complete', $DB->get_field('ailanguageteacher_operation', 'state', ['id' => $claim->id]));
     }
 }

@@ -29,7 +29,7 @@ use core_external\external_value;
 use mod_ailanguageteacher\local\audio;
 
 /**
- * Creates one phrase voice with LMS Labs (5 credits when delivered). Teachers only, always an explicit action.
+ * Creates one phrase voice with LMS Labs (2 credits when LMS Labs creates it). Teachers only, always an explicit action.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -54,9 +54,9 @@ class create_audio extends base {
             ),
             'maxcredits' => new external_value(
                 PARAM_INT,
-                'The most the teacher confirmed for this voice (0 or 5)',
+                'The most the teacher confirmed for this voice (0 or the price per voice)',
                 VALUE_DEFAULT,
-                5
+                \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS
             ),
         ]);
     }
@@ -68,7 +68,7 @@ class create_audio extends base {
      * @param string $voice exact catalogue voice name
      * @param string $variant normal, slow or example
      * @param bool $discard the teacher confirmed abandoning an unfinished request
-     * @param int $maxcredits the most the teacher confirmed (0 or 5)
+     * @param int $maxcredits the most the teacher confirmed (0 or the price per voice)
      * @return array
      */
     public static function execute(
@@ -76,7 +76,7 @@ class create_audio extends base {
         string $voice,
         string $variant,
         bool $discard = false,
-        int $maxcredits = 5
+        int $maxcredits = \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS
     ): array {
         global $USER;
         self::validate_parameters(

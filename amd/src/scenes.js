@@ -26,6 +26,36 @@ import Notification from 'core/notification';
 import {loadStrings, fmt} from 'mod_ailanguageteacher/ui';
 
 /**
+ * Blocks Back, Next and the other set-up links while voices are being made (leaving would stop the run), and asks
+ * before the page is closed. The links look disabled, and clicks on them do nothing.
+ *
+ * @param {boolean} on
+ * @param {string} busytext
+ */
+const lockNav = (on, busytext = '') => {
+    document.querySelectorAll('.lt-setupnav a, .lt-setupnav button').forEach((link) => {
+        link.classList.toggle('is-busy', on);
+        if (on) {
+            link.setAttribute('aria-disabled', 'true');
+            link.setAttribute('tabindex', '-1');
+            link.dataset.ltTitle = link.getAttribute('title') || '';
+            link.setAttribute('title', busytext);
+        } else {
+            link.removeAttribute('aria-disabled');
+            link.removeAttribute('tabindex');
+            link.setAttribute('title', link.dataset.ltTitle || '');
+        }
+    });
+    window.onbeforeunload = on ? () => busytext : null;
+};
+document.addEventListener('click', (e) => {
+    if (e.target.closest('.lt-setupnav [aria-disabled="true"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+}, true);
+
+/**
  * Initialises the page.
  *
  * @param {string} selector
@@ -41,7 +71,7 @@ export const init = async(selector) => {
     }
     const S = await loadStrings(['confirm_title', 'confirm_create', 'voices_confirm', 'voices_progress',
         'discard_confirm', 'voices_quoting', 'voices_confirm_head', 'voices_confirm_headone', 'voices_confirm_new',
-        'voices_confirm_newone', 'voices_confirm_free', 'voices_confirm_freeone', 'voices_confirm_note']);
+        'voices_confirm_newone', 'voices_confirm_free', 'voices_confirm_freeone', 'voices_confirm_note', 'voices_busy']);
     const confirm = (question) => new Promise((resolve) => {
         Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
     });
@@ -87,6 +117,7 @@ export const init = async(selector) => {
         const label = all.querySelector('span');
         const original = label.textContent;
         all.disabled = true;
+        lockNav(true, S.voices_busy);
         let made = 0;
         try {
             // One after another; the run stops at the first voice that is not delivered (nothing is retried).
@@ -106,11 +137,13 @@ export const init = async(selector) => {
                 made++;
             }
         } catch (err) {
+            lockNav(false);
             all.disabled = false;
             label.textContent = original;
             Notification.exception(err);
             return;
         }
+        lockNav(false);
         window.location.reload();
     });
 };

@@ -540,11 +540,11 @@ class Editor {
                 // The activity's voice (chosen in the Voices step), or the first voice LMS Labs offers.
                 const voice = catalog.voices.includes(this.cfg.voice) ? this.cfg.voice : catalog.voices[0];
                 // With free remakes, the voice's current price comes first (free) and is its ceiling.
-                let maxcredits = 5;
+                let maxcredits = this.cfg.voicecredits;
                 if (this.cfg.remakes) {
                     const quote = await Ajax.call([{methodname: 'mod_ailanguageteacher_quote_audio',
                         args: {phraseids: [phrase.id], variant: 'normal'}}])[0];
-                    maxcredits = quote.length && quote[0].credits === 0 ? 0 : 5;
+                    maxcredits = quote.length && quote[0].credits === 0 ? 0 : this.cfg.voicecredits;
                 }
                 const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title,
                     maxcredits === 0 ? S.voice_confirm_free : S.voice_confirm,

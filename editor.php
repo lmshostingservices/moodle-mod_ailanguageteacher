@@ -93,6 +93,7 @@ $data += [
     'hasservicetts' => audio::has_service_tts($instance->targetlocale),
     'voice' => (string)$instance->ttsvoice,
     'remakes' => audio::remakes() !== null,
+    'voicecredits' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
     'canrecord' => true,
     'targetname' => languages::name($instance->targetlang),
     'supportname' => languages::name($instance->supportlang),

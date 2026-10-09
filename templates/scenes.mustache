@@ -69,7 +69,8 @@
         </form>
         <p class="lt-mini">{{#str}} voices_match_help, mod_ailanguageteacher {{/str}}</p>
         {{#missingvoices}}
-        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" data-phrases="{{missingvoiceids}}" data-credits="{{voicecredits}}" data-remakes="{{remakes}}">
+        {{#pricehold}}<p class="lt-note lt-pricehold mt-3" role="status">{{pricehold}}</p>{{/pricehold}}
+        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" {{#pricehold}}disabled {{/pricehold}}data-phrases="{{missingvoiceids}}" data-credits="{{voicecredits}}" data-remakes="{{remakes}}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
             <span>{{#remakes}}{{#str}} voices_createall_remakes, mod_ailanguageteacher, {{missingvoices}} {{/str}}{{/remakes}}{{^remakes}}{{#str}} voices_createall, mod_ailanguageteacher, { "count": {{missingvoices}}, "credits": {{missingvoicecredits}} } {{/str}}{{/remakes}}</span>
         </button>

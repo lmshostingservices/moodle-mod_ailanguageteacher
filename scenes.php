@@ -237,6 +237,12 @@ if ($step === setuppath::VOICES && $state['voices'] && has_capability('mod/ailan
 
 $PAGE->requires->js_call_amd('mod_ailanguageteacher/scenes', 'init', ['#lt-scenes']);
 
+// LMS Labs still publishes another price per voice: nothing new is made until it publishes the approved one.
+$held = \mod_ailanguageteacher\local\audio::price_hold();
+$pricehold = $held === null ? '' : get_string('voices_pricehold', 'mod_ailanguageteacher', [
+    'published' => $held,
+    'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
+]);
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
     'bar' => setuppath::bar($step),
@@ -261,6 +267,7 @@ echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
     'voicecredits' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
     // Free remakes (when LMS Labs supports them): each voice is priced before the teacher confirms.
     'remakes' => \mod_ailanguageteacher\local\audio::remakes() ? 1 : 0,
+    'pricehold' => $pricehold,
     'remakesline' => \mod_ailanguageteacher\local\audio::remakes()
         ? get_string('voices_remakes', 'mod_ailanguageteacher', (object)\mod_ailanguageteacher\local\audio::remakes()) : '',
     'nav' => [

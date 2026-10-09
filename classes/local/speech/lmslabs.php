@@ -35,8 +35,11 @@ class lmslabs implements service {
     /** @var string Free price check of one phrase voice (free remakes, 9 Oct 2026): {clipRef} -> {credits, ...}. */
     public const QUOTE_ROUTE = '/api/moodle/ai-language-teacher/speech/quote';
 
-    /** @var int Credits LMS Labs charges per delivered voice clip (owner-approved tariff, 8 Oct 2026; was 1). */
-    public const TTS_CREDITS = 5;
+    /** @var int Credits per voice clip (owner-approved 11 Oct 2026; was 5). LMS Labs must publish the same price. */
+    public const TTS_CREDITS = 2;
+
+    /** @var int[] Ceilings earlier versions may have stored in a request body (kept so those requests are found). */
+    public const OLD_CEILINGS = [5];
 
     /** @var array|null Live catalog for this PHP request. */
     private $catalog = null;
@@ -60,8 +63,9 @@ class lmslabs implements service {
         }
         $cache = \cache::make('mod_ailanguageteacher', 'speechcatalog');
         $credentials = \mod_ailanguageteacher\local\credentials::find();
-        // The key names the catalogue format: a new format (1.3.3: the tariff) is read again, never a stale copy.
-        $key = sha1('tariff|' . (string)($credentials['siteid'] ?? ''));
+        // The key names the catalogue format, so a new format is read again, never a stale copy (1.3.3: the tariff;
+        // 1.3.6: its price per voice).
+        $key = sha1('tariff2|' . (string)($credentials['siteid'] ?? ''));
         $cached = $cache->get($key);
         if (is_array($cached) && ($cached['time'] ?? 0) > time() - ($cached['locales'] ? self::CATALOG_TTL : self::CATALOG_RETRY)) {
             if (!$cached['locales']) {
@@ -84,6 +88,8 @@ class lmslabs implements service {
         // Free remakes are used only once LMS Labs says it takes clipRef and maxCredits (until then it refuses them).
         $tariff = is_array($data['tariff'] ?? null) ? $data['tariff'] : [];
         $remakes = !empty($tariff['clipRefSupported']) && !empty($tariff['maxCreditsRequired']);
+        // The price LMS Labs publishes per clip: new voices wait while it differs from the approved price.
+        set_config('speechprice', is_int($tariff['tts'] ?? null) ? (string)$tariff['tts'] : '', 'mod_ailanguageteacher');
         set_config('speechremakes', $remakes ? json_encode(['on' => 1, 'limit' => (int)($tariff['ttsRemakeLimit'] ?? 10),
             'days' => (int)($tariff['ttsRemakeWindowDays'] ?? 30)]) : '', 'mod_ailanguageteacher');
         return $this->catalog = $data['locales'];
@@ -222,7 +228,7 @@ class lmslabs implements service {
      * The current price of one phrase voice (free; nothing is made, charged or reserved).
      *
      * @param string $clipref
-     * @return int|null 0 or 5, or null when LMS Labs gave no price
+     * @return int|null 0 or the price per voice, or null when LMS Labs gave no price
      */
     public static function quote(string $clipref): ?int {
         try {

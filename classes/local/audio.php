@@ -107,6 +107,19 @@ class audio {
     }
 
     /**
+     * The price LMS Labs publishes per voice when it differs from the approved price, or null when it matches (or
+     * LMS Labs publishes none). While it differs, no new voice is asked for: the teacher would be charged a price
+     * they were not shown.
+     *
+     * @return int|null
+     */
+    public static function price_hold(): ?int {
+        $price = (string)get_config('mod_ailanguageteacher', 'speechprice');
+        return $price !== '' && (int)$price !== \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS
+            ? (int)$price : null;
+    }
+
+    /**
      * The free remake rule when LMS Labs supports it (voices are then sent with clipRef and maxCredits).
      *
      * @return array|null {limit, days}, or null when LMS Labs has not said it supports remakes
@@ -134,7 +147,7 @@ class audio {
 
     /**
      * Every request body this phrase voice may have been asked for with, by its hash: the body of earlier versions
-     * (no clipRef) and the remake bodies (clipRef with a ceiling of 0 or 5 credits).
+     * (no clipRef) and the remake bodies (clipRef with a ceiling of 0 or the price per voice, and earlier ceilings).
      *
      * @param stdClass $instance
      * @param stdClass $phrase
@@ -150,7 +163,9 @@ class audio {
         }
         $out = [operation::hash($legacy) => [$legacy, null, null]];
         $ref = self::clipref($instance, $phrase, $variant);
-        foreach ([0, \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS] as $max) {
+        $now = [0, \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS];
+        $ceilings = array_unique(array_merge($now, \mod_ailanguageteacher\local\speech\lmslabs::OLD_CEILINGS));
+        foreach ($ceilings as $max) {
             $body = $legacy + ['clipRef' => $ref, 'maxCredits' => $max];
             $out[operation::hash($body)] = [$body, $ref, $max];
         }
@@ -163,7 +178,7 @@ class audio {
      * @param stdClass $instance
      * @param stdClass $phrase
      * @param string $variant
-     * @return int 0 or 5
+     * @return int 0 or the price per voice
      */
     public static function quote(stdClass $instance, stdClass $phrase, string $variant): int {
         $full = \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS;
@@ -262,7 +277,7 @@ class audio {
     }
 
     /**
-     * Creates one paid phrase recording (5 credits). Called only after a teacher explicitly asks for it.
+     * Creates one paid phrase recording (TTS_CREDITS). Called only after a teacher explicitly asks for it.
      *
      * @param stdClass $instance
      * @param \context $context
@@ -271,7 +286,7 @@ class audio {
      * @param int $userid
      * @param string $voice exact catalogue voice name
      * @param bool $discard the teacher confirmed abandoning an unfinished request for different text or voice
-     * @param int|null $maxcredits the most the teacher confirmed (0 or 5), when LMS Labs supports free remakes
+     * @param int|null $maxcredits the most the teacher confirmed (0 or the price per voice), when LMS Labs supports free remakes
      * @return string URL of the saved audio
      */
     public static function create(
@@ -330,6 +345,11 @@ class audio {
                 }
             }
             if ($op === null) {
+                // A new voice is asked for only at the approved price (an unresolved one is still asked about).
+                if (($published = self::price_hold()) !== null) {
+                    throw new \moodle_exception('voices_pricehold', 'mod_ailanguageteacher', '', ['published' => $published,
+                        'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS]);
+                }
                 $op = operation::claim((int)$instance->id, $userid, 'tts', $itemid, $body);
             }
             // A refusal ends the stored request; no answer or "still working" keeps it for the same key.

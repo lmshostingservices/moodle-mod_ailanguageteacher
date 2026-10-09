@@ -86,7 +86,7 @@ class quote_audio extends base {
     public static function execute_returns(): external_multiple_structure {
         return new external_multiple_structure(new external_single_structure([
             'phraseid' => new external_value(PARAM_INT, 'Phrase id'),
-            'credits' => new external_value(PARAM_INT, 'Current price: 0 (a free remake) or 5'),
+            'credits' => new external_value(PARAM_INT, 'Current price: 0 (a free remake) or the price per voice'),
         ]));
     }
 }

@@ -2,6 +2,17 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.6] - 2026-10-11
+
+### Changed
+
+- **Phrase voices cost 2 credits each** (owner-approved 11 Oct 2026; was 5). Every price shown and every ceiling sent (`maxCredits`) uses 2.
+- **No voice is made at a price the teacher was not shown.** Moodle reads the price per voice that LMS Labs publishes in its catalogue (`tariff.tts`). While it is not 2, the Voices step says so and no new voice is asked for; voices already made keep playing, and a voice asked for before is still asked about with exactly its old body and key. The catalogue is read again after this upgrade (its cache key changed; no cache is purged).
+
+### Fixed
+
+- While voices are being made, Back and Next look disabled and do nothing, and leaving the page asks first (the run would stop).
+
 ## [v1.3.5] - 2026-10-11
 
 ### Fixed
