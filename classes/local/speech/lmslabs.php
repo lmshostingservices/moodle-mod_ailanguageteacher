@@ -32,6 +32,9 @@ class lmslabs implements service {
     /** @var string Phrase audio route (TTS_CREDITS per delivered clip). */
     public const TTS_ROUTE = '/api/moodle/ai-language-teacher/speech/tts';
 
+    /** @var string Free price check of one phrase voice (free remakes, 9 Oct 2026): {clipRef} -> {credits, ...}. */
+    public const QUOTE_ROUTE = '/api/moodle/ai-language-teacher/speech/quote';
+
     /** @var int Credits LMS Labs charges per delivered voice clip (owner-approved tariff, 8 Oct 2026; was 1). */
     public const TTS_CREDITS = 5;
 
@@ -77,6 +80,11 @@ class lmslabs implements service {
             throw new moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
         }
         $cache->set($key, ['time' => time(), 'locales' => $data['locales']]);
+        // Free remakes are used only once LMS Labs says it takes clipRef and maxCredits (until then it refuses them).
+        $tariff = is_array($data['tariff'] ?? null) ? $data['tariff'] : [];
+        $remakes = !empty($tariff['clipRefSupported']) && !empty($tariff['maxCreditsRequired']);
+        set_config('speechremakes', $remakes ? json_encode(['on' => 1, 'limit' => (int)($tariff['ttsRemakeLimit'] ?? 10),
+            'days' => (int)($tariff['ttsRemakeWindowDays'] ?? 30)]) : '', 'mod_ailanguageteacher');
         return $this->catalog = $data['locales'];
     }
 
@@ -156,7 +164,15 @@ class lmslabs implements service {
      * @param string $idemkey
      * @return array
      */
-    public function synthesise(string $text, string $locale, string $voice, string $speed, string $idemkey): array {
+    public function synthesise(
+        string $text,
+        string $locale,
+        string $voice,
+        string $speed,
+        string $idemkey,
+        ?string $clipref = null,
+        ?int $maxcredits = null
+    ): array {
         $names = array_column($this->voices($locale), 'name');
         if (!$names || ($voice !== '' && !in_array($voice, $names, true))) {
             throw new moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
@@ -167,6 +183,10 @@ class lmslabs implements service {
         $request = ['text' => $text, 'locale' => $locale, 'speed' => $speed];
         if ($voice !== '') {
             $request['voice'] = $voice;
+        }
+        if ($clipref !== null && $maxcredits !== null) {
+            // Both or neither: LMS Labs refuses one without the other.
+            $request += ['clipRef' => $clipref, 'maxCredits' => $maxcredits];
         }
         global $DB;
         [$status, $body, , $headers] = \mod_ailanguageteacher\local\remote::request(
@@ -195,6 +215,30 @@ class lmslabs implements service {
             throw new moodle_exception('unusableaudio', 'mod_ailanguageteacher');
         }
         return ['audio' => $body, 'mimetype' => 'audio/mpeg', 'requestid' => ''];
+    }
+
+    /**
+     * The current price of one phrase voice (free; nothing is made, charged or reserved).
+     *
+     * @param string $clipref
+     * @return int|null 0 or 5, or null when LMS Labs gave no price
+     */
+    public static function quote(string $clipref): ?int {
+        try {
+            // A price check is quick and free: a slow one is not waited for (the voice then counts as full price).
+            [$status, $body] = \mod_ailanguageteacher\local\remote::request(
+                self::QUOTE_ROUTE,
+                ['clipRef' => $clipref],
+                \core\uuid::generate(),
+                'application/json',
+                8
+            );
+        } catch (\moodle_exception $e) {
+            return null;
+        }
+        $data = json_decode($body, true);
+        $credits = is_array($data) ? ($data['credits'] ?? null) : null;
+        return $status === 200 && in_array($credits, [0, self::TTS_CREDITS], true) ? $credits : null;
     }
 
     /**

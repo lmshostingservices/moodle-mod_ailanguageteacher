@@ -4324,3 +4324,17 @@
     flex: 1 1 160px;
     min-width: 140px;
 }
+
+/* 1.3.1: traffic-light progress bars (red, amber, green; the bands are activity settings). */
+.path-mod-ailanguageteacher .lt-mastery-bar.is-red > span,
+.path-mod-ailanguageteacher .lt-bar.is-red > span {
+    background: #d92d20;
+}
+.path-mod-ailanguageteacher .lt-mastery-bar.is-amber > span,
+.path-mod-ailanguageteacher .lt-bar.is-amber > span {
+    background: #f5a00b;
+}
+.path-mod-ailanguageteacher .lt-mastery-bar.is-green > span,
+.path-mod-ailanguageteacher .lt-bar.is-green > span {
+    background: #12a150;
+}

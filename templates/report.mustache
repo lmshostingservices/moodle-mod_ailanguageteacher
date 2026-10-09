@@ -24,7 +24,7 @@
         "tabs": [{"name": "Learners", "url": "#", "active": true}], "learners": true, "phrases": false, "attempts": false,
         "groupselector": "", "identityheaders": [{"name": "Email address"}], "hasrows": true, "paging": "", "downloads": "",
         "rows": [{"fullname": "Ana Silva", "profileurl": "#", "identity": [{"value": "ana@example.com"}], "studied": true,
-            "mastered": 4, "total": 10, "masterpct": 40, "needs": 1, "avgscore": "82%", "speaktries": 20, "hints": 3,
+            "mastered": 4, "total": 10, "masterpct": 40, "tone": "amber", "needs": 1, "avgscore": "82%", "speaktries": 20, "hints": 3,
             "testbest": "90%", "testattempts": 1, "lastseen": "1/10/26"}]
     }
 }}
@@ -57,7 +57,7 @@
             <td><a href="{{profileurl}}">{{fullname}}</a></td>
             {{#identity}}<td>{{value}}</td>{{/identity}}
             <td>{{#studied}}<span class="lt-yes">{{#str}} yes {{/str}}</span>{{/studied}}{{^studied}}<span class="lt-no">{{#str}} no {{/str}}</span>{{/studied}}</td>
-            <td><span class="lt-meter" role="img" aria-label="{{mastered}} / {{total}}"><span class="lt-bar"><span style="width: {{masterpct}}%"></span></span>{{mastered}}/{{total}}</span></td>
+            <td><span class="lt-meter" role="img" aria-label="{{mastered}} / {{total}}"><span class="lt-bar is-{{tone}}"><span style="width: {{masterpct}}%"></span></span>{{mastered}}/{{total}}</span></td>
             <td>{{needs}}</td>
             <td>{{avgscore}}</td>
             <td>{{speaktries}}</td>

@@ -50,6 +50,7 @@ final class remote {
      * @param array|null $body JSON body (POST), or null for GET
      * @param string $key Idempotency-Key (POST)
      * @param string $accept Accept header
+     * @param int $timeout seconds to wait for the answer
      * @return array [status, body, info, headers (lower-case names)]
      * @throws \moodle_exception remoteuncertain when no answer arrived
      */
@@ -57,7 +58,8 @@ final class remote {
         string $path,
         ?array $body = null,
         string $key = '',
-        string $accept = 'application/json'
+        string $accept = 'application/json',
+        int $timeout = 45
     ): array {
         global $CFG;
         $pair = credentials::resolve();
@@ -75,7 +77,7 @@ final class remote {
         $curl = new \curl();
         $curl->setHeader($headers);
         // Never follow a redirect: the credential headers would be sent on to the new address.
-        $opts = ['CURLOPT_CONNECTTIMEOUT' => 5, 'CURLOPT_TIMEOUT' => 45, 'CURLOPT_FOLLOWLOCATION' => 0];
+        $opts = ['CURLOPT_CONNECTTIMEOUT' => 5, 'CURLOPT_TIMEOUT' => $timeout, 'CURLOPT_FOLLOWLOCATION' => 0];
         $response = $body === null ? $curl->get($url, [], $opts) : $curl->post($url, json_encode($body), $opts);
         if ($curl->get_errno()) {
             throw new \moodle_exception('remoteuncertain', 'mod_ailanguageteacher');
@@ -146,7 +148,7 @@ final class remote {
         }
         $code = $status === 404 ? 'NOT_LIVE' : self::error($status, $body);
         $known = ['INSUFFICIENT_CREDITS', 'NO_ENTITLEMENT', 'INVALID_CREDENTIALS', 'RATE_LIMITED', 'NOT_LIVE',
-            'IDEMPOTENCY_CONFLICT'];
+            'IDEMPOTENCY_CONFLICT', 'PRICE_CHANGED'];
         if ($status === 402) {
             $code = 'INSUFFICIENT_CREDITS';
         } else if ($status === 401) {
@@ -155,7 +157,7 @@ final class remote {
             $code = 'NO_ENTITLEMENT';
         } else if ($status === 429) {
             $code = 'RATE_LIMITED';
-        } else if ($status === 409) {
+        } else if ($status === 409 && $code !== 'PRICE_CHANGED') {
             $code = 'IDEMPOTENCY_CONFLICT';
         }
         $key = in_array($code, $known, true) ? 'remoterefused_' . strtolower($code) : 'remoteerror';

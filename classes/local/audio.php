@@ -107,6 +107,74 @@ class audio {
     }
 
     /**
+     * The free remake rule when LMS Labs supports it (voices are then sent with clipRef and maxCredits).
+     *
+     * @return array|null {limit, days}, or null when LMS Labs has not said it supports remakes
+     */
+    public static function remakes(): ?array {
+        $rule = json_decode((string)get_config('mod_ailanguageteacher', 'speechremakes'), true);
+        return is_array($rule) && !empty($rule['on'])
+            ? ['limit' => (int)($rule['limit'] ?? 0), 'days' => (int)($rule['days'] ?? 0)] : null;
+    }
+
+    /**
+     * The stable reference of one phrase voice, sent with each voice so LMS Labs can make it again for free after an
+     * edit. It never contains text or voice, and its serialisation must never change: a JSON array of the component,
+     * this site, the activity, the phrase and the variant.
+     *
+     * @param stdClass $instance
+     * @param stdClass $phrase
+     * @param string $variant
+     * @return string 64 lower-case hex characters
+     */
+    public static function clipref(stdClass $instance, stdClass $phrase, string $variant): string {
+        return hash('sha256', json_encode(['mod_ailanguageteacher', (string)get_site_identifier(), (int)$instance->id,
+            (int)$phrase->id, $variant]));
+    }
+
+    /**
+     * Every request body this phrase voice may have been asked for with, by its hash: the body of earlier versions
+     * (no clipRef) and the remake bodies (clipRef with a ceiling of 0 or 5 credits).
+     *
+     * @param stdClass $instance
+     * @param stdClass $phrase
+     * @param string $variant
+     * @param string $voice
+     * @return array hash => [body, clipRef or null, maxCredits or null]
+     */
+    public static function bodies(stdClass $instance, stdClass $phrase, string $variant, string $voice): array {
+        $legacy = ['text' => self::text_for($phrase, $variant), 'locale' => $instance->targetlocale,
+            'speed' => self::speed_for($variant)];
+        if ($voice !== '') {
+            $legacy['voice'] = $voice;
+        }
+        $out = [operation::hash($legacy) => [$legacy, null, null]];
+        $ref = self::clipref($instance, $phrase, $variant);
+        foreach ([0, \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS] as $max) {
+            $body = $legacy + ['clipRef' => $ref, 'maxCredits' => $max];
+            $out[operation::hash($body)] = [$body, $ref, $max];
+        }
+        return $out;
+    }
+
+    /**
+     * The current price of one phrase voice (free; nothing is made). No price from LMS Labs counts as full price.
+     *
+     * @param stdClass $instance
+     * @param stdClass $phrase
+     * @param string $variant
+     * @return int 0 or 5
+     */
+    public static function quote(stdClass $instance, stdClass $phrase, string $variant): int {
+        $full = \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS;
+        if (self::remakes() === null) {
+            return $full;
+        }
+        $quote = \mod_ailanguageteacher\local\speech\lmslabs::quote(self::clipref($instance, $phrase, $variant));
+        return $quote ?? $full;
+    }
+
+    /**
      * URL of an existing audio file for a phrase, or '' when it still has to be created or spoken by the browser.
      *
      * @param stdClass $instance
@@ -138,14 +206,8 @@ class audio {
         );
         $row = $rows ? reset($rows) : null;
         $voice = $row ? (string)$row->result : '';
-        $body = ['text' => self::text_for($phrase, $variant),
-            'locale' => $instance->targetlocale, 'speed' => self::speed_for($variant), 'voice' => $voice];
-        if (
-            !$row || $row->bodyhash !== hash(
-                'sha256',
-                json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
-            )
-        ) {
+        // The stored voice is current when it was made for this text and voice, with or without a clip reference.
+        if (!$row || !isset(self::bodies($instance, $phrase, $variant, $voice)[$row->bodyhash])) {
             return '';
         }
         $filename = self::tts_filename($instance, $phrase, $variant, $voice);
@@ -174,14 +236,13 @@ class audio {
      */
     public static function pending_with_voice(stdClass $instance, stdClass $phrase, string $variant, string $voice): bool {
         global $DB;
-        $body = ['text' => self::text_for($phrase, $variant), 'locale' => $instance->targetlocale,
-            'speed' => self::speed_for($variant)];
-        if ($voice !== '') {
-            $body['voice'] = $voice;
-        }
-        return $DB->record_exists('ailanguageteacher_operation', ['ailanguageteacherid' => $instance->id, 'kind' => 'tts',
-            'itemid' => (int)$phrase->id * 3 + array_search($variant, self::VARIANTS, true), 'state' => 'pending',
-            'bodyhash' => operation::hash($body)]);
+        $hashes = array_keys(self::bodies($instance, $phrase, $variant, $voice));
+        [$insql, $params] = $DB->get_in_or_equal($hashes, SQL_PARAMS_NAMED);
+        return $DB->record_exists_select(
+            'ailanguageteacher_operation',
+            "ailanguageteacherid = :aid AND kind = 'tts' AND itemid = :item AND state = 'pending' AND bodyhash $insql",
+            $params + ['aid' => $instance->id, 'item' => (int)$phrase->id * 3 + array_search($variant, self::VARIANTS, true)]
+        );
     }
 
     /**
@@ -210,6 +271,7 @@ class audio {
      * @param int $userid
      * @param string $voice exact catalogue voice name
      * @param bool $discard the teacher confirmed abandoning an unfinished request for different text or voice
+     * @param int|null $maxcredits the most the teacher confirmed (0 or 5), when LMS Labs supports free remakes
      * @return string URL of the saved audio
      */
     public static function create(
@@ -219,7 +281,8 @@ class audio {
         string $variant,
         int $userid,
         string $voice,
-        bool $discard = false
+        bool $discard = false,
+        ?int $maxcredits = null
     ): string {
         global $DB;
         $url = self::existing_url($instance, $context, $phrase, $variant);
@@ -229,10 +292,12 @@ class audio {
         if (mb_strlen(self::text_for($phrase, $variant), 'UTF-8') > 200) {
             throw new \moodle_exception('speechtxttoolong', 'mod_ailanguageteacher');
         }
-        $body = ['text' => self::text_for($phrase, $variant), 'locale' => $instance->targetlocale,
-            'speed' => self::speed_for($variant)];
-        if ($voice !== '') {
-            $body['voice'] = $voice;
+        $bodies = self::bodies($instance, $phrase, $variant, $voice);
+        // What a new request sends: with free remakes, the voice's place and the price the teacher confirmed.
+        $max = $maxcredits === 0 ? 0 : \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS;
+        $body = array_values($bodies)[0][0];
+        if (self::remakes() !== null) {
+            $body += ['clipRef' => self::clipref($instance, $phrase, $variant), 'maxCredits' => $max];
         }
         $filename = self::tts_filename($instance, $phrase, $variant, $voice);
         $factory = \core\lock\lock_config::get_lock_factory('mod_ailanguageteacher_tts');
@@ -252,9 +317,12 @@ class audio {
                 'itemid' => $itemid, 'state' => 'pending',
             ], 'id DESC');
             $op = null;
+            $send = $body;
             foreach ($pending as $claim) {
-                if ($claim->bodyhash === operation::hash($body)) {
+                if (isset($bodies[$claim->bodyhash])) {
+                    // Unresolved: asked about again with its own key and exactly the body it was sent with.
                     $op = $claim;
+                    $send = $bodies[$claim->bodyhash][0];
                 } else if ($discard) {
                     operation::failed($claim);
                 } else {
@@ -270,7 +338,9 @@ class audio {
                 $instance->targetlocale,
                 $voice,
                 self::speed_for($variant),
-                $op->idemkey
+                $op->idemkey,
+                $send['clipRef'] ?? null,
+                $send['maxCredits'] ?? null
             );
             $fs = get_file_storage();
             // Remove this variant's older audio (the text, voice or service settings have changed).

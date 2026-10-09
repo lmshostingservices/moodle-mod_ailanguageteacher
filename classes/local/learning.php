@@ -34,6 +34,20 @@ use stdClass;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class learning {
+    /**
+     * The traffic-light colour of a progress bar: red below the activity's amber number, amber from it, green from its
+     * green number.
+     *
+     * @param float $percent 0 to 100
+     * @param stdClass|null $instance
+     * @return string red, amber or green
+     */
+    public static function bar_tone(float $percent, ?stdClass $instance): string {
+        $amber = max(1, min(99, (int)($instance->barsamber ?? 40)));
+        $green = max($amber + 1, min(100, (int)($instance->barsgreen ?? 70)));
+        return $percent >= $green ? 'green' : ($percent >= $amber ? 'amber' : 'red');
+    }
+
     /** @var string Phrase not opened yet. */
     public const STATE_UNSEEN = 'unseen';
 

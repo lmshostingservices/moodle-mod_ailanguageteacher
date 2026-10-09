@@ -32,6 +32,13 @@ $functions = [
         'ajax' => true,
         'capabilities' => 'mod/ailanguageteacher:manage,mod/ailanguageteacher:useai',
     ],
+    'mod_ailanguageteacher_quote_audio' => [
+        'classname' => \mod_ailanguageteacher\external\quote_audio::class,
+        'description' => 'Prices phrase voices before the teacher confirms (free; nothing is made).',
+        'type' => 'read',
+        'ajax' => true,
+        'capabilities' => 'mod/ailanguageteacher:manage,mod/ailanguageteacher:useai',
+    ],
     'mod_ailanguageteacher_create_audio' => [
         'classname' => \mod_ailanguageteacher\external\create_audio::class,
         'description' => 'Teacher explicitly creates one charged phrase audio file.',

@@ -69,9 +69,19 @@ interface service {
      * @param string $voice voice name, or '' for the service default
      * @param string $speed 'normal' or 'slow'
      * @param string $idemkey idempotency key for this operation
+     * @param string|null $clipref the voice's place, for free remakes (sent with $maxcredits only)
+     * @param int|null $maxcredits the most the teacher confirmed: 0 or 5
      * @return array ['audio' => bytes, 'mimetype' => string, 'requestid' => string]
      */
-    public function synthesise(string $text, string $locale, string $voice, string $speed, string $idemkey): array;
+    public function synthesise(
+        string $text,
+        string $locale,
+        string $voice,
+        string $speed,
+        string $idemkey,
+        ?string $clipref = null,
+        ?int $maxcredits = null
+    ): array;
 
     /**
      * Transcribes a learner's recording.

@@ -211,6 +211,10 @@ if ($tab === 'learners') {
                 'mastered' => (int)($p->mastered ?? 0),
                 'total' => $totalphrases,
                 'masterpct' => $totalphrases ? round((int)($p->mastered ?? 0) / $totalphrases * 100) : 0,
+                'tone' => \mod_ailanguageteacher\local\learning::bar_tone(
+                    $totalphrases ? (int)($p->mastered ?? 0) / $totalphrases * 100 : 0,
+                    $instance
+                ),
                 'needs' => (int)($p->needs ?? 0),
                 'avgscore' => $fmtpct($p->avgscore ?? null),
                 'speaktries' => (int)($p->speaktries ?? 0),

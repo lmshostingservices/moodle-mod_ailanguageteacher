@@ -52,6 +52,12 @@ class create_audio extends base {
                 VALUE_DEFAULT,
                 false
             ),
+            'maxcredits' => new external_value(
+                PARAM_INT,
+                'The most the teacher confirmed for this voice (0 or 5)',
+                VALUE_DEFAULT,
+                5
+            ),
         ]);
     }
 
@@ -62,11 +68,21 @@ class create_audio extends base {
      * @param string $voice exact catalogue voice name
      * @param string $variant normal, slow or example
      * @param bool $discard the teacher confirmed abandoning an unfinished request
+     * @param int $maxcredits the most the teacher confirmed (0 or 5)
      * @return array
      */
-    public static function execute(int $phraseid, string $voice, string $variant, bool $discard = false): array {
+    public static function execute(
+        int $phraseid,
+        string $voice,
+        string $variant,
+        bool $discard = false,
+        int $maxcredits = 5
+    ): array {
         global $USER;
-        self::validate_parameters(self::execute_parameters(), compact('phraseid', 'voice', 'variant', 'discard'));
+        self::validate_parameters(
+            self::execute_parameters(),
+            compact('phraseid', 'voice', 'variant', 'discard', 'maxcredits')
+        );
         [, , $instance, $context, $phrase] = self::load_phrase($phraseid);
         require_capability('mod/ailanguageteacher:useai', $context);
         $names = array_column((new \mod_ailanguageteacher\local\speech\lmslabs())->voices($instance->targetlocale), 'name');
@@ -80,7 +96,16 @@ class create_audio extends base {
             $matched = $voice;
         }
         $voice = $matched;
-        return ['url' => audio::create($instance, $context, $phrase, $variant, (int)$USER->id, $voice, $discard)];
+        return ['url' => audio::create(
+            $instance,
+            $context,
+            $phrase,
+            $variant,
+            (int)$USER->id,
+            $voice,
+            $discard,
+            $maxcredits === 0 ? 0 : null
+        )];
     }
 
     /**

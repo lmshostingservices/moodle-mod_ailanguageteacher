@@ -259,6 +259,10 @@ echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
     'missingvoiceids' => implode(',', $state['novoice']),
     'missingvoicecredits' => count($state['novoice']) * \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
     'voicecredits' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
+    // Free remakes (when LMS Labs supports them): each voice is priced before the teacher confirms.
+    'remakes' => \mod_ailanguageteacher\local\audio::remakes() ? 1 : 0,
+    'remakesline' => \mod_ailanguageteacher\local\audio::remakes()
+        ? get_string('voices_remakes', 'mod_ailanguageteacher', (object)\mod_ailanguageteacher\local\audio::remakes()) : '',
     'nav' => [
         'backurl' => setuppath::url((int)$cm->id, $step - 1)->out(false),
         'backlabel' => $str('setup_back'),

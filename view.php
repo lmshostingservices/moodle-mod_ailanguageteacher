@@ -220,6 +220,10 @@ $templatedata = [
         'phrases' => $phrasecount,
         'mastered' => $counts['mastered'],
         'percent' => $counts['total'] ? round($counts['mastered'] / $counts['total'] * 100) : 0,
+        'tone' => \mod_ailanguageteacher\local\learning::bar_tone(
+            $counts['total'] ? $counts['mastered'] / $counts['total'] * 100 : 0,
+            $instance
+        ),
         'hasprogress' => $canattempt && $counts['total'] > 0,
     ],
     'modes' => $modes,

@@ -150,7 +150,15 @@ final class speech_test extends \advanced_testcase {
              * @param string $idemkey
              * @return array
              */
-            public function synthesise(string $text, string $locale, string $voice, string $speed, string $idemkey): array {
+            public function synthesise(
+                string $text,
+                string $locale,
+                string $voice,
+                string $speed,
+                string $idemkey,
+                ?string $clipref = null,
+                ?int $maxcredits = null
+            ): array {
                 $this->calls['tts'][] = [$text, $locale, $speed, $idemkey];
                 return ['audio' => 'ID3' . str_repeat('m', 200), 'mimetype' => 'audio/mpeg', 'requestid' => 'r1'];
             }

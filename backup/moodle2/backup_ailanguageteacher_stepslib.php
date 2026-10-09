@@ -39,7 +39,8 @@ class backup_ailanguageteacher_activity_structure_step extends backup_activity_s
             'imagestyle', 'ttsvoice', 'ttsvoice2', 'voicematch', 'showromanisation', 'allowstudy', 'allowpractice',
             'allowtest', 'sequential', 'speaking',
             'passscore', 'repetitions', 'consecutive', 'maxspeaktries', 'testlistening', 'testspeaking', 'grade',
-            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'mustlisten', 'leaderboard', 'completionstudy',
+            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'mustlisten', 'barsamber',
+            'barsgreen', 'leaderboard', 'completionstudy',
             'completionmastery', 'completionfinish', 'timecreated', 'timemodified',
         ]);
         $situations = new backup_nested_element('situationlist');

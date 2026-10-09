@@ -2,6 +2,36 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.3] - 2026-10-11
+
+Follows the LMS Labs response of 9 Oct 2026 on free voice remakes (approved by Jamie: 10 free remakes per voice in a rolling 30 days).
+
+### Added
+
+- **Free phrase voice remakes after an edit.** Once the LMS Labs catalogue says `clipRefSupported`, every voice is sent with `clipRef` (a stable SHA-256 of a JSON array of component, site, activity, phrase and variant; no text or voice) and `maxCredits` (0 or 5, the price the teacher confirmed), after a free price check per voice (`speech/quote`). The Voices step and the scene editor show the price first.
+- A voice request left unresolved before the upgrade is asked about again with its own key and exactly its old body, so it can never be charged twice; audio made before the upgrade still counts as made.
+- A price rise (409 `PRICE_CHANGED`) is refused before anything is made or charged, with its own message.
+
+## [v1.3.2] - 2026-10-11
+
+### Changed
+
+- Picture prompts (AI-assistant prompt and the picture request): each named person is drawn with a gender, age and appearance that fit their name and the country (for example, Priya looks South Asian).
+
+## [v1.3.1] - 2026-10-11
+
+Follows the LMS Labs release response of 9 Oct 2026 (5 credits per scene and per clip). No tariff change.
+
+### Added
+
+- **Traffic-light progress bars**: the mastery bars (activity page and reports) are red, amber or green. The bands are activity settings (default: amber from 40%, green from 70%).
+
+### Fixed
+
+- Charging wording: LMS Labs charges a scene or voice when it creates it, not when it reaches the site.
+- A voice that can no longer be returned (410) no longer says it was charged: keep the reference and contact LMS Labs support before creating it again.
+- New regression tests for sites that came from 1.1.0: the stored-requests table is created when missing, and 1.1.0 requests move with their keys.
+
 ## [v1.3.0] - 2026-10-10
 
 Builds on 1.2.1. New tariffs approved by the owner on 8 Oct 2026: **5 credits per scene** (LMS Labs AI or the teacher's own AI assistant; was 3) and **5 credits per phrase voice clip** (was 1). Unchanged: 50 to unlock. LMS Labs charges these; Moodle shows them and asks first.

@@ -92,6 +92,7 @@ $data += [
     'romanise' => languages::needs_romanisation($instance->targetlang),
     'hasservicetts' => audio::has_service_tts($instance->targetlocale),
     'voice' => (string)$instance->ttsvoice,
+    'remakes' => audio::remakes() !== null,
     'canrecord' => true,
     'targetname' => languages::name($instance->targetlang),
     'supportname' => languages::name($instance->supportlang),

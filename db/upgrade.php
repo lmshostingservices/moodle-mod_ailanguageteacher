@@ -71,6 +71,26 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         }
         upgrade_mod_savepoint(true, 2026101000, 'ailanguageteacher');
     }
+    if ($oldversion < 2026101001) {
+        // Traffic-light progress bars with bands the teacher can change.
+        $table = new xmldb_table('ailanguageteacher');
+        $fields = [
+            new xmldb_field('barsamber', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '40', 'mustlisten'),
+            new xmldb_field('barsgreen', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '70', 'barsamber'),
+        ];
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+        upgrade_mod_savepoint(true, 2026101001, 'ailanguageteacher');
+    }
+    if ($oldversion < 2026101003) {
+        // Free voice remakes: read the voice catalogue again so its tariff (clipRefSupported) is known.
+        \cache_helper::purge_by_definition('mod_ailanguageteacher', 'speechcatalog');
+        unset_config('speechremakes', 'mod_ailanguageteacher');
+        upgrade_mod_savepoint(true, 2026101003, 'ailanguageteacher');
+    }
     return true;
 }
 

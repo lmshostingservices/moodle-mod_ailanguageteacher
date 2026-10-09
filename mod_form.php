@@ -104,6 +104,18 @@ class mod_ailanguageteacher_mod_form extends moodleform_mod {
         $mform->addHelpButton('repetitions', 'repetitions', $c);
         $mform->addElement('advcheckbox', 'mustlisten', get_string('mustlisten', $c), get_string('mustlisten_desc', $c));
         $mform->addHelpButton('mustlisten', 'mustlisten', $c);
+        $bands = [
+            $mform->createElement('static', 'barsamberlabel', '', get_string('barsamber', $c)),
+            $mform->createElement('text', 'barsamber', get_string('barsamber', $c), ['size' => 3]),
+            $mform->createElement('static', 'barsgreenlabel', '', get_string('barsgreen', $c)),
+            $mform->createElement('text', 'barsgreen', get_string('barsgreen', $c), ['size' => 3]),
+        ];
+        $mform->addGroup($bands, 'barbands', get_string('barbands', $c), ' ', false);
+        $mform->setType('barsamber', PARAM_INT);
+        $mform->setType('barsgreen', PARAM_INT);
+        $mform->setDefault('barsamber', 40);
+        $mform->setDefault('barsgreen', 70);
+        $mform->addHelpButton('barbands', 'barbands', $c);
         $mform->addElement('advcheckbox', 'consecutive', get_string('consecutive', $c), get_string('consecutive_desc', $c));
         $mform->addElement(
             'select',
@@ -214,6 +226,11 @@ class mod_ailanguageteacher_mod_form extends moodleform_mod {
         $errors = parent::validation($data, $files);
         if (empty($data['allowstudy']) && empty($data['allowpractice']) && empty($data['allowtest'])) {
             $errors['allowtest'] = get_string('errornomode', 'mod_ailanguageteacher');
+        }
+        $amber = (int)($data['barsamber'] ?? 40);
+        $green = (int)($data['barsgreen'] ?? 70);
+        if ($amber < 1 || $green > 100 || $amber >= $green) {
+            $errors['barbands'] = get_string('barbands_range', 'mod_ailanguageteacher');
         }
         return $errors;
     }

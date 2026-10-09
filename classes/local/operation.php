@@ -162,9 +162,17 @@ final class operation {
         $outcome = remote::outcome($status, $body);
         if ($outcome === 'gone') {
             self::expired($row);
+            $data = json_decode($body, true);
+            $reference = clean_param((string)($headers['x-request-id'] ?? ''), PARAM_ALPHANUMEXT);
+            if ($reference === '' && is_array($data) && is_scalar($data['requestId'] ?? null)) {
+                $reference = clean_param((string)$data['requestId'], PARAM_ALPHANUMEXT);
+            }
+            $reference = $reference !== '' ? substr($reference, 0, 64) : (string)$row->idemkey;
             throw new \moodle_exception(
                 $row->kind === 'tts' ? 'speechresultnotretained' : 'operationexpired',
-                'mod_ailanguageteacher'
+                'mod_ailanguageteacher',
+                '',
+                $reference
             );
         }
         if ($outcome === 'refused') {

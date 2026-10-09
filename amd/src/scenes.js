@@ -40,7 +40,8 @@ export const init = async(selector) => {
         return;
     }
     const S = await loadStrings(['confirm_title', 'confirm_create', 'voices_confirm', 'voices_progress',
-        'discard_confirm']);
+        'discard_confirm', 'voices_quoting', 'voices_confirm_head', 'voices_confirm_headone', 'voices_confirm_new',
+        'voices_confirm_newone', 'voices_confirm_free', 'voices_confirm_freeone', 'voices_confirm_note']);
     const confirm = (question) => new Promise((resolve) => {
         Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
     });
@@ -48,8 +49,39 @@ export const init = async(selector) => {
         const ids = all.dataset.phrases.split(',').map((v) => parseInt(v, 10)).filter((v) => v > 0);
         const voice = root.querySelector('[data-region="voice"]').value;
         // Every paid request is confirmed first; the credits are named.
-        const credits = ids.length * parseInt(all.dataset.credits, 10);
-        if (!ids.length || !voice || !await confirm(fmt(S.voices_confirm, {count: ids.length, credits}))) {
+        const each = parseInt(all.dataset.credits, 10);
+        // With free remakes, each voice's current price comes from LMS Labs first (free) and is its ceiling.
+        const prices = new Map();
+        let question = fmt(S.voices_confirm, {count: ids.length, credits: ids.length * each});
+        if (all.dataset.remakes === '1' && ids.length && voice) {
+            const label = all.querySelector('span');
+            const before = label.textContent;
+            all.disabled = true;
+            label.textContent = S.voices_quoting;
+            try {
+                const quotes = await Ajax.call([{methodname: 'mod_ailanguageteacher_quote_audio',
+                    args: {phraseids: ids, variant: 'normal'}}], true, true, false, 120000)[0];
+                quotes.forEach((q) => prices.set(q.phraseid, q.credits));
+            } catch (err) {
+                Notification.exception(err);
+                return;
+            } finally {
+                all.disabled = false;
+                label.textContent = before;
+            }
+            const paid = ids.filter((id) => prices.get(id) !== 0).length;
+            const free = ids.length - paid;
+            const parts = [];
+            if (paid) {
+                parts.push(fmt(paid === 1 ? S.voices_confirm_newone : S.voices_confirm_new, {paid, each, credits: paid * each}));
+            }
+            if (free) {
+                parts.push(fmt(free === 1 ? S.voices_confirm_freeone : S.voices_confirm_free, free));
+            }
+            question = fmt(ids.length === 1 ? S.voices_confirm_headone : S.voices_confirm_head, ids.length) + ' '
+                + parts.join(' ') + ' ' + S.voices_confirm_note;
+        }
+        if (!ids.length || !voice || !await confirm(question)) {
             return;
         }
         const label = all.querySelector('span');
@@ -60,7 +92,7 @@ export const init = async(selector) => {
             // One after another; the run stops at the first voice that is not delivered (nothing is retried).
             for (const phraseid of ids) {
                 label.textContent = fmt(S.voices_progress, {done: made + 1, count: ids.length});
-                const args = {phraseid, voice, variant: 'normal'};
+                const args = {phraseid, voice, variant: 'normal', maxcredits: prices.get(phraseid) === 0 ? 0 : each};
                 try {
                     await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio', args}], true, true, false, 120000)[0];
                 } catch (err) {

@@ -29,7 +29,8 @@ import {loadStrings, fmt, el, render, renderAll, readable} from 'mod_ailanguaget
 
 const KEYS = ['saved', 'saving', 'unsaved', 'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
-    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'discard_confirm', 'limit_count',
+    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'voice_confirm_free',
+    'discard_confirm', 'limit_count',
     'limit_over'];
 
 let S = {};
@@ -538,12 +539,20 @@ class Editor {
                 }
                 // The activity's voice (chosen in the Voices step), or the first voice LMS Labs offers.
                 const voice = catalog.voices.includes(this.cfg.voice) ? this.cfg.voice : catalog.voices[0];
-                const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title, S.voice_confirm,
+                // With free remakes, the voice's current price comes first (free) and is its ceiling.
+                let maxcredits = 5;
+                if (this.cfg.remakes) {
+                    const quote = await Ajax.call([{methodname: 'mod_ailanguageteacher_quote_audio',
+                        args: {phraseids: [phrase.id], variant: 'normal'}}])[0];
+                    maxcredits = quote.length && quote[0].credits === 0 ? 0 : 5;
+                }
+                const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title,
+                    maxcredits === 0 ? S.voice_confirm_free : S.voice_confirm,
                     S.confirm_create, () => resolve(true), () => resolve(false)));
                 if (!go) {
                     return;
                 }
-                const args = {phraseid: phrase.id, voice, variant: 'normal'};
+                const args = {phraseid: phrase.id, voice, variant: 'normal', maxcredits};
                 let res;
                 try {
                     res = await Ajax.call([{methodname: 'mod_ailanguageteacher_create_audio', args}])[0];
