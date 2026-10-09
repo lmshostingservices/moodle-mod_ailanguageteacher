@@ -42,7 +42,7 @@ class lmslabs implements provider {
     public const IMPORT_ROUTE = '/api/moodle/ai-language-teacher/lessons/import';
 
     /** @var int Credits per delivered lesson scene (owner-approved tariff). */
-    public const TEXT_CREDITS = 3;
+    public const TEXT_CREDITS = 5;
 
     /** @var callable|null Replacement transport used by unit tests. */
     public static $transport = null;
@@ -76,7 +76,7 @@ class lmslabs implements provider {
     }
 
     /**
-     * Drafts one lesson scene on the approved dedicated text route (3 credits when delivered).
+     * Drafts one lesson scene on the approved dedicated text route (5 credits when delivered).
      *
      * The caller has stored the request (key and body) first. Anything but a delivered draft is recorded on the request
      * and reported: a refusal ends it (nothing charged), no answer or "still working" keeps it for the same key.
@@ -104,7 +104,7 @@ class lmslabs implements provider {
     }
 
     /**
-     * Charges for scenes written with the teacher's own AI assistant: 3 credits per scene, like a draft.
+     * Charges for scenes written with the teacher's own AI assistant: 5 credits per scene, like a draft.
      *
      * Only the number of scenes and their titles are sent. The caller creates the scenes after this returns.
      *

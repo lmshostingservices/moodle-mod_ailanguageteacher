@@ -212,7 +212,7 @@ $string['copyprompt'] = 'Copy prompt';
 $string['correct'] = 'Correct';
 $string['correctfeedback'] = 'Correct: {$a}';
 $string['correctof'] = '{$a->correct} of {$a->total} correct';
-$string['createaudio'] = 'Create voice (1 credit)';
+$string['createaudio'] = 'Create voice (5 credits)';
 $string['creating'] = 'Creating scenes…';
 $string['credentials_central'] = 'In use: the Site ID and API key from LMS Labs Central Config. The standalone fields below are ignored while Central Config has both.';
 $string['credentials_centralincomplete'] = 'Not configured: LMS Labs Central Config is missing its Site ID or API key, and the standalone fields below are not both filled in. Complete Central Config (recommended) or enter both below. LMS Labs is not contacted until then.';
@@ -223,7 +223,7 @@ $string['deleterecording'] = 'Remove recording';
 $string['deleteselected'] = 'Delete selected';
 $string['discard_confirm'] = 'An earlier request for this has not been confirmed by LMS Labs and had different content. Start a new one instead? The earlier one may still have been charged: if so, contact LMS Labs support.';
 $string['distractor'] = 'Distractor (not on the picture)';
-$string['draft_confirm'] = 'Create a scene with LMS Labs AI? LMS Labs charges 3 credits when it is delivered. You can check it before it is added.';
+$string['draft_confirm'] = 'Create a scene with LMS Labs AI? LMS Labs charges 5 credits when it is delivered. You can check it before it is added.';
 $string['draftused'] = 'This LMS Labs draft has already been used to create scenes. Create a new one if you need more.';
 $string['dropzoneempty'] = 'Place {$a}, empty';
 $string['dropzonefilled'] = 'Place {$a->number}: {$a->label}';
@@ -310,7 +310,7 @@ $string['imagestyle_illustration'] = 'bright, friendly flat illustration with cl
 $string['imagestyle_illustration_name'] = 'Illustration';
 $string['imagestyle_photo'] = 'realistic, natural-light photograph';
 $string['imagestyle_photo_name'] = 'Photo';
-$string['import_confirm'] = 'Scenes to create: {$a->count}. LMS Labs charges 3 credits per scene, {$a->credits} credits in all, the same as scenes written by LMS Labs AI. The scenes are created once LMS Labs confirms.';
+$string['import_confirm'] = 'Scenes to create: {$a->count}. LMS Labs charges 5 credits per scene, {$a->credits} credits in all, the same as scenes written by LMS Labs AI. The scenes are created once LMS Labs confirms.';
 $string['import_done'] = 'Scenes created: {$a->scenes}. LMS Labs credits used: {$a->charged}.';
 $string['incorrect'] = 'Incorrect';
 $string['instructions_drag'] = 'Drag each phrase to the right place on the picture.';
@@ -414,7 +414,7 @@ For every phrase give:
 - exampletrans: its meaning in the learners\' language
 - prompt: a speaking cue in the learners\' language that makes the learner say the phrase without showing it, for example "Greet the housekeeper in the morning"
 - alternatives: other natural ways to say the same thing that should also be accepted (0 to 3)
-- anchor: in English, who or what in the picture the phrase belongs to, for example "the homeowner at the door"
+- anchor: in English, who or what in the picture the phrase belongs to, saying whether the person is a man or a woman, for example "the woman at the door" or "the male taxi driver" (the phrase audio uses a matching voice)
 
 For every scene give:
 - situation and title (in the learners\' language)
@@ -738,7 +738,7 @@ $string['settings_ai'] = 'AI lesson drafting (LMS Labs)';
 $string['settings_ai_desc'] = 'LMS Labs has not yet published the generation service for AI Language Teacher, so the "Create with AI" buttons stay off for now. Teachers can already draft lessons and pictures with any AI assistant: the lesson builder gives them a ready-made prompt, and they paste the reply back. The site ID and key below are used only to show the LMS Labs credit balance.';
 $string['settings_defaults'] = 'Defaults for new activities';
 $string['settings_speech'] = 'Speech';
-$string['settings_speech_desc'] = 'Teachers can create and cache phrase audio using the approved Google voice catalog through LMS Labs (1 credit per successful synthesis). Learner listening never generates a paid request. No paid Speech-to-Text is available: the browser\'s transcript, manual input or listen-back self-check compares recognised words, not phonemes, pronunciation or accent.';
+$string['settings_speech_desc'] = 'Teachers can create and cache phrase audio using the approved Google voice catalog through LMS Labs (5 credits per delivered clip). Learner listening never generates a paid request. No paid Speech-to-Text is available: the browser\'s transcript, manual input or listen-back self-check compares recognised words, not phonemes, pronunciation or accent.';
 $string['setup_back'] = 'Back';
 $string['setup_needpictures'] = 'Scenes still without a picture: {$a}.';
 $string['setup_needplaced'] = 'Scenes with no phrase placed on the picture yet: {$a}.';
@@ -827,7 +827,7 @@ $string['speechnotconfigured'] = 'The speech service is not available on this si
 $string['speechrate'] = 'Speaking checks per minute';
 $string['speechrate_desc'] = 'Most speaking checks one learner can make per minute.';
 $string['speechratelimit'] = 'Too many speaking checks in a short time. Wait a minute and try again.';
-$string['speechresultnotretained'] = 'LMS Labs finished this voice, but it did not reach this site, and LMS Labs does not keep voices, so it may already have been charged. Contact LMS Labs support if so. Creating the voice again is a new request (1 credit).';
+$string['speechresultnotretained'] = 'LMS Labs finished this voice, but it did not reach this site, and LMS Labs does not keep voices, so it may already have been charged. Contact LMS Labs support if so. Creating the voice again is a new request (5 credits).';
 $string['speechtxttoolong'] = 'This phrase exceeds the 200-character speech limit.';
 $string['spokencheck'] = 'Spoken-answer check';
 $string['stage_listen'] = 'Listen';
@@ -889,14 +889,14 @@ $string['unusabledraft'] = 'LMS Labs delivered a draft this site could not use, 
 $string['uploadimage'] = 'Upload a picture';
 $string['uploadimages_help'] = 'PNG, JPEG, GIF or WebP, or a ZIP of them (up to 100 pictures).';
 $string['uploadownimage'] = 'Upload a picture';
-$string['voice_confirm'] = 'Create this phrase\'s voice? LMS Labs charges 1 credit when it is delivered.';
+$string['voice_confirm'] = 'Create this phrase\'s voice? LMS Labs charges 5 credits when it is delivered.';
 $string['voice_missing'] = 'needs a voice';
 $string['voice_ready'] = 'voice ready';
 $string['voices_alldone'] = 'Every phrase has a voice.';
 $string['voices_choose'] = 'Voice';
-$string['voices_confirm'] = 'Create {$a->count} phrase voices? LMS Labs charges 1 credit for each voice it delivers, up to {$a->credits} credits. They are made one after another and saved in Moodle.';
+$string['voices_confirm'] = 'Create {$a->count} phrase voices? LMS Labs charges 5 credits for each voice it delivers, up to {$a->credits} credits. They are made one after another and saved in Moodle.';
 $string['voices_createall'] = 'Create missing voices: {$a->count} ({$a->credits} credits)';
-$string['voices_intro'] = 'Choose one LMS Labs voice for this lesson, then create the voices. Each phrase voice costs 1 LMS Labs credit, charged only when it is delivered. Slow listening plays the same voice more slowly, at no extra cost.';
+$string['voices_intro'] = 'Choose one LMS Labs voice for this lesson, then create the voices. Each phrase voice costs 5 LMS Labs credits, charged only when it is delivered. Slow listening plays the same voice more slowly, at no extra cost.';
 $string['voices_none'] = 'LMS Labs has no voices for this language yet, or this site is not connected to LMS Labs. Learners will hear their browser\'s own voice.';
 $string['voices_progress'] = 'Creating voice {$a->done} of {$a->count}…';
 $string['voices_save'] = 'Use this voice';
@@ -911,3 +911,25 @@ $string['youplaced'] = 'You placed: {$a}';
 $string['yourrecording'] = 'Your recording (used instead of the generated voice)';
 $string['zipinvalid'] = 'That ZIP file could not be read.';
 $string['ziptoolarge'] = 'That ZIP is too large. Upload at most {$a} pictures and 200 MB unpacked.';
+$string['voicegender_f'] = 'female';
+$string['voicegender_m'] = 'male';
+$string['voicewho_f'] = 'Female voice';
+$string['voicewho_m'] = 'Male voice';
+$string['voices_choose2'] = 'Voice for people of the other gender';
+$string['voices_match'] = 'Match each phrase\'s voice to who says it (female or male)';
+$string['voices_match_help'] = 'Who says a phrase is read from where it belongs in the picture, such as "the male taxi driver", unless you choose it for the phrase in the scene editor. Voices already made keep their voice; this applies to voices made from now on.';
+$string['phrasevoice'] = 'Who says it';
+$string['phrasevoice_auto'] = 'From where it belongs';
+$string['thesituation'] = 'The situation';
+$string['listenfirst'] = 'Listen to the phrase first: the microphone opens when it has played.';
+$string['mustlisten'] = 'Listen before speaking';
+$string['mustlisten_desc'] = 'In Practice, learners hear each phrase before they can say it';
+$string['mustlisten_help'] = 'Stops learners from saying a phrase before they have heard how it sounds. The phrase plays when its card opens, and the microphone opens once it has played. A phrase the learner comes back to is not held back again.';
+$string['recap_correct'] = 'Placed correctly: {$a->correct} of {$a->total}';
+$string['results_carousel'] = 'Results';
+$string['results_goto'] = 'Go to slide {$a}';
+$string['results_next'] = 'Use Next to see every scene.';
+$string['results_slide'] = '{$a->number} of {$a->total}';
+$string['results_slidename'] = 'slide';
+$string['limit_count'] = '{$a->length} / {$a->max} characters';
+$string['limit_over'] = '{$a->length} / {$a->max} characters: shorten this so it fits neatly on the page';

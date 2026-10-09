@@ -164,6 +164,27 @@ class audio {
     }
 
     /**
+     * Whether an unresolved request for this phrase variant was made with this voice.
+     *
+     * @param stdClass $instance
+     * @param stdClass $phrase
+     * @param string $variant
+     * @param string $voice
+     * @return bool
+     */
+    public static function pending_with_voice(stdClass $instance, stdClass $phrase, string $variant, string $voice): bool {
+        global $DB;
+        $body = ['text' => self::text_for($phrase, $variant), 'locale' => $instance->targetlocale,
+            'speed' => self::speed_for($variant)];
+        if ($voice !== '') {
+            $body['voice'] = $voice;
+        }
+        return $DB->record_exists('ailanguageteacher_operation', ['ailanguageteacherid' => $instance->id, 'kind' => 'tts',
+            'itemid' => (int)$phrase->id * 3 + array_search($variant, self::VARIANTS, true), 'state' => 'pending',
+            'bodyhash' => operation::hash($body)]);
+    }
+
+    /**
      * Returns the audio URL for a phrase, asking the speech service for it once when there is no stored audio yet.
      *
      * A lock per audio file makes sure that learners opening a new phrase at the same time cause one request, not many.
@@ -180,7 +201,7 @@ class audio {
     }
 
     /**
-     * Creates one paid phrase recording (1 credit). Called only after a teacher explicitly asks for it.
+     * Creates one paid phrase recording (5 credits). Called only after a teacher explicitly asks for it.
      *
      * @param stdClass $instance
      * @param \context $context

@@ -53,6 +53,12 @@ class save_scene extends base {
                 'prompt' => new external_value(PARAM_TEXT, 'Speaking cue', VALUE_DEFAULT, ''),
                 'alternatives' => new external_value(PARAM_TEXT, 'Accepted answers, one per line', VALUE_DEFAULT, ''),
                 'anchor' => new external_value(PARAM_TEXT, 'Where it belongs in the picture', VALUE_DEFAULT, ''),
+                'voicegender' => new external_value(
+                    PARAM_ALPHA,
+                    'Who says it: f, m or empty (from where it belongs)',
+                    VALUE_DEFAULT,
+                    ''
+                ),
                 'x' => new external_value(PARAM_FLOAT, 'X percent', VALUE_DEFAULT, 0),
                 'y' => new external_value(PARAM_FLOAT, 'Y percent', VALUE_DEFAULT, 0),
                 'placed' => new external_value(PARAM_INT, 'Placed on the picture', VALUE_DEFAULT, 0),

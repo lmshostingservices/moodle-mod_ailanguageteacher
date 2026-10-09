@@ -29,7 +29,7 @@ use core_external\external_value;
 use mod_ailanguageteacher\local\audio;
 
 /**
- * Creates one phrase voice with LMS Labs (1 credit when delivered). Teachers only, always an explicit action.
+ * Creates one phrase voice with LMS Labs (5 credits when delivered). Teachers only, always an explicit action.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -69,13 +69,17 @@ class create_audio extends base {
         self::validate_parameters(self::execute_parameters(), compact('phraseid', 'voice', 'variant', 'discard'));
         [, , $instance, $context, $phrase] = self::load_phrase($phraseid);
         require_capability('mod/ailanguageteacher:useai', $context);
-        if (
-            !in_array($variant, audio::VARIANTS, true) ||
-                !in_array($voice, array_column((new \mod_ailanguageteacher\local\speech\lmslabs())
-                    ->voices($instance->targetlocale), 'name'), true)
-        ) {
+        $names = array_column((new \mod_ailanguageteacher\local\speech\lmslabs())->voices($instance->targetlocale), 'name');
+        if (!in_array($variant, audio::VARIANTS, true) || !in_array($voice, $names, true)) {
             throw new \moodle_exception('speechcatalogunavailable', 'mod_ailanguageteacher');
         }
+        // A phrase said by someone of the other gender gets the activity's second voice, unless a request made with
+        // the activity's voice is still unresolved: that one is asked about again (same key), never replaced.
+        $matched = \mod_ailanguageteacher\local\voices::for_phrase($instance, $phrase, $names, $voice);
+        if ($matched !== $voice && audio::pending_with_voice($instance, $phrase, $variant, $voice)) {
+            $matched = $voice;
+        }
+        $voice = $matched;
         return ['url' => audio::create($instance, $context, $phrase, $variant, (int)$USER->id, $voice, $discard)];
     }
 

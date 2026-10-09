@@ -24,74 +24,86 @@
         "mode": "test", "headline": "Passed!", "sub": "14 of 16 correct", "hasverdict": true, "pass": true,
         "verdict": "Pass mark 70% reached", "stats": [{"label": "Time", "value": "3:10", "icon": {"clock": true} }],
         "leaderboard": [{"rank": 1, "name": "Ana S.", "percent": 95, "time": "2:40", "me": true}],
-        "hasreview": true, "review": [{"title": "Arriving", "rows": [{"number": 1, "text": "Good morning", "translation": "",
-            "match": true, "chosen": "", "haslisten": true, "listen": true, "hasspeak": true, "speaktext": "86%", "speakpass": true}]}],
+        "hasreview": true, "slides": [{"label": 1, "current": true}, {"label": 2, "current": false}],
+        "review": [{"number": 1, "title": "Arriving", "image": "scene.png", "correct": 1, "total": 1, "rows": [{"number": 1,
+            "text": "Good morning", "translation": "", "match": true, "chosen": "", "haslisten": true, "listen": true,
+            "hasspeak": true, "speaktext": "86%", "speakpass": true}]}],
         "retry": true, "ring": 326.7
     }
 }}
 <div class="lt-shell lt-summary-shell lt-mode-{{mode}}" tabindex="-1">
     <div class="lt-summary">
-        <div class="lt-summary-ring">
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-                <circle class="lt-ring-bg" cx="60" cy="60" r="52"/>
-                <circle class="lt-ring-fg" cx="60" cy="60" r="52" stroke-dasharray="{{ring}}" stroke-dashoffset="{{ring}}"/>
-            </svg>
-            <div class="lt-ring-label"><strong data-region="count">0</strong><span>%</span></div>
+        <div class="lt-slide-r lt-slide-overview" tabindex="-1" role="group" aria-roledescription="{{#str}} results_slidename, mod_ailanguageteacher {{/str}}" aria-labelledby="lt-summary-title">
+            <div class="lt-summary-ring">
+                <svg viewBox="0 0 120 120" aria-hidden="true">
+                    <circle class="lt-ring-bg" cx="60" cy="60" r="52"/>
+                    <circle class="lt-ring-fg" cx="60" cy="60" r="52" stroke-dasharray="{{ring}}" stroke-dashoffset="{{ring}}"/>
+                </svg>
+                <div class="lt-ring-label"><strong data-region="count">0</strong><span>%</span></div>
+            </div>
+            {{#hasverdict}}
+            <div class="lt-verdict {{#pass}}is-pass{{/pass}}{{^pass}}is-fail{{/pass}}">
+                {{#pass}}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>{{/pass}}
+                {{^pass}}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15"/></svg>{{/pass}}
+                <span>{{verdict}}</span>
+            </div>
+            {{/hasverdict}}
+            <h3 class="lt-summary-title" id="lt-summary-title">{{headline}}</h3>
+            <p class="lt-summary-sub">{{sub}}</p>
+            <div class="lt-summary-stats">
+                {{#stats}}
+                <div class="lt-sstat">{{#icon}}{{> mod_ailanguageteacher/icon }}{{/icon}}<span>{{label}}</span><strong>{{value}}</strong></div>
+                {{/stats}}
+            </div>
+            {{#leaderboard.0}}
+            <div class="lt-leaderboard">
+                <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/></svg>{{#str}} leaderboard, mod_ailanguageteacher {{/str}}</h4>
+                <ol>
+                    {{#leaderboard}}
+                    <li class="{{#me}}is-me{{/me}}"><span class="lt-lb-rank">{{rank}}</span><span class="lt-lb-name">{{name}}{{#me}} ({{#str}} you, mod_ailanguageteacher {{/str}}){{/me}}</span><span class="lt-lb-pct">{{percent}}%</span><span class="lt-lb-time">{{time}}</span></li>
+                    {{/leaderboard}}
+                </ol>
+            </div>
+            {{/leaderboard.0}}
+            {{#hasreview}}<p class="lt-mini mb-0">{{#str}} results_next, mod_ailanguageteacher {{/str}}</p>{{/hasreview}}
         </div>
-        {{#hasverdict}}
-        <div class="lt-verdict {{#pass}}is-pass{{/pass}}{{^pass}}is-fail{{/pass}}">
-            {{#pass}}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>{{/pass}}
-            {{^pass}}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 013-3h15"/></svg>{{/pass}}
-            <span>{{verdict}}</span>
-        </div>
-        {{/hasverdict}}
-        <h3 class="lt-summary-title">{{headline}}</h3>
-        <p class="lt-summary-sub">{{sub}}</p>
-        <div class="lt-summary-stats">
-            {{#stats}}
-            <div class="lt-sstat">{{#icon}}{{> mod_ailanguageteacher/icon }}{{/icon}}<span>{{label}}</span><strong>{{value}}</strong></div>
-            {{/stats}}
-        </div>
-        {{#leaderboard.0}}
-        <div class="lt-leaderboard">
-            <h4><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0z"/></svg>{{#str}} leaderboard, mod_ailanguageteacher {{/str}}</h4>
-            <ol>
-                {{#leaderboard}}
-                <li class="{{#me}}is-me{{/me}}"><span class="lt-lb-rank">{{rank}}</span><span class="lt-lb-name">{{name}}{{#me}} ({{#str}} you, mod_ailanguageteacher {{/str}}){{/me}}</span><span class="lt-lb-pct">{{percent}}%</span><span class="lt-lb-time">{{time}}</span></li>
-                {{/leaderboard}}
-            </ol>
-        </div>
-        {{/leaderboard.0}}
         {{#hasreview}}
-        <details class="lt-review">
-            <summary>{{#str}} reviewanswers, mod_ailanguageteacher {{/str}}</summary>
-            {{#review}}
-            <h5>{{title}}</h5>
-            <table class="lt-review-table">
-                <thead><tr>
-                    <th scope="col">#</th>
-                    <th scope="col">{{#str}} phrase, mod_ailanguageteacher {{/str}}</th>
-                    <th scope="col">{{#str}} stage_match, mod_ailanguageteacher {{/str}}</th>
-                    {{#rows.0.haslisten}}<th scope="col">{{#str}} stage_listen, mod_ailanguageteacher {{/str}}</th>{{/rows.0.haslisten}}
-                    {{#rows.0.hasspeak}}<th scope="col">{{#str}} stage_speak, mod_ailanguageteacher {{/str}}</th>{{/rows.0.hasspeak}}
-                </tr></thead>
-                <tbody>
-                {{#rows}}
-                <tr>
-                    <td>{{number}}</td>
-                    <td><span class="lt-review-phrase" dir="auto">{{text}}</span>{{#translation}}<span class="lt-review-trans" dir="auto">{{.}}</span>{{/translation}}</td>
-                    <td class="{{#match}}is-yes{{/match}}{{^match}}is-no{{/match}}">
-                        {{#match}}<span class="lt-yes">{{#str}} correct, mod_ailanguageteacher {{/str}}</span>{{/match}}
-                        {{^match}}<span class="lt-no">{{#str}} incorrect, mod_ailanguageteacher {{/str}}</span>{{#chosen}}<span class="lt-review-trans" dir="auto">{{#str}} youplaced, mod_ailanguageteacher, {{chosen}} {{/str}}</span>{{/chosen}}{{/match}}
-                    </td>
-                    {{#haslisten}}<td class="{{#listen}}is-yes{{/listen}}{{^listen}}is-no{{/listen}}">{{#listen}}<span class="lt-yes">{{#str}} correct, mod_ailanguageteacher {{/str}}</span>{{/listen}}{{^listen}}<span class="lt-no">{{#str}} incorrect, mod_ailanguageteacher {{/str}}</span>{{/listen}}</td>{{/haslisten}}
-                    {{#hasspeak}}<td class="{{#speakpass}}is-yes{{/speakpass}}{{^speakpass}}is-no{{/speakpass}}"><span class="{{#speakpass}}lt-yes{{/speakpass}}{{^speakpass}}lt-no{{/speakpass}}">{{speaktext}}</span></td>{{/hasspeak}}
-                </tr>
-                {{/rows}}
-                </tbody>
-            </table>
-            {{/review}}
-        </details>
+        {{#review}}
+        <div class="lt-slide-r lt-slide-scene" tabindex="-1" role="group" aria-roledescription="{{#str}} results_slidename, mod_ailanguageteacher {{/str}}" aria-labelledby="lt-review-title-{{number}}" hidden>
+            <div class="lt-recap">
+                {{#image}}<div class="lt-recap-pic"><img src="{{image}}" alt="" loading="lazy"></div>{{/image}}
+                <div class="lt-recap-body">
+                    <h4 class="lt-recap-title" id="lt-review-title-{{number}}" dir="auto">{{title}}</h4>
+                    <p class="lt-mini">{{#str}} recap_correct, mod_ailanguageteacher, { "correct": {{correct}}, "total": {{total}} } {{/str}}</p>
+                    <ul class="lt-recap-rows">
+                        {{#rows}}
+                        <li class="lt-recap-row {{#match}}is-yes{{/match}}{{^match}}is-no{{/match}}">
+                            <span class="lt-recap-num">{{number}}</span>
+                            <span class="lt-recap-text">
+                                <span class="lt-review-phrase" dir="auto">{{text}}</span>
+                                {{#translation}}<span class="lt-review-trans" dir="auto">{{.}}</span>{{/translation}}
+                                {{^match}}{{#chosen}}<span class="lt-review-trans" dir="auto">{{#str}} youplaced, mod_ailanguageteacher, {{chosen}} {{/str}}</span>{{/chosen}}{{/match}}
+                            </span>
+                            <span class="lt-recap-marks">
+                                <span class="{{#match}}lt-yes{{/match}}{{^match}}lt-no{{/match}}">{{#str}} stage_match, mod_ailanguageteacher {{/str}}</span>
+                                {{#haslisten}}<span class="{{#listen}}lt-yes{{/listen}}{{^listen}}lt-no{{/listen}}">{{#str}} stage_listen, mod_ailanguageteacher {{/str}}</span>{{/haslisten}}
+                                {{#hasspeak}}<span class="{{#speakpass}}lt-yes{{/speakpass}}{{^speakpass}}lt-no{{/speakpass}}">{{#str}} stage_speak, mod_ailanguageteacher {{/str}} {{speaktext}}</span>{{/hasspeak}}
+                            </span>
+                        </li>
+                        {{/rows}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {{/review}}
+        <nav class="lt-slidenav" aria-label="{{#str}} results_carousel, mod_ailanguageteacher {{/str}}">
+            <button type="button" class="lt-iconbtn" data-action="slideprev" aria-label="{{#str}} previous, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <div class="lt-slidedots">
+                {{#slides}}<button type="button" class="lt-slidedot {{#current}}is-current{{/current}}" aria-label="{{#str}} results_goto, mod_ailanguageteacher, {{label}} {{/str}}"></button>{{/slides}}
+            </div>
+            <span class="lt-mini" data-region="slidecount" aria-live="polite"></span>
+            <button type="button" class="lt-iconbtn" data-action="slidenext" aria-label="{{#str}} next, mod_ailanguageteacher {{/str}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+        </nav>
         {{/hasreview}}
         <div class="lt-summary-actions">
             <button type="button" class="lt-btn lt-btn-ghost" data-action="again" {{^retry}}disabled{{/retry}}>

@@ -54,7 +54,7 @@
             {{#situations}}<option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/situations}}
         </select>
         <label class="lt-mini d-block mb-1" for="lt-context">{{#str}} scenecontext, mod_ailanguageteacher {{/str}}</label>
-        <textarea id="lt-context" class="lt-textarea mb-2" rows="2" data-field="context">{{context}}</textarea>
+        <textarea id="lt-context" class="lt-textarea mb-2" rows="2" data-field="context" data-lt-limit="300">{{context}}</textarea>
         <label class="lt-mini d-block mb-1" for="lt-imageprompt">{{#str}} sceneimageprompt, mod_ailanguageteacher {{/str}}</label>
         <textarea id="lt-imageprompt" class="lt-textarea" rows="3" data-field="imageprompt">{{imageprompt}}</textarea>
     </div>

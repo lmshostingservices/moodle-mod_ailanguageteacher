@@ -109,18 +109,18 @@ final class services_test extends \advanced_testcase {
             [['text' => 'Hi there', 'x' => 10, 'y' => 10, 'placed' => 1]]]);
         $this->assertCount(1, $res['ids']);
         $this->assertSame('Renamed', $DB->get_field('ailanguageteacher_scene', 'title', ['id' => $this->scene->id]));
-        // Scenes from the teacher's own AI assistant are charged (3 credits each) before they are created.
+        // Scenes from the teacher's own AI assistant are charged (5 credits each) before they are created.
         set_config('lmslabssiteid', 'site', 'mod_ailanguageteacher');
         set_config('lmslabsapikey', 'key', 'mod_ailanguageteacher');
         $sent = [];
         \mod_ailanguageteacher\local\remote::$transport = function ($url, $headers, $body) use (&$sent) {
             $sent[] = [$url, json_decode($body, true)];
-            return [200, json_encode(['requestId' => 'imp', 'creditsCharged' => 3, 'creditsBalance' => 40])];
+            return [200, json_encode(['requestId' => 'imp', 'creditsCharged' => 5, 'creditsBalance' => 40])];
         };
         $draft = json_encode(['scenes' => [['title' => 'Paying', 'phrases' => [['text' => 'How much?']]]]]);
         $res = $this->call('editingteacher', 'import_lesson', [(int)$this->cm->id, $draft]);
         $this->assertSame(1, $res['scenes']);
-        $this->assertSame(3, $res['charged']);
+        $this->assertSame(5, $res['charged']);
         $this->assertSame('https://lms-labs.com/api/moodle/ai-language-teacher/lessons/import', $sent[0][0]);
         $this->assertSame(['sceneCount' => 1, 'titles' => ['Paying']], $sent[0][1]);
         \mod_ailanguageteacher\local\remote::$transport = null;

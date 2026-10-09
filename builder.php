@@ -158,7 +158,7 @@ if ($step === 'build') {
     $balance = $provider->balance();
     $scenes = manager::get_scenes($instance->id);
     $names = lesson::chosen_situations($instance);
-    // Both ways of creating scenes go through LMS Labs (3 credits per scene), so both need it.
+    // Both ways of creating scenes go through LMS Labs (5 credits per scene), so both need it.
     $canai = $provider->can_generate() && has_capability('mod/ailanguageteacher:useai', $context);
     $templatedata = [
         'cmid' => (int)$cm->id,

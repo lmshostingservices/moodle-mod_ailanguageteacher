@@ -102,6 +102,8 @@ class mod_ailanguageteacher_mod_form extends moodleform_mod {
         $mform->addElement('select', 'repetitions', get_string('repetitions', $c), array_combine(range(1, 10), range(1, 10)));
         $mform->setDefault('repetitions', 3);
         $mform->addHelpButton('repetitions', 'repetitions', $c);
+        $mform->addElement('advcheckbox', 'mustlisten', get_string('mustlisten', $c), get_string('mustlisten_desc', $c));
+        $mform->addHelpButton('mustlisten', 'mustlisten', $c);
         $mform->addElement('advcheckbox', 'consecutive', get_string('consecutive', $c), get_string('consecutive_desc', $c));
         $mform->addElement(
             'select',

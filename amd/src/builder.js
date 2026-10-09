@@ -194,7 +194,7 @@ export const initBuild = async(selector) => {
                 Notification.alert('', S.lessonempty);
                 return;
             }
-            // The teacher's own AI assistant: 3 credits per scene, confirmed first. An LMS Labs draft is paid for.
+            // The teacher's own AI assistant: charged per scene like LMS Labs AI, confirmed first. An LMS Labs draft is paid for.
             if (!draftid && !await confirm(fmt(S.import_confirm, {count: keep.length, credits: keep.length * perscene}))) {
                 return;
             }

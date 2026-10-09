@@ -24,7 +24,7 @@ use mod_ailanguageteacher\local\remote;
 use PHPUnit\Framework\Attributes\CoversClass;
 
 /**
- * Charging and recovery: every scene costs 3 credits whichever way it is made, nothing is charged twice, and a refused
+ * Charging and recovery: every scene costs 5 credits whichever way it is made, nothing is charged twice, and a refused
  * or abandoned request never leaves the teacher stuck.
  *
  * @package    mod_ailanguageteacher
@@ -131,7 +131,7 @@ final class charging_test extends \advanced_testcase {
 
     /**
      * AI-assistant scenes: refused (nothing created, nothing stuck), unconfirmed (same key, never a second charge),
-     * then confirmed (created once, 3 credits per scene).
+     * then confirmed (created once, 5 credits per scene).
      */
     public function test_assistant_scenes_are_charged_once(): void {
         global $DB;
@@ -165,10 +165,10 @@ final class charging_test extends \advanced_testcase {
         $this->assertSame($this->sent[1][2], $this->sent[2][2]);
         $this->assertSame($start, $count());
 
-        // Confirmed: created, charged 6 for 2 scenes, with the same key.
-        $this->answers = [$this->answer(200, ['requestId' => 'imp', 'creditsCharged' => 6, 'creditsBalance' => 30])];
+        // Confirmed: created, charged 10 for 2 scenes, with the same key.
+        $this->answers = [$this->answer(200, ['requestId' => 'imp', 'creditsCharged' => 10, 'creditsBalance' => 30])];
         $res = $this->call('import_lesson', [$this->cmid(), $this->assistant(2)]);
-        $this->assertSame(['scenes' => 2, 'phrases' => 2, 'charged' => 6, 'balance' => 30], $res);
+        $this->assertSame(['scenes' => 2, 'phrases' => 2, 'charged' => 10, 'balance' => 30], $res);
         $this->assertSame($this->sent[2][2], $this->sent[3][2]);
         $this->assertSame($start + 2, $count());
 
@@ -186,9 +186,9 @@ final class charging_test extends \advanced_testcase {
             $this->assertSame('operationconflict', $e->errorcode);
         }
         $this->assertCount(5, $this->sent);
-        $this->answers = [$this->answer(200, ['creditsCharged' => 9])];
+        $this->answers = [$this->answer(200, ['requestId' => 'imp3'])];
         $res = $this->call('import_lesson', [$this->cmid(), $this->assistant(3), 0, true]);
-        $this->assertSame(9, $res['charged']);
+        $this->assertSame(15, $res['charged'], 'Without creditsCharged, 5 credits per scene are assumed.');
         $this->assertSame($start + 5, $count());
     }
 

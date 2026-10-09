@@ -22,7 +22,7 @@
 
     Example context (json):
     {
-        "id": 3, "title": "The housekeeper arrives", "context": "It is 8 am.", "image": "scene.png", "ratio": 1.6,
+        "id": 3, "title": "The housekeeper arrives", "context": "It is 8 am.", "contextlines": ["It is 8 am."], "image": "scene.png", "ratio": 1.6,
         "width": 1600, "height": 1000, "n": 2, "compact": false, "study": true, "hastray": false, "lang": "en-AU",
         "pins": [{"token": "p1", "number": 1, "x": 30, "y": 40, "text": "Good morning!", "romanisation": "",
             "color": "#6366F1", "ink": "#4338CA"}],
@@ -56,7 +56,12 @@
         </div>
         <svg class="lt-lines" aria-hidden="true" focusable="false"></svg>
     </div>
-    {{#context}}<p class="lt-scenecontext" dir="auto">{{context}}</p>{{/context}}
+    {{#contextlines.0}}
+    <div class="lt-scenecontext">
+        <span class="lt-scenecontext-title"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6-5.3-6-11a6 6 0 0 1 12 0c0 5.7-6 11-6 11z"/><circle cx="12" cy="10" r="2.5"/></svg>{{#str}} thesituation, mod_ailanguageteacher {{/str}}</span>
+        {{#contextlines}}<p dir="auto">{{.}}</p>{{/contextlines}}
+    </div>
+    {{/contextlines.0}}
     {{#hastray}}
     <div class="lt-tray" role="group" aria-label="{{#str}} labeltray, mod_ailanguageteacher {{/str}}">
         {{#chips}}

@@ -69,12 +69,22 @@ if ($sceneid) {
 }
 
 if ($action === 'voice') {
-    // The one voice used for all of this activity's phrase audio.
+    // The activity's voice, the second voice for people of the other gender, and whether voices match who speaks.
     require_sesskey();
     $voice = required_param('voice', PARAM_TEXT);
+    $voice2 = optional_param('voice2', '', PARAM_TEXT);
     $names = array_column((new \mod_ailanguageteacher\local\speech\lmslabs())->voices((string)$instance->targetlocale), 'name');
     if (in_array($voice, $names, true)) {
-        $DB->set_field('ailanguageteacher', 'ttsvoice', $voice, ['id' => $instance->id]);
+        $update = (object)['id' => $instance->id, 'ttsvoice' => $voice,
+            'voicematch' => optional_param('voicematch', 0, PARAM_BOOL) ? 1 : 0];
+        if (
+            in_array($voice2, $names, true) && \mod_ailanguageteacher\local\voices::gender_of_voice($voice2) !== ''
+                && \mod_ailanguageteacher\local\voices::gender_of_voice($voice2) !==
+                \mod_ailanguageteacher\local\voices::gender_of_voice($voice)
+        ) {
+            $update->ttsvoice2 = $voice2;
+        }
+        $DB->update_record('ailanguageteacher', $update);
     }
     redirect($baseurl);
 }
@@ -151,8 +161,10 @@ foreach ($scenes as $s) {
     $voiced = [];
     foreach ($pins as $p) {
         if (trim((string)$p->text) !== '') {
+            $who = !empty($instance->voicematch) ? \mod_ailanguageteacher\local\voices::gender_of_phrase($p) : '';
             $voiced[] = ['id' => (int)$p->id, 'text' => format_string($p->text, true, ['context' => $context]),
-                'hasvoice' => !isset($novoice[(int)$p->id])];
+                'hasvoice' => !isset($novoice[(int)$p->id]),
+                'who' => $who !== '' ? get_string('voicewho_' . $who, 'mod_ailanguageteacher') : ''];
         }
     }
     $key = (int)$s->situationid;
@@ -198,6 +210,7 @@ if (!$total) {
 
 // The voice catalogue (cached) for the Voices step.
 $voicedata = [];
+$voice2data = [];
 $canvoice = false;
 if ($step === setuppath::VOICES && $state['voices'] && has_capability('mod/ailanguageteacher:useai', $context)) {
     try {
@@ -206,9 +219,18 @@ if ($step === setuppath::VOICES && $state['voices'] && has_capability('mod/ailan
         $names = [];
     }
     $current = in_array((string)$instance->ttsvoice, $names, true) ? (string)$instance->ttsvoice : ($names[0] ?? '');
+    $sexlabel = fn($name) => \mod_ailanguageteacher\local\voices::type($name) .
+        (($g = \mod_ailanguageteacher\local\voices::gender_of_voice($name)) !== '' ? ' (' . $str('voicegender_' . $g) . ')' : '');
     foreach ($names as $name) {
-        $voicedata[] = ['name' => $name, 'label' => preg_replace('/^.*-Chirp3-HD-/', '', $name),
-            'selected' => $name === $current];
+        $voicedata[] = ['name' => $name, 'label' => $sexlabel($name), 'selected' => $name === $current];
+    }
+    $second = \mod_ailanguageteacher\local\voices::second((object)['ttsvoice' => $current,
+        'ttsvoice2' => (string)$instance->ttsvoice2], $names);
+    $othergender = \mod_ailanguageteacher\local\voices::gender_of_voice($current) === 'm' ? 'f' : 'm';
+    foreach ($names as $name) {
+        if (\mod_ailanguageteacher\local\voices::gender_of_voice($name) === $othergender) {
+            $voice2data[] = ['name' => $name, 'label' => $sexlabel($name), 'selected' => $name === $second];
+        }
     }
     $canvoice = (bool)$names;
 }
@@ -228,11 +250,15 @@ echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
     'canvoice' => $canvoice,
     'novoiceservice' => !$state['voices'],
     'voicelist' => $voicedata,
+    'voice2list' => $voice2data,
+    'hasvoice2' => (bool)$voice2data,
+    'voicematch' => !empty($instance->voicematch),
     'voiceaction' => $baseurl->out(false),
     'sesskey' => $sesskey,
     'missingvoices' => count($state['novoice']),
     'missingvoiceids' => implode(',', $state['novoice']),
-    'missingvoicecredits' => count($state['novoice']),
+    'missingvoicecredits' => count($state['novoice']) * \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
+    'voicecredits' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
     'nav' => [
         'backurl' => setuppath::url((int)$cm->id, $step - 1)->out(false),
         'backlabel' => $str('setup_back'),

@@ -29,7 +29,8 @@ import {loadStrings, fmt, el, render, renderAll, readable} from 'mod_ailanguaget
 
 const KEYS = ['saved', 'saving', 'unsaved', 'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
-    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'discard_confirm'];
+    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'discard_confirm', 'limit_count',
+    'limit_over'];
 
 let S = {};
 
@@ -48,6 +49,35 @@ const parseLine = (line) => {
 /**
  * The editor.
  */
+/**
+ * Adds a live "120 / 300" counter under fields with data-lt-limit, so the text fits neatly on the learner's page.
+ *
+ * @param {HTMLElement} root
+ */
+const limits = (root) => {
+    root.querySelectorAll('[data-lt-limit]').forEach((field) => {
+        if (field.dataset.ltCounted) {
+            return;
+        }
+        field.dataset.ltCounted = '1';
+        const max = parseInt(field.dataset.ltLimit, 10);
+        const counter = document.createElement('span');
+        counter.className = 'lt-limit lt-mini';
+        counter.id = 'lt-limit-' + Math.random().toString(36).slice(2);
+        field.setAttribute('aria-describedby', counter.id);
+        field.insertAdjacentElement('afterend', counter);
+        const update = () => {
+            const length = Array.from(field.value.trim()).length;
+            counter.textContent = fmt(length > max ? S.limit_over : S.limit_count, {length, max});
+            counter.classList.toggle('is-over', length > max);
+            // Announced only when the text goes over the limit, not on every key.
+            counter.setAttribute('role', length > max ? 'status' : 'note');
+        };
+        field.addEventListener('input', update);
+        update();
+    });
+};
+
 class Editor {
     /**
      * Constructor.
@@ -85,6 +115,7 @@ class Editor {
         const nodes = await renderAll('editor_layout', {...c, ratio: c.width / c.height,
             situations: c.situations.map((s) => ({...s, selected: s.id === c.situationid}))});
         this.root.replaceChildren(...nodes);
+        limits(this.root);
         const q = (r) => this.root.querySelector(`[data-region="${r}"]`);
         this.figure = q('figure');
         this.cursor = q('cursor');
@@ -427,6 +458,7 @@ class Editor {
                 romanise: c.romanise, lang: c.locale, hasrecording: !!phrase.recording,
                 palette: c.palette.map((color) => ({color, on: color === phrase.color})),
                 targetname: c.targetname, supportname: c.supportname,
+                voiceauto: !phrase.voicegender, voicef: phrase.voicegender === 'f', voicem: phrase.voicegender === 'm',
             }));
         }
         if (this.drawToken !== token) {
@@ -434,6 +466,7 @@ class Editor {
         }
         this.list.replaceChildren(...rows);
         rows.forEach((row, i) => this.wireRow(row, sorted[i]));
+        rows.forEach((row) => limits(row));
     }
 
     /**
@@ -702,7 +735,7 @@ class Editor {
         const payload = sent.map((p) => ({id: p.id || 0, text: p.text.trim(), romanisation: p.romanisation || '',
             translation: p.translation || '', usagenote: p.usagenote || '', example: p.example || '',
             exampletrans: p.exampletrans || '', prompt: p.prompt || '', alternatives: p.alternatives || '',
-            anchor: p.anchor || '', x: p.x, y: p.y, placed: p.placed ? 1 : 0, color: p.color,
+            anchor: p.anchor || '', voicegender: p.voicegender || '', x: p.x, y: p.y, placed: p.placed ? 1 : 0, color: p.color,
             distractor: p.distractor ? 1 : 0}));
         this.dirty = false;
         this.saving = Promise.resolve(Ajax.call([{methodname: 'mod_ailanguageteacher_save_scene', args: {

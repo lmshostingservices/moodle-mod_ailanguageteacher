@@ -2,6 +2,25 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.0] - 2026-10-10
+
+Builds on 1.2.1. New tariffs approved by the owner on 8 Oct 2026: **5 credits per scene** (LMS Labs AI or the teacher's own AI assistant; was 3) and **5 credits per phrase voice clip** (was 1). Unchanged: 50 to unlock. LMS Labs charges these; Moodle shows them and asks first.
+
+### Fixed
+
+- **"Error reading from database" when creating scenes** on sites that had installed 1.1.0. Those sites never got the stored-requests table. The upgrade now creates it, moves any request 1.1.0 left unresolved (with its key, so asking again cannot charge twice), and removes the old table.
+
+### Added
+
+- **Voices that match who says each phrase.** A phrase that belongs to a woman or a man in the picture ("the male taxi driver") gets a female or male voice. The teacher sets the second voice in the Voices step and can choose per phrase in the scene editor. Voices already made keep their voice.
+- **"Listen before speaking"** (Practice): the microphone opens once the learner has heard the phrase.
+- **Test results as slides:** the result first, then one slide per scene with its picture and every phrase marked.
+- **The situation as a short card**, one sentence per line, and character counters in the scene editor.
+
+### Changed
+
+- The prompt for the teacher's own AI assistant asks for "the woman at the door" or "the male taxi driver", so voices can match.
+
 ## [v1.2.1] - 2026-10-09
 
 Builds on 1.2.0, which it replaces. It follows the LMS Labs handover of 9 Oct 2026 for the lesson import route. No tariff or database changes.

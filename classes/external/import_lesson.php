@@ -28,7 +28,7 @@ use moodle_exception;
  * Creates scenes and phrases from a lesson draft.
  *
  * A draft LMS Labs AI delivered (already charged) is created free, once. Scenes written with the teacher's own AI
- * assistant are charged like LMS Labs drafts, 3 credits per scene, and created only after LMS Labs confirms.
+ * assistant are charged like LMS Labs drafts, 5 credits per scene, and created only after LMS Labs confirms.
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -92,7 +92,7 @@ class import_lesson extends base {
                 'body' => '', 'result' => null]);
             return $result + ['charged' => 0, 'balance' => -1];
         }
-        // The teacher's own AI assistant: 3 credits per scene, confirmed by LMS Labs before anything is created.
+        // The teacher's own AI assistant: 5 credits per scene, confirmed by LMS Labs before anything is created.
         require_capability('mod/ailanguageteacher:useai', $context);
         if (\mod_ailanguageteacher\local\credentials::find() === null) {
             throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');

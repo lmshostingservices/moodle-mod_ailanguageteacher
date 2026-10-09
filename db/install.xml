@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/ailanguageteacher/db" VERSION="20261008" COMMENT="XMLDB file for Moodle mod_ailanguageteacher"
+<XMLDB PATH="mod/ailanguageteacher/db" VERSION="20261010" COMMENT="XMLDB file for Moodle mod_ailanguageteacher"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -41,6 +41,8 @@
         <FIELD NAME="situations" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON of the situations chosen in the lesson builder"/>
         <FIELD NAME="imagestyle" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="illustration" SEQUENCE="false"/>
         <FIELD NAME="ttsvoice" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="LMS Labs Chirp 3 HD voice for the activity's phrase audio"/>
+        <FIELD NAME="ttsvoice2" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="Voice for phrases said by people of the other gender (Chirp 3 HD)"/>
+        <FIELD NAME="voicematch" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Phrase voices match who says them: female or male"/>
         <FIELD NAME="showromanisation" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="allowstudy" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="allowpractice" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
@@ -59,6 +61,7 @@
         <FIELD NAME="timelimit" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Test time limit in seconds, 0 = none"/>
         <FIELD NAME="shufflelabels" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="sounds" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="mustlisten" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="In Practice, learners hear a phrase before they can say it"/>
         <FIELD NAME="leaderboard" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="completionstudy" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="completionmastery" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
@@ -116,6 +119,7 @@
         <FIELD NAME="prompt" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Speaking cue in the learners' language"/>
         <FIELD NAME="alternatives" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Other accepted spoken answers, one per line"/>
         <FIELD NAME="anchor" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Where the phrase belongs in the picture"/>
+        <FIELD NAME="voicegender" TYPE="char" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Who says it sounds female (f) or male (m); empty: worked out from where it belongs"/>
         <FIELD NAME="x" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="4" COMMENT="Horizontal position, percent of image width"/>
         <FIELD NAME="y" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" DECIMALS="4" COMMENT="Vertical position, percent of image height"/>
         <FIELD NAME="placed" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 once the phrase has a position on the picture"/>

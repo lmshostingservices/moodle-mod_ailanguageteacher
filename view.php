@@ -190,6 +190,7 @@ $config = [
     'speakmode' => audio::speaking_mode($instance->targetlocale),
     'hasservicetts' => audio::has_service_tts($instance->targetlocale),
     'speaking' => (int)$instance->speaking,
+    'mustlisten' => (int)$instance->mustlisten,
     'passscore' => (int)$instance->passscore,
     'repetitions' => (int)$instance->repetitions,
     'consecutive' => (int)$instance->consecutive,

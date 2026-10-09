@@ -24,11 +24,11 @@
         "bar": {"current": 7, "total": 9, "steps": [{"number": 7, "name": "Voices", "done": false, "current": true, "dot": 0}]},
         "pictures": false, "voicesstep": true, "check": false, "hasscenes": true, "count": 1, "cmid": 1,
         "canvoice": true, "novoiceservice": false, "voiceaction": "#", "sesskey": "abc",
-        "voicelist": [{"name": "en-AU-Chirp3-HD-Kore", "label": "Kore", "selected": true}],
-        "missingvoices": 1, "missingvoiceids": "4", "missingvoicecredits": 1,
+        "voicelist": [{"name": "en-AU-Chirp3-HD-Kore", "label": "Kore (female)", "selected": true}], "voice2list": [{"name": "en-AU-Chirp3-HD-Charon", "label": "Charon (male)", "selected": true}], "hasvoice2": true, "voicematch": true,
+        "missingvoices": 1, "missingvoiceids": "4", "missingvoicecredits": 5, "voicecredits": 5,
         "groups": [{"name": "Greetings", "cards": [{"id": 1, "number": 1, "title": "At reception", "image": "",
             "noimage": true, "phrases": 1, "placed": 0, "placedok": false, "novoices": 1,
-            "voices": [{"id": 4, "text": "Good morning", "hasvoice": false}],
+            "voices": [{"id": 4, "text": "Good morning", "hasvoice": false, "who": "Male voice"}],
             "editurl": "#", "replaceurl": "#", "deleteurl": "#", "upurl": null, "downurl": null}]}],
         "nav": {"backurl": "#", "backlabel": "Back", "nexturl": "#", "nextlabel": "Next: Check the scenes", "blocked": ""}
     }
@@ -58,10 +58,18 @@
             <select id="lt-voice" name="voice" class="custom-select form-select" data-region="voice">
                 {{#voicelist}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/voicelist}}
             </select>
+            {{#hasvoice2}}
+            <label for="lt-voice2"><strong>{{#str}} voices_choose2, mod_ailanguageteacher {{/str}}</strong></label>
+            <select id="lt-voice2" name="voice2" class="custom-select form-select">
+                {{#voice2list}}<option value="{{name}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/voice2list}}
+            </select>
+            {{/hasvoice2}}
+            <label class="lt-check-row lt-voicematch"><input type="checkbox" name="voicematch" value="1" {{#voicematch}}checked{{/voicematch}}><span>{{#str}} voices_match, mod_ailanguageteacher {{/str}}</span></label>
             <button type="submit" class="lt-btn lt-btn-ghost lt-btn-sm">{{#str}} voices_save, mod_ailanguageteacher {{/str}}</button>
         </form>
+        <p class="lt-mini">{{#str}} voices_match_help, mod_ailanguageteacher {{/str}}</p>
         {{#missingvoices}}
-        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" data-phrases="{{missingvoiceids}}">
+        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" data-phrases="{{missingvoiceids}}" data-credits="{{voicecredits}}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
             <span>{{#str}} voices_createall, mod_ailanguageteacher, { "count": {{missingvoices}}, "credits": {{missingvoicecredits}} } {{/str}}</span>
         </button>
@@ -98,7 +106,7 @@
                 {{/pictures}}
                 {{#voicesstep}}
                 <ul class="lt-voicelist">
-                    {{#voices}}<li class="{{^hasvoice}}is-warn{{/hasvoice}}" data-phrase="{{id}}"><span>{{text}}</span> <span class="lt-mini">{{#hasvoice}}{{#str}} voice_ready, mod_ailanguageteacher {{/str}}{{/hasvoice}}{{^hasvoice}}{{#str}} voice_missing, mod_ailanguageteacher {{/str}}{{/hasvoice}}</span></li>{{/voices}}
+                    {{#voices}}<li class="{{^hasvoice}}is-warn{{/hasvoice}}" data-phrase="{{id}}"><span>{{text}}</span> {{#who}}<span class="lt-voicewho">{{.}}</span> {{/who}}<span class="lt-mini">{{#hasvoice}}{{#str}} voice_ready, mod_ailanguageteacher {{/str}}{{/hasvoice}}{{^hasvoice}}{{#str}} voice_missing, mod_ailanguageteacher {{/str}}{{/hasvoice}}</span></li>{{/voices}}
                 </ul>
                 {{/voicesstep}}
                 {{#check}}

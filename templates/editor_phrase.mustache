@@ -23,7 +23,7 @@
     {
         "key": "k1", "number": 1, "color": "#6366F1", "selected": true, "unplaced": false, "distractor": false,
         "text": "Good morning!", "romanisation": "", "translation": "", "usagenote": "", "example": "", "exampletrans": "",
-        "prompt": "", "alternatives": "", "anchor": "", "romanise": false, "lang": "en-AU", "hasrecording": false,
+        "prompt": "", "alternatives": "", "anchor": "", "voiceauto": true, "voicef": false, "voicem": false, "romanise": false, "lang": "en-AU", "hasrecording": false,
         "palette": [{"color": "#6366F1", "on": true}], "targetname": "English", "supportname": "Thai"
     }
 }}
@@ -44,12 +44,17 @@
             <label><span class="lt-mini">{{#str}} romanisation, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="romanisation" value="{{romanisation}}" maxlength="255"></label>
             {{/romanise}}
             <label><span class="lt-mini">{{#str}} meaningin, mod_ailanguageteacher, {{supportname}} {{/str}}</span><input type="text" class="lt-input" data-field="translation" value="{{translation}}" maxlength="255" dir="auto"></label>
-            <label><span class="lt-mini">{{#str}} whentouse, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="usagenote" dir="auto">{{usagenote}}</textarea></label>
+            <label><span class="lt-mini">{{#str}} whentouse, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="usagenote" dir="auto" data-lt-limit="200">{{usagenote}}</textarea></label>
             <label><span class="lt-mini">{{#str}} example, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="example" value="{{example}}" maxlength="255" dir="auto" lang="{{lang}}"></label>
             <label><span class="lt-mini">{{#str}} examplemeaning, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="exampletrans" value="{{exampletrans}}" maxlength="255" dir="auto"></label>
             <label><span class="lt-mini">{{#str}} speakingcue, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="prompt" value="{{prompt}}" maxlength="255" dir="auto" placeholder="{{#str}} speakingcue_help, mod_ailanguageteacher {{/str}}"></label>
             <label><span class="lt-mini">{{#str}} alternatives, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="alternatives" dir="auto" lang="{{lang}}" placeholder="{{#str}} alternatives_help, mod_ailanguageteacher {{/str}}">{{alternatives}}</textarea></label>
             <label><span class="lt-mini">{{#str}} anchor, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="anchor" value="{{anchor}}" maxlength="255"></label>
+            <label><span class="lt-mini">{{#str}} phrasevoice, mod_ailanguageteacher {{/str}}</span><select class="custom-select form-select lt-input" data-field="voicegender">
+                <option value="" {{#voiceauto}}selected{{/voiceauto}}>{{#str}} phrasevoice_auto, mod_ailanguageteacher {{/str}}</option>
+                <option value="f" {{#voicef}}selected{{/voicef}}>{{#str}} voicewho_f, mod_ailanguageteacher {{/str}}</option>
+                <option value="m" {{#voicem}}selected{{/voicem}}>{{#str}} voicewho_m, mod_ailanguageteacher {{/str}}</option>
+            </select></label>
         </div>
         <div class="lt-recording">
             <span class="lt-mini">{{#str}} yourrecording, mod_ailanguageteacher {{/str}}</span>

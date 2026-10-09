@@ -75,8 +75,8 @@ class manager {
      */
     public static function prepare_instance_data(stdClass $data): stdClass {
         $flags = ['allowstudy', 'allowpractice', 'allowtest', 'sequential', 'speaking', 'consecutive', 'testlistening',
-            'testspeaking', 'shufflelabels', 'sounds', 'leaderboard', 'showromanisation', 'completionstudy',
-            'completionmastery', 'completionfinish'];
+            'testspeaking', 'shufflelabels', 'sounds', 'mustlisten', 'voicematch', 'leaderboard', 'showromanisation',
+            'completionstudy', 'completionmastery', 'completionfinish'];
         foreach ($flags as $flag) {
             if (property_exists($data, $flag)) {
                 $data->$flag = empty($data->$flag) ? 0 : 1;
@@ -854,6 +854,7 @@ class manager {
             'prompt' => self::clean_line($item['prompt'] ?? ''),
             'alternatives' => $alternatives,
             'anchor' => self::clean_line($item['anchor'] ?? ''),
+            'voicegender' => in_array($item['voicegender'] ?? '', ['f', 'm'], true) ? $item['voicegender'] : null,
             'x' => $placed ? max(0, min(100, round((float)($item['x'] ?? 0), 4))) : 0,
             'y' => $placed ? max(0, min(100, round((float)($item['y'] ?? 0), 4))) : 0,
             'placed' => $placed ? 1 : 0,
@@ -886,6 +887,7 @@ class manager {
                 'prompt' => (string)$phrase->prompt,
                 'alternatives' => (string)$phrase->alternatives,
                 'anchor' => (string)$phrase->anchor,
+                'voicegender' => (string)($phrase->voicegender ?? ''),
                 'x' => (float)$phrase->x,
                 'y' => (float)$phrase->y,
                 'placed' => (int)$phrase->placed,

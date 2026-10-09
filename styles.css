@@ -4156,3 +4156,171 @@
 .path-mod-ailanguageteacher .lt-setup-progress {
     margin: 0;
 }
+
+/* 1.3.0: the situation as a short card, one sentence per line. */
+.path-mod-ailanguageteacher .lt-scenecontext {
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--lt-border);
+    border-left: 4px solid var(--lt-primary);
+    background: var(--lt-surface);
+    white-space: normal;
+}
+.path-mod-ailanguageteacher .lt-scenecontext p {
+    margin: 0;
+    line-height: 1.5;
+}
+.path-mod-ailanguageteacher .lt-scenecontext p + p {
+    margin-top: 4px;
+}
+.path-mod-ailanguageteacher .lt-scenecontext-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    color: var(--lt-primary);
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+.path-mod-ailanguageteacher .lt-scenecontext-title svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* 1.3.0: results as slides. */
+.path-mod-ailanguageteacher .lt-summary-shell .lt-summary {
+    max-width: 760px;
+}
+.path-mod-ailanguageteacher .lt-slide-r:focus {
+    outline: none;
+}
+.path-mod-ailanguageteacher .lt-recap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 18px;
+    align-items: start;
+    text-align: left;
+}
+.path-mod-ailanguageteacher .lt-recap-pic {
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--lt-surface-2);
+    aspect-ratio: 16 / 10;
+}
+.path-mod-ailanguageteacher .lt-recap-pic img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.path-mod-ailanguageteacher .lt-recap-title {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+.path-mod-ailanguageteacher .lt-recap-rows {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.path-mod-ailanguageteacher .lt-recap-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 4px 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--lt-border);
+    border-left: 4px solid var(--lt-success);
+    background: var(--lt-surface);
+}
+.path-mod-ailanguageteacher .lt-recap-row.is-no {
+    border-left-color: var(--lt-danger);
+}
+.path-mod-ailanguageteacher .lt-recap-num {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: var(--lt-surface-2);
+    font-weight: 800;
+    font-size: .85rem;
+}
+.path-mod-ailanguageteacher .lt-recap-marks {
+    grid-column: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    font-size: .82rem;
+}
+.path-mod-ailanguageteacher .lt-slidenav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 18px 0 6px;
+}
+.path-mod-ailanguageteacher .lt-slidedots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.path-mod-ailanguageteacher .lt-slidedot {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: var(--lt-border-strong, #cbd5e1);
+    cursor: pointer;
+    transition: width .2s var(--lt-ease), background-color .2s;
+}
+.path-mod-ailanguageteacher .lt-slidedot.is-current {
+    width: 26px;
+    background: var(--lt-primary);
+}
+.path-mod-ailanguageteacher .lt-voicematch {
+    margin: 6px 0;
+}
+.path-mod-ailanguageteacher .lt-voicewho {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--lt-surface-2);
+    border: 1px solid var(--lt-border);
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+@media (max-width: 700px) {
+    .path-mod-ailanguageteacher .lt-recap {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+.path-mod-ailanguageteacher .lt-limit {
+    display: block;
+    margin: -4px 0 6px;
+    color: var(--lt-muted);
+}
+.path-mod-ailanguageteacher .lt-limit.is-over {
+    color: var(--lt-danger);
+    font-weight: 700;
+}
+
+.path-mod-ailanguageteacher .lt-lrow-head {
+    flex-wrap: wrap;
+}
+.path-mod-ailanguageteacher .lt-lrow-head > .lt-input {
+    flex: 1 1 160px;
+    min-width: 140px;
+}

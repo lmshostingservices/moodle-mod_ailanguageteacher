@@ -53,7 +53,7 @@ const STRING_KEYS = [
     'intro_item_resume', 'intro_item_browserspeech', 'intro_item_selfspeech', 'stage_listen_step', 'stage_speak_step',
     'skip', 'playall', 'stopplaying', 'confirmreset', 'resetdone', 'masteredsummary', 'avgscore', 'hintsused',
     'needspracticecount', 'stage_match_help', 'selectplace', 'nomatchsaved', 'triesleft', 'tryagainshort',
-    'hint1', 'hint2', 'hint3', 'hint4', 'audiounavailable', 'studyrecorded',
+    'hint1', 'hint2', 'hint3', 'hint4', 'audiounavailable', 'studyrecorded', 'listenfirst', 'results_slide',
 ];
 
 let S = {};
@@ -61,6 +61,29 @@ let S = {};
 /**
  * The player application.
  */
+/**
+ * Splits a text into sentences, so a scene's situation is shown one short paragraph at a time.
+ * Works for scripts with a space after the full stop and for those without one (Chinese, Japanese).
+ *
+ * @param {string} text
+ * @returns {string[]}
+ */
+const sentences = (text) => String(text || '').trim()
+    // No lookbehind: older Safari (before 16.4) cannot parse it.
+    .replace(/([.!?…])\s+(?=["“‘¿¡(\p{Lu}\p{Lo}\d])/gu, '$1\n')
+    .replace(/([。！？])/gu, '$1\n')
+    .split(/\n+/)
+    .map((t) => t.trim()).filter((t) => t !== '')
+    // A title such as "Mr. Smith" stays in one sentence.
+    .reduce((out, t) => {
+        if (out.length && /\b(Mr|Mrs|Ms|Dr|St|Prof|Sr|Jr|vs|etc|e\.g|i\.e)\.$/i.test(out[out.length - 1])) {
+            out[out.length - 1] += ' ' + t;
+        } else {
+            out.push(t);
+        }
+        return out;
+    }, []);
+
 class Player {
     /**
      * Constructor.
@@ -341,7 +364,8 @@ class Player {
         const locale = this.config.locale;
         const n = data.pins.length;
         const context = {
-            id: data.id, title: data.title, context: data.context, image: data.image, width: data.width,
+            id: data.id, title: data.title, context: data.context, contextlines: sentences(data.context), image: data.image,
+            width: data.width,
             height: data.height, ratio: data.width / data.height, n: Math.min(n, 8), compact: n > 5, study,
             hastray: !study, lang: locale,
             pins: data.pins.map((p) => ({...p, ink: p.color ? readable(p.color) : ''})),
@@ -1481,8 +1505,34 @@ class Player {
             lesson.resolve = resolve;
         });
         const q = (a) => node.querySelector(`[data-action="${a}"]`);
-        q('listen').addEventListener('click', () => this.listen(detail, 'normal'));
-        q('slow').addEventListener('click', () => this.listen(detail, 'slow'));
+        // "Listen before speaking": in Practice the microphone opens once the learner has heard the phrase.
+        let mustlisten = practice && !!c.mustlisten && !revisit;
+        const statusEl = node.querySelector('[data-region="status"]');
+        const heard = () => {
+            if (!mustlisten) {
+                return;
+            }
+            mustlisten = false;
+            const m = q('speak');
+            if (m) {
+                m.disabled = !this.canSpeak();
+            }
+            if (statusEl && statusEl.textContent === S.listenfirst) {
+                statusEl.textContent = '';
+            }
+        };
+        // Only the latest playback counts: pressing Listen again stops the earlier one, which must not open the mic.
+        let playid = 0;
+        const play = (variant) => {
+            const id = ++playid;
+            return this.listen(detail, variant).then(() => {
+                if (id === playid) {
+                    heard();
+                }
+            });
+        };
+        q('listen').addEventListener('click', () => play('normal'));
+        q('slow').addEventListener('click', () => play('slow'));
         const ex = q('example');
         if (ex) {
             ex.addEventListener('click', () => this.listen(detail, 'example'));
@@ -1490,8 +1540,11 @@ class Player {
         node.querySelectorAll('[data-action="close"]').forEach((b) => b.addEventListener('click', () => this.closeLesson()));
         const mic = q('speak');
         if (mic) {
-            if (!this.canSpeak()) {
+            if (!this.canSpeak() || mustlisten) {
                 mic.disabled = true;
+            }
+            if (mustlisten && statusEl) {
+                statusEl.textContent = S.listenfirst;
             }
             mic.addEventListener('click', () => this.speakTurn(lesson));
         }
@@ -1525,7 +1578,7 @@ class Player {
         if (!revisit || this.mode === 'study') {
             window.setTimeout(() => {
                 if (this.lesson === lesson) {
-                    this.listen(detail, 'normal');
+                    play('normal');
                 }
             }, 350);
         }
@@ -2318,6 +2371,58 @@ class Player {
         }
     }
 
+    /**
+     * The results as slides: the overall result first, then one slide per scene of a test. Back and Next, the dots
+     * and the arrow keys move between them.
+     *
+     * @param {HTMLElement} node the rendered summary
+     */
+    resultSlides(node) {
+        const slides = Array.from(node.querySelectorAll('.lt-slide-r'));
+        const prev = node.querySelector('[data-action="slideprev"]');
+        if (slides.length < 2 || !prev) {
+            return;
+        }
+        const next = node.querySelector('[data-action="slidenext"]');
+        const dots = Array.from(node.querySelectorAll('.lt-slidedot'));
+        const counter = node.querySelector('[data-region="slidecount"]');
+        let current = 0;
+        const go = (i, focus) => {
+            current = Math.max(0, Math.min(slides.length - 1, i));
+            slides.forEach((sl, n) => {
+                sl.hidden = n !== current;
+            });
+            dots.forEach((d, n) => {
+                d.classList.toggle('is-current', n === current);
+                d.setAttribute('aria-current', n === current ? 'true' : 'false');
+            });
+            prev.disabled = current === 0;
+            next.disabled = current === slides.length - 1;
+            counter.textContent = fmt(S.results_slide, {number: current + 1, total: slides.length});
+            if (!REDUCED) {
+                slides[current].animate([{opacity: 0, transform: 'translateX(16px)'}, {opacity: 1, transform: 'none'}],
+                    {duration: 300, easing: EASE});
+            }
+            if (focus) {
+                slides[current].focus({preventScroll: true});
+            }
+        };
+        prev.addEventListener('click', () => go(current - 1, true));
+        next.addEventListener('click', () => go(current + 1, true));
+        dots.forEach((d, n) => d.addEventListener('click', () => go(n, true)));
+        node.addEventListener('keydown', (e) => {
+            if (e.target.closest('button') && !e.target.closest('.lt-slidenav')) {
+                return;
+            }
+            if (e.key === 'ArrowRight') {
+                go(current + 1, true);
+            } else if (e.key === 'ArrowLeft') {
+                go(current - 1, true);
+            }
+        });
+        go(0, false);
+    }
+
     /* ------------------------------------------------------------------ */
     /* Finish                                                             */
     /* ------------------------------------------------------------------ */
@@ -2386,7 +2491,9 @@ class Player {
             hasverdict: !!pass, pass: passed, verdict: passed ? fmt(S.passmark, pass) : fmt(S.youneed, pass),
             leaderboard: (summary.leaderboard || []).map((r) => ({...r, time: clock(r.duration)})),
             hasreview: test && summary.review.length > 0,
-            review: summary.review.map((s) => ({title: s.title, rows: s.rows.map((r) => ({...r,
+            slides: [{label: 1, current: true}].concat(summary.review.map((r, i) => ({label: i + 2, current: false}))),
+            review: summary.review.map((s, i) => ({number: i + 1, title: s.title, image: s.image, correct: s.correct,
+                total: s.total, rows: s.rows.map((r) => ({...r,
                 speaktext: r.speak >= 0 ? `${r.speak}%` : '–'}))})),
             retry: !test || summary.attemptsleft !== 0,
         });
@@ -2408,6 +2515,7 @@ class Player {
             this.showIntro(summary.kind);
         });
         node.querySelector('[data-action="home"]').addEventListener('click', () => this.exit(true));
+        this.resultSlides(node);
         const fg = node.querySelector('.lt-ring-fg');
         const count = node.querySelector('[data-region="count"]');
         let ringcolor = 'var(--lt-danger)';

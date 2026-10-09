@@ -1276,7 +1276,9 @@ class learning {
                     'speakpass' => !empty($r['speak']->correct) ? 1 : 0,
                 ];
             }
-            $out[] = ['title' => self::line($scenes[$sceneid]->title, $context), 'rows' => $rows];
+            [$image] = manager::get_scene_image($context, (int)$sceneid);
+            $out[] = ['title' => self::line($scenes[$sceneid]->title, $context), 'rows' => $rows, 'image' => (string)$image,
+                'correct' => count(array_filter($rows, fn($row) => $row['match'])), 'total' => count($rows)];
         }
         return $out;
     }

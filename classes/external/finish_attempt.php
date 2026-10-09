@@ -77,6 +77,9 @@ class finish_attempt extends base {
             ])),
             'review' => new external_multiple_structure(new external_single_structure([
                 'title' => new external_value(PARAM_TEXT, 'Scene'),
+                'image' => new external_value(PARAM_URL, 'Scene picture, empty when none'),
+                'correct' => new external_value(PARAM_INT, 'Phrases matched correctly'),
+                'total' => new external_value(PARAM_INT, 'Phrases'),
                 'rows' => new external_multiple_structure(new external_single_structure([
                     'number' => new external_value(PARAM_INT, 'Number'),
                     'text' => new external_value(PARAM_TEXT, 'Phrase'),

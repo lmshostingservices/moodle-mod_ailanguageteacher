@@ -36,9 +36,10 @@ class backup_ailanguageteacher_activity_structure_step extends backup_activity_s
 
         $root = new backup_nested_element('ailanguageteacher', ['id'], [
             'name', 'intro', 'introformat', 'targetlang', 'targetlocale', 'supportlang', 'cefrlevel', 'situations',
-            'imagestyle', 'ttsvoice', 'showromanisation', 'allowstudy', 'allowpractice', 'allowtest', 'sequential', 'speaking',
+            'imagestyle', 'ttsvoice', 'ttsvoice2', 'voicematch', 'showromanisation', 'allowstudy', 'allowpractice',
+            'allowtest', 'sequential', 'speaking',
             'passscore', 'repetitions', 'consecutive', 'maxspeaktries', 'testlistening', 'testspeaking', 'grade',
-            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'leaderboard', 'completionstudy',
+            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'mustlisten', 'leaderboard', 'completionstudy',
             'completionmastery', 'completionfinish', 'timecreated', 'timemodified',
         ]);
         $situations = new backup_nested_element('situationlist');
@@ -48,7 +49,7 @@ class backup_ailanguageteacher_activity_structure_step extends backup_activity_s
             'timemodified']);
         $phrases = new backup_nested_element('phrases');
         $phrase = new backup_nested_element('phrase', ['id'], ['sortorder', 'text', 'romanisation', 'translation',
-            'usagenote', 'example', 'exampletrans', 'prompt', 'alternatives', 'anchor', 'x', 'y', 'placed', 'color',
+            'usagenote', 'example', 'exampletrans', 'prompt', 'alternatives', 'anchor', 'voicegender', 'x', 'y', 'placed', 'color',
             'distractor', 'timemodified']);
         $attempts = new backup_nested_element('attempts');
         $attempt = new backup_nested_element('attempt', ['id'], ['userid', 'attempt', 'kind', 'state', 'tokenmap',

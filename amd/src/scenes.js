@@ -47,8 +47,9 @@ export const init = async(selector) => {
     all.addEventListener('click', async() => {
         const ids = all.dataset.phrases.split(',').map((v) => parseInt(v, 10)).filter((v) => v > 0);
         const voice = root.querySelector('[data-region="voice"]').value;
-        // Every paid request is confirmed first; the credits are named (1 per phrase voice).
-        if (!ids.length || !voice || !await confirm(fmt(S.voices_confirm, {count: ids.length, credits: ids.length}))) {
+        // Every paid request is confirmed first; the credits are named.
+        const credits = ids.length * parseInt(all.dataset.credits, 10);
+        if (!ids.length || !voice || !await confirm(fmt(S.voices_confirm, {count: ids.length, credits}))) {
             return;
         }
         const label = all.querySelector('span');

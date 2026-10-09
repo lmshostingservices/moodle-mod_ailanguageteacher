@@ -29,8 +29,11 @@ class lmslabs implements service {
     /** @var string Voice catalogue route. */
     public const CAPABILITIES_ROUTE = '/api/moodle/ai-language-teacher/speech/capabilities';
 
-    /** @var string Phrase audio route (1 credit per delivered clip). */
+    /** @var string Phrase audio route (TTS_CREDITS per delivered clip). */
     public const TTS_ROUTE = '/api/moodle/ai-language-teacher/speech/tts';
+
+    /** @var int Credits LMS Labs charges per delivered voice clip (owner-approved tariff, 8 Oct 2026; was 1). */
+    public const TTS_CREDITS = 5;
 
     /** @var array|null Live catalog for this PHP request. */
     private $catalog = null;
@@ -144,7 +147,7 @@ class lmslabs implements service {
     }
 
     /**
-     * Call the approved one-credit TTS route with an existing durable key.
+     * Call the approved TTS route (TTS_CREDITS per delivered clip) with an existing durable key.
      *
      * @param string $text
      * @param string $locale
