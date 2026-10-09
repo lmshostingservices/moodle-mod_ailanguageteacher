@@ -34,6 +34,8 @@
  */
 function xmldb_ailanguageteacher_upgrade($oldversion) {
     global $DB;
+    // Set once for every step: a site can start from any version, so no step may rely on an earlier one having run.
+    $dbman = $DB->get_manager();
     if ($oldversion < 2026092801) {
         mod_ailanguageteacher_upgrade_operation_table();
         upgrade_mod_savepoint(true, 2026092801, 'ailanguageteacher');
@@ -42,7 +44,6 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         // The LMS Labs voice used for all of the activity's phrase audio (chosen once in the Voices step).
         $table = new xmldb_table('ailanguageteacher');
         $field = new xmldb_field('ttsvoice', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'imagestyle');
-        $dbman = $DB->get_manager();
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
@@ -52,7 +53,6 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         mod_ailanguageteacher_upgrade_operation_table();
         mod_ailanguageteacher_upgrade_move_110_requests();
         // Voices that match who says each phrase, and "listen before speaking".
-        $dbman = $DB->get_manager();
         $table = new xmldb_table('ailanguageteacher');
         $fields = [
             new xmldb_field('ttsvoice2', XMLDB_TYPE_CHAR, '100', null, null, null, null, 'ttsvoice'),

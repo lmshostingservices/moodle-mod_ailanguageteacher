@@ -149,4 +149,34 @@ final class upgrade_test extends \advanced_testcase {
         mod_ailanguageteacher_upgrade_move_110_requests();
         $this->assertSame(3, $DB->count_records('ailanguageteacher_operation', ['ailanguageteacherid' => $instance->id]));
     }
+
+    /**
+     * The upgrade runs from every released version, not only from the oldest: no step may rely on an earlier step
+     * having run (1.3.4 failed on sites already at 1.3.0, where the bars step had no database manager).
+     */
+    public function test_upgrade_from_each_version(): void {
+        global $CFG, $DB;
+        require_once($CFG->libdir . '/upgradelib.php');
+        require_once($CFG->dirroot . '/mod/ailanguageteacher/db/upgrade.php');
+        $this->resetAfterTest();
+        $dbman = $DB->get_manager();
+        $table = new \xmldb_table('ailanguageteacher');
+        $bars = [
+            new \xmldb_field('barsamber', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '40', 'mustlisten'),
+            new \xmldb_field('barsgreen', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '70', 'barsamber'),
+        ];
+        foreach ([2026092801, 2026100800, 2026101000, 2026101001, 2026101002, 2026101003] as $from) {
+            if ($from < 2026101001) {
+                foreach ([$bars[1], $bars[0]] as $field) {
+                    $dbman->drop_field($table, $field);
+                }
+            }
+            set_config('version', $from, 'mod_ailanguageteacher');
+            $this->assertTrue(xmldb_ailanguageteacher_upgrade($from), "Upgrade from $from");
+            foreach ($bars as $field) {
+                $this->assertTrue($dbman->field_exists($table, $field), "Bars after an upgrade from $from");
+            }
+            $this->assertEquals(2026101003, get_config('mod_ailanguageteacher', 'version'));
+        }
+    }
 }

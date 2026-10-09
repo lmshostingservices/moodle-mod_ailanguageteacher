@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.5] - 2026-10-11
+
+### Fixed
+
+- **The upgrade stopped with an error on sites already at 1.3.0** (version 2026101000). The traffic-light bars step used the database manager that only the earlier steps set up, so it failed when those steps were skipped. This was the real cause of the error seen on Moodle 4.4; the cache purge removed in 1.3.4 was not. The database manager is now set once for every step, and a new test upgrades from every released version. Nothing was changed in the database by the failed attempts, so the upgrade can simply be run again.
+
 ## [v1.3.4] - 2026-10-11
 
 ### Fixed
