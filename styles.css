@@ -4346,3 +4346,62 @@
     pointer-events: none;
     filter: grayscale(.6);
 }
+
+/* 1.3.9: full screen fills the screen with the player's frame, so the lesson, the results and "Try again" all stay
+   in it. The frame is exactly the screen; the lesson inside keeps its sizes (the pictures use the screen height) and
+   scrolls inside when needed, never sideways. Browsers without full screen for part of a page (iPhone Safari) get
+   the whole window instead. */
+.path-mod-ailanguageteacher .lt-player.is-full {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--lt-bg);
+}
+.path-mod-ailanguageteacher .lt-player.is-full > .lt-shell {
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    border: 0;
+    box-shadow: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    animation: none;
+}
+.path-mod-ailanguageteacher .lt-player:fullscreen {
+    background: var(--lt-bg);
+}
+.path-mod-ailanguageteacher .lt-player::backdrop {
+    background: #f3f5f9;
+}
+.path-mod-ailanguageteacher .lt-player.is-pseudo-full {
+    position: fixed;
+    inset: 0;
+    z-index: 1040;
+}
+.path-mod-ailanguageteacher.lt-noscroll {
+    overflow: hidden;
+}
+.path-mod-ailanguageteacher .lt-summary-shell {
+    position: relative;
+}
+.path-mod-ailanguageteacher .lt-summary-shell > .lt-summary-full {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+}
+.path-mod-ailanguageteacher [dir="rtl"] .lt-summary-shell > .lt-summary-full {
+    right: auto;
+    left: 14px;
+}
+.path-mod-ailanguageteacher .lt-player.is-full > .lt-summary-shell > .lt-summary {
+    margin-block: auto;
+}

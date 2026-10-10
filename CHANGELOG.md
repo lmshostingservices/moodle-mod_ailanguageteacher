@@ -2,6 +2,14 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.9] - 2026-10-12
+
+### Fixed
+
+- **Full screen stays on to the end.** The player's frame now goes full screen (not just the lesson panel), so the results and "Try again" stay full screen instead of dropping out at the end. The results have their own full screen button, and the results card is centred on the screen. Nothing scrolls sideways at any size.
+- In the full-window view used where the browser has no full screen for part of a page (iPhone Safari), the page could stay locked from scrolling after the lesson ended; leaving full screen now always unlocks it.
+- An error message leaves full screen first, so it is never hidden behind it. Leaving the lesson leaves full screen.
+
 ## [v1.3.8] - 2026-10-12
 
 ### Changed

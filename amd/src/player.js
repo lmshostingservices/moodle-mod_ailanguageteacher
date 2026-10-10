@@ -241,7 +241,7 @@ class Player {
                     this.say(S.resetdone);
                     this.showIntro('practice');
                 } catch (err) {
-                    Notification.exception(err);
+                    this.error(err);
                 }
             });
         }
@@ -275,7 +275,7 @@ class Player {
             }
         } catch (err) {
             this.exit();
-            Notification.exception(err);
+            this.error(err);
             return;
         }
         this.data = data;
@@ -1295,7 +1295,7 @@ class Player {
      */
     event(token, action, tries = 1, hintlevel = 0) {
         return Promise.resolve(Ajax.call([{methodname: 'mod_ailanguageteacher_practice_event', args: {
-            attemptid: this.attemptid, token, action, tries, hintlevel}}])[0]).catch(Notification.exception);
+            attemptid: this.attemptid, token, action, tries, hintlevel}}])[0]).catch((err) => this.error(err));
     }
 
     /* ------------------------------------------------------------------ */
@@ -1684,7 +1684,7 @@ class Player {
             } else if (err && err.errorcode === 'speechinprogress') {
                 status.textContent = S.speechinprogress;
             } else if (err && err.errorcode) {
-                Notification.exception(err);
+                this.error(err);
             } else {
                 status.textContent = S.speechfailed_short;
             }
@@ -1721,7 +1721,7 @@ class Player {
                     selfcheck: true}}])[0];
                 await this.showResult(lesson, res, host);
             } catch (err) {
-                Notification.exception(err);
+                this.error(err);
             }
         });
     }
@@ -1925,7 +1925,7 @@ class Player {
                 sceneid: slide.data.id, stage: 'match', answers}}])[0];
         } catch (err) {
             slide.submitting = false;
-            Notification.exception(err);
+            this.error(err);
             return;
         }
         slide.submitting = false;
@@ -2053,7 +2053,7 @@ class Player {
                     .map(([itemtoken, answer]) => ({item: itemtoken, answer}))}}])[0];
         } catch (err) {
             slide.submitting = false;
-            Notification.exception(err);
+            this.error(err);
             return;
         }
         slide.submitting = false;
@@ -2138,7 +2138,7 @@ class Player {
                 } else if (err && err.errorcode === 'speechinprogress') {
                     status.textContent = S.speechinprogress;
                 } else if (err && err.errorcode) {
-                    Notification.exception(err);
+                    this.error(err);
                 } else {
                     status.textContent = S.speechfailed_short;
                 }
@@ -2297,21 +2297,55 @@ class Player {
      * Toggles full screen (native where available, CSS fallback such as on iPhone Safari).
      */
     toggleFullscreen() {
-        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        if (fsEl || this.shell.classList.contains('is-pseudo-full')) {
-            if (fsEl) {
-                (document.exitFullscreen || document.webkitExitFullscreen).call(document);
-            }
-            this.shell.classList.remove('is-pseudo-full');
-            document.documentElement.classList.remove('lt-lock-scroll');
-            this.syncFullscreen();
+        // The player's frame goes full screen, so the lesson, the results and "Try again" all stay in it.
+        if (this.isFull()) {
+            this.leaveFullscreen();
             return;
         }
-        const req = this.shell.requestFullscreen || this.shell.webkitRequestFullscreen;
+        const req = this.host.requestFullscreen || this.host.webkitRequestFullscreen;
         if (req) {
-            Promise.resolve(req.call(this.shell)).catch(() => this.pseudoFull());
+            Promise.resolve(req.call(this.host)).catch(() => this.pseudoFull());
         } else {
             this.pseudoFull();
+        }
+    }
+
+    /**
+     * Whether the player fills the screen (native full screen or the CSS fallback).
+     *
+     * @returns {boolean}
+     */
+    isFull() {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        return fsEl === this.host || this.host.classList.contains('is-pseudo-full');
+    }
+
+    /**
+     * Leaves full screen (native or the CSS fallback) and unlocks page scrolling.
+     *
+     * @returns {Promise}
+     */
+    leaveFullscreen() {
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        let done = Promise.resolve();
+        if (fsEl === this.host) {
+            done = Promise.resolve((document.exitFullscreen || document.webkitExitFullscreen).call(document)).catch(() => null);
+        }
+        this.host.classList.remove('is-pseudo-full');
+        document.body.classList.remove('lt-noscroll');
+        return done.then(() => this.syncFullscreen());
+    }
+
+    /**
+     * Shows an error. Moodle shows it outside the player, so full screen is left first or it would be hidden.
+     *
+     * @param {Error} err
+     */
+    error(err) {
+        if (this.isFull()) {
+            this.leaveFullscreen().then(() => Notification.exception(err));
+        } else {
+            Notification.exception(err);
         }
     }
 
@@ -2319,8 +2353,8 @@ class Player {
      * CSS full screen fallback.
      */
     pseudoFull() {
-        this.shell.classList.add('is-pseudo-full');
-        document.documentElement.classList.add('lt-lock-scroll');
+        this.host.classList.add('is-pseudo-full');
+        document.body.classList.add('lt-noscroll');
         this.syncFullscreen();
     }
 
@@ -2328,11 +2362,14 @@ class Player {
      * Updates the full screen button and redraws.
      */
     syncFullscreen() {
+        const on = this.isFull();
+        this.host.classList.toggle('is-full', on);
+        if (!on) {
+            document.body.classList.remove('lt-noscroll');
+        }
         if (!this.fullBtn || !this.shell) {
             return;
         }
-        const on = !!(document.fullscreenElement || document.webkitFullscreenElement) ||
-            this.shell.classList.contains('is-pseudo-full');
         this.shell.classList.toggle('is-full', on);
         setIcon(this.fullBtn, on ? 'unfull' : 'full');
         this.fullBtn.setAttribute('aria-label', on ? S.exitfullscreen : S.fullscreen);
@@ -2444,7 +2481,7 @@ class Player {
             await this.showSummary(summary);
         } catch (err) {
             this.finishing = false;
-            Notification.exception(err);
+            this.error(err);
         }
     }
 
@@ -2504,6 +2541,11 @@ class Player {
         this.host.replaceChildren(node);
         this.shell = node;
         this.slides = null;
+        // The results keep full screen, with their own button to leave it (or to go full screen).
+        this.fullBtn = el('button', 'lt-iconbtn lt-summary-full', {type: 'button', 'data-action': 'fullscreen'});
+        this.fullBtn.addEventListener('click', () => this.toggleFullscreen());
+        node.prepend(this.fullBtn);
+        this.syncFullscreen();
         node.querySelector('[data-action="again"]').addEventListener('click', () => {
             this.finishing = false;
             if (test) {
@@ -2564,10 +2606,9 @@ class Player {
         this.closeLesson(true);
         Speech.stop();
         this.flushStudy();
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
+        if (this.isFull()) {
+            this.leaveFullscreen();
         }
-        document.documentElement.classList.remove('lt-lock-scroll');
         if (reload || this.attemptid || (this.mode === 'study' && this.studySent.size)) {
             window.location.reload();
             return;
