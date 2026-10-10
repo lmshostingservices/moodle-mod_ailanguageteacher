@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.3.8] - 2026-10-12
+
+### Changed
+
+- **The AI-assistant prompt gives character limits.** Phrases and examples at most 150 characters (voices are at most 200), usage notes 180 and the scene context 260 (each under Moodle's limit), with a check to count and shorten before replying, and never to name a real person, brand or business.
+
 ## [v1.3.7] - 2026-10-11
 
 ### Changed

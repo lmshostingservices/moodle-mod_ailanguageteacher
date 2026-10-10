@@ -407,11 +407,11 @@ Situations:
 For each situation create {$a->scenes} scenes. A scene is one moment that a single picture can show, for example "The housekeeper arrives at the front door". Each scene has exactly {$a->phrases} useful phrases (never more than {$a->maxphrases}) that people really say in that same moment, in a natural order, for example a greeting and its reply. A phrase that belongs to a different moment, such as saying goodbye after a greeting, needs its own scene and picture. Add 1 or 2 distractors per scene: short phrases in the taught language that learners might confuse but that do not fit the moment.
 
 For every phrase give:
-- text: the phrase in the taught language, with the spelling and vocabulary of that variety
+- text: the phrase in the taught language, with the spelling and vocabulary of that variety, at most 150 characters
 - romanisation: {$a->romanisation}
 - translation: the natural meaning in the learners\' language
-- usagenote: one or two short sentences in the learners\' language on when and how to use it (formality, time of day, tone)
-- example: a short example line in the taught language that uses the phrase
+- usagenote: one or two short sentences in the learners\' language on when and how to use it (formality, time of day, tone), at most 180 characters including spaces
+- example: a short example line in the taught language that uses the phrase, at most 150 characters
 - exampletrans: its meaning in the learners\' language
 - prompt: a speaking cue in the learners\' language that makes the learner say the phrase without showing it, for example "Greet the housekeeper in the morning"
 - alternatives: other natural ways to say the same thing that should also be accepted (0 to 3)
@@ -419,8 +419,10 @@ For every phrase give:
 
 For every scene give:
 - situation and title (in the learners\' language)
-- context: one sentence in the learners\' language describing what is happening
+- context: one sentence in the learners\' language describing what is happening, at most 260 characters including spaces
 - imageprompt: an English description of one {$a->style} for this moment, set in {$a->country} and naming {$a->country} in the description. Show the people and objects the phrases belong to clearly and spread out, with calm uncluttered areas. Give each named person a gender, age and appearance that fit their name and {$a->country} (for example, a person called Priya looks South Asian). No text, letters, captions, signs or speech bubbles.
+
+Keep to every character limit above: phrases and examples are read aloud (at most 200 characters each), and notes and contexts must fit on the learner\'s screen. Before you reply, count the characters of each and shorten any that is over its limit. Never name a real person, brand or business; invent names instead.
 
 Reply with JSON only, in exactly this shape:
 {"scenes":[{"situation":"","title":"","context":"","imageprompt":"","phrases":[{"text":"","romanisation":"","translation":"","usagenote":"","example":"","exampletrans":"","prompt":"","alternatives":[""],"anchor":""}],"distractors":[{"text":"","romanisation":"","translation":""}]}]}';
