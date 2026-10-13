@@ -2,6 +2,26 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.2] - 2026-10-13
+
+### Added
+
+- **Labels are placed for the teacher.** Every label that is not on the picture yet is put on it, so the teacher only moves each one onto the right person or thing. One person's phrases sit together, different people are spread out, and "left", "right" or "middle" in the "Place on" description are followed. New AI scenes get this straight away; older scenes when they are opened.
+- Placed-for-you labels pulse with a dashed outline and a "?", and a banner says how many need checking. Drag a label, or click it and then click the picture; "They are all in the right place" confirms them all.
+- Learners only see labels a teacher has placed or checked. The scenes list shows "Labels to check", and the step does not move on until each scene has checked labels.
+
+## [v1.4.1] - 2026-10-13
+
+### Fixed
+
+- **Microphone problems are explained.** With the browser's own speech recognition, a microphone that sends no sound, a missing microphone, or a speech service that does not answer each get their own message instead of "We couldn't hear you". The microphone shows a live level while listening, and words already heard are kept when the learner taps to finish early.
+- The message under "Tap and say it" in Test is no longer cut off.
+
+### Changed
+
+- The example line is removed from the phrase card (Listen and Slowly stay) and from the scene editor.
+- The AI-assistant prompt names who says each phrase: every person gets a name that shows whether they are a man or a woman, and phrases name the person spoken to (for example "Hi, Emily!"), so learners know which person to place each phrase on.
+
 ## [v1.4.0] - 2026-10-13
 
 Follows the LMS Labs contract of 13 Oct 2026 for Language Teacher pictures. Owner-approved: **2 credits per picture** (Soft Skills pictures stay at 5) and 2 credits per voice.

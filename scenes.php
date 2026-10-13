@@ -157,7 +157,8 @@ foreach ($scenes as $s) {
     [$url] = manager::get_scene_image($context, (int)$s->id);
     $list = $phrases[$s->id];
     $pins = array_filter($list, fn($p) => empty($p->distractor));
-    $placed = count(array_filter($pins, fn($p) => !empty($p->placed)));
+    $placed = count(array_filter($pins, fn($p) => (int)$p->placed === 1));
+    $guessed = count(array_filter($pins, fn($p) => (int)$p->placed === manager::GUESSED));
     $voiced = [];
     foreach ($pins as $p) {
         if (trim((string)$p->text) !== '') {
@@ -183,7 +184,8 @@ foreach ($scenes as $s) {
         'noimage' => !$url,
         'phrases' => count($pins),
         'placed' => $placed,
-        'placedok' => $placed > 0,
+        'placedok' => $placed > 0 && !$guessed,
+        'guessed' => $guessed,
         'voices' => $voiced,
         'novoices' => count(array_filter($voiced, fn($v) => !$v['hasvoice'])),
         'editurl' => (new moodle_url('/mod/ailanguageteacher/editor.php', ['id' => $cm->id, 'sceneid' => $s->id]))->out(false),

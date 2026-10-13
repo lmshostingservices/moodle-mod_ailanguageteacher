@@ -21,7 +21,7 @@
 
     Example context (json):
     {
-        "key": "k1", "number": 1, "color": "#6366F1", "selected": true, "unplaced": false, "distractor": false,
+        "key": "k1", "number": 1, "color": "#6366F1", "selected": true, "unplaced": false, "guessed": false, "distractor": false,
         "text": "Good morning!", "romanisation": "", "translation": "", "usagenote": "", "example": "", "exampletrans": "",
         "prompt": "", "alternatives": "", "anchor": "", "voiceauto": true, "voicef": false, "voicem": false, "romanise": false, "lang": "en-AU", "hasrecording": false,
         "palette": [{"color": "#6366F1", "on": true}], "targetname": "English", "supportname": "Thai"
@@ -37,6 +37,7 @@
         <button type="button" class="lt-btn lt-btn-ghost lt-btn-sm" data-action="createaudio">{{#str}} createaudio, mod_ailanguageteacher {{/str}}</button>
         <button type="button" class="lt-swatch" data-action="select" aria-label="{{#str}} editthisphrase, mod_ailanguageteacher {{/str}}" title="{{#str}} editthisphrase, mod_ailanguageteacher {{/str}}"></button>
     </div>
+    {{#guessed}}<p class="lt-mini lt-unplaced-note">{{#str}} guessrow, mod_ailanguageteacher {{/str}}{{#anchor}} · {{#str}} placeon, mod_ailanguageteacher, {{anchor}} {{/str}}{{/anchor}}</p>{{/guessed}}
     {{#unplaced}}<p class="lt-mini lt-unplaced-note">{{#str}} notplacedyet, mod_ailanguageteacher {{/str}}{{#anchor}} · {{#str}} placeon, mod_ailanguageteacher, {{anchor}} {{/str}}{{/anchor}}</p>{{/unplaced}}
     <div class="lt-lrow-body">
         <div class="lt-fieldgrid">
@@ -45,8 +46,6 @@
             {{/romanise}}
             <label><span class="lt-mini">{{#str}} meaningin, mod_ailanguageteacher, {{supportname}} {{/str}}</span><input type="text" class="lt-input" data-field="translation" value="{{translation}}" maxlength="255" dir="auto"></label>
             <label><span class="lt-mini">{{#str}} whentouse, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="usagenote" dir="auto" data-lt-limit="200">{{usagenote}}</textarea></label>
-            <label><span class="lt-mini">{{#str}} example, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="example" value="{{example}}" maxlength="255" dir="auto" lang="{{lang}}"></label>
-            <label><span class="lt-mini">{{#str}} examplemeaning, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="exampletrans" value="{{exampletrans}}" maxlength="255" dir="auto"></label>
             <label><span class="lt-mini">{{#str}} speakingcue, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="prompt" value="{{prompt}}" maxlength="255" dir="auto" placeholder="{{#str}} speakingcue_help, mod_ailanguageteacher {{/str}}"></label>
             <label><span class="lt-mini">{{#str}} alternatives, mod_ailanguageteacher {{/str}}</span><textarea class="lt-textarea" rows="2" data-field="alternatives" dir="auto" lang="{{lang}}" placeholder="{{#str}} alternatives_help, mod_ailanguageteacher {{/str}}">{{alternatives}}</textarea></label>
             <label><span class="lt-mini">{{#str}} anchor, mod_ailanguageteacher {{/str}}</span><input type="text" class="lt-input" data-field="anchor" value="{{anchor}}" maxlength="255"></label>

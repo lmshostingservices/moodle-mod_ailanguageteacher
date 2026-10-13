@@ -335,7 +335,8 @@ class lesson {
             $sceneid = manager::add_scene($instance, $situationid, $s['title'], $s['context'], $s['imageprompt']);
             $scenecount++;
             $order = 0;
-            foreach (array_merge($s['phrases'], $s['distractors']) as $i => $p) {
+            // Every label starts on the picture as a guess, so the teacher only drags it onto the right person.
+            foreach (array_merge(manager::guess_positions($s['phrases']), $s['distractors']) as $i => $p) {
                 $order++;
                 $record = (object)$p;
                 $record->sceneid = $sceneid;

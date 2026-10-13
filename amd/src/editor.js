@@ -27,7 +27,11 @@ import Notification from 'core/notification';
 import * as Speech from 'mod_ailanguageteacher/speech';
 import {loadStrings, fmt, el, render, renderAll, readable} from 'mod_ailanguageteacher/ui';
 
-const KEYS = ['saved', 'saving', 'unsaved', 'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
+/** @var {number} A label placed for the teacher to check (manager::GUESSED). */
+const GUESSED = 2;
+
+const KEYS = ['saved', 'saving', 'unsaved', 'guessbanner', 'guessallok', 'guesspin',
+    'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
     'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'voice_confirm_free',
     'discard_confirm', 'limit_count',
@@ -306,6 +310,33 @@ class Editor {
         this.placing = null;
         this.figure.classList.remove('is-placing');
         this.banner.hidden = true;
+        this.guessBanner();
+    }
+
+    /**
+     * While labels placed for the teacher are still guesses, says so above the picture, with a button for when they
+     * are all in the right place already.
+     */
+    guessBanner() {
+        const guesses = this.phrases.filter((p) => !p.distractor && p.placed === GUESSED);
+        if (this.placing || !guesses.length) {
+            return;
+        }
+        this.banner.replaceChildren();
+        const info = el('div', 'lt-qlabel');
+        info.appendChild(el('span', '', {text: fmt(S.guessbanner, guesses.length)}));
+        const ok = el('button', 'lt-btn lt-btn-ghost lt-btn-sm', {type: 'button', text: S.guessallok});
+        ok.addEventListener('click', () => {
+            guesses.forEach((p) => {
+                p.placed = 1;
+            });
+            this.touch();
+            this.drawPins();
+            this.drawList();
+            this.banner.hidden = true;
+        });
+        this.banner.append(info, ok);
+        this.banner.hidden = false;
     }
 
     /**
@@ -339,8 +370,10 @@ class Editor {
     drawPins(fresh = null) {
         this.figure.querySelectorAll('.lt-pin').forEach((p) => p.remove());
         this.ordered().forEach((phrase, i) => {
+            const guess = phrase.placed === GUESSED;
             const pin = el('button', `lt-pin is-filled${phrase === this.selected ? ' is-sel' : ''}${
-                phrase === fresh ? ' is-new' : ''}`, {type: 'button', text: String(i + 1), 'aria-label': phrase.text});
+                phrase === fresh ? ' is-new' : ''}${guess ? ' is-guess' : ''}`, {type: 'button', text: String(i + 1),
+                'aria-label': guess ? `${phrase.text}. ${S.guesspin}` : phrase.text});
             pin.style.left = `${phrase.x}%`;
             pin.style.top = `${phrase.y}%`;
             pin.style.setProperty('--c', phrase.color);
@@ -352,6 +385,10 @@ class Editor {
                 e.stopPropagation();
                 if (!this.suppress) {
                     this.select(phrase);
+                    if (phrase.placed === GUESSED) {
+                        // A guessed label: the next click on the picture puts it in the right place.
+                        this.startPlacing(phrase);
+                    }
                 }
             });
             this.figure.appendChild(pin);
@@ -390,6 +427,9 @@ class Editor {
             pin.removeEventListener('pointerup', up);
             pin.removeEventListener('pointercancel', up);
             if (moved) {
+                // Moved by the teacher: no longer a guess.
+                phrase.placed = 1;
+                this.stopPlacing();
                 this.suppress = true;
                 window.setTimeout(() => {
                     this.suppress = false;
@@ -456,6 +496,7 @@ class Editor {
             rows.push(await render('editor_phrase', {
                 ...phrase, number: this.number(phrase), selected: phrase === this.selected,
                 unplaced: !phrase.distractor && !phrase.placed, distractor: !!phrase.distractor,
+                guessed: !phrase.distractor && phrase.placed === GUESSED,
                 romanise: c.romanise, lang: c.locale, hasrecording: !!phrase.recording,
                 palette: c.palette.map((color) => ({color, on: color === phrase.color})),
                 targetname: c.targetname, supportname: c.supportname,
@@ -744,7 +785,8 @@ class Editor {
         const payload = sent.map((p) => ({id: p.id || 0, text: p.text.trim(), romanisation: p.romanisation || '',
             translation: p.translation || '', usagenote: p.usagenote || '', example: p.example || '',
             exampletrans: p.exampletrans || '', prompt: p.prompt || '', alternatives: p.alternatives || '',
-            anchor: p.anchor || '', voicegender: p.voicegender || '', x: p.x, y: p.y, placed: p.placed ? 1 : 0, color: p.color,
+            anchor: p.anchor || '', voicegender: p.voicegender || '', x: p.x, y: p.y,
+            placed: p.placed === GUESSED ? GUESSED : (p.placed ? 1 : 0), color: p.color,
             distractor: p.distractor ? 1 : 0}));
         this.dirty = false;
         this.saving = Promise.resolve(Ajax.call([{methodname: 'mod_ailanguageteacher_save_scene', args: {

@@ -93,6 +93,11 @@ $string['addphrase'] = 'Add a phrase';
 $string['aibadimage_charged'] = 'LMS Labs sent a picture Moodle could not use, so it was not saved. It may have been charged: keep this reference for LMS Labs support. (Reference: {$a})';
 $string['aiimages'] = 'LMS Labs AI pictures';
 $string['aiimages_desc'] = 'Teachers can create a picture for each scene with LMS Labs AI, {$a} credits per picture, charged when LMS Labs creates it; a picture it could not create is not charged. Switch this on once LMS Labs offers Language Teacher pictures. Only the teacher\'s scene text is sent; no learner data is sent.';
+$string['guessallok'] = 'They are all in the right place';
+$string['guessbanner'] = 'Labels placed for you: {$a}. Drag each one onto the right person or thing, or click it and then click the picture.';
+$string['guesspin'] = 'Placed for you: move it to the right place.';
+$string['guessrow'] = 'Placed for you: check where it goes';
+$string['labelstocheck'] = 'Labels to check: {$a}';
 $string['pictures_busy'] = 'The pictures are being made. Wait until they finish.';
 $string['pictures_confirm_all'] = 'Create {$a->count} pictures with LMS Labs AI? LMS Labs charges {$a->each} credits for each picture it creates, {$a->credits} credits in all. They are made one after another; a picture LMS Labs has made is charged even if this page is closed before it arrives.';
 $string['pictures_confirm_new'] = 'Create a new picture for this scene? It replaces the current picture, and the phrases may need placing again. LMS Labs charges {$a} credits when it creates the picture.';
@@ -432,21 +437,21 @@ For every phrase give:
 - romanisation: {$a->romanisation}
 - translation: the natural meaning in the learners\' language
 - usagenote: one or two short sentences in the learners\' language on when and how to use it (formality, time of day, tone), at most 180 characters including spaces
-- example: a short example line in the taught language that uses the phrase, at most 150 characters
-- exampletrans: its meaning in the learners\' language
-- prompt: a speaking cue in the learners\' language that makes the learner say the phrase without showing it, for example "Greet the housekeeper in the morning"
+- prompt: a speaking cue in the learners\' language that makes the learner say the phrase without showing it, using the people\'s names, for example "Greet Emily in the morning"
 - alternatives: other natural ways to say the same thing that should also be accepted (0 to 3)
-- anchor: in English, who or what in the picture the phrase belongs to, saying whether the person is a man or a woman, for example "the woman at the door" or "the male taxi driver" (the phrase audio uses a matching voice)
+- anchor: in English, the person in the picture who says the phrase (or the object it is about), with their name and whether they are a man or a woman, for example "Jake, the man at the door" or "Emily, the woman waving" (the phrase audio uses a matching voice)
 
 For every scene give:
 - situation and title (in the learners\' language)
 - context: one sentence in the learners\' language describing what is happening, at most 260 characters including spaces
 - imageprompt: an English description of one {$a->style} for this moment, set in {$a->country} and naming {$a->country} in the description. Show the people and objects the phrases belong to clearly and spread out, with calm uncluttered areas. Give each named person a gender, age and appearance that fit their name and {$a->country} (for example, a person called Priya looks South Asian). No text, letters, captions, signs or speech bubbles.
 
-Keep to every character limit above: phrases and examples are read aloud (at most 200 characters each), and notes and contexts must fit on the learner\'s screen. Before you reply, count the characters of each and shorten any that is over its limit. Never name a real person, brand or business; invent names instead.
+Make it obvious who says each phrase, so learners know which person to place it on. Give every person in a scene a first name that clearly shows whether they are a man or a woman, and where possible put a man and a woman in the same scene. Where it is natural, the phrase names the person being spoken to: for example, the man says "Hi, Emily!" to the woman, and she replies "Hi, Jake! Nice to meet you." If two people in a scene are both men or both women, make their roles and appearance clearly different in the picture and the anchor. Use the same names in the context, the cues, the anchors and the picture description.
+
+Keep to every character limit above: phrases are read aloud (at most 200 characters each), and notes and contexts must fit on the learner\'s screen. Before you reply, count the characters of each and shorten any that is over its limit. Never name a real person, brand or business; invent names instead.
 
 Reply with JSON only, in exactly this shape:
-{"scenes":[{"situation":"","title":"","context":"","imageprompt":"","phrases":[{"text":"","romanisation":"","translation":"","usagenote":"","example":"","exampletrans":"","prompt":"","alternatives":[""],"anchor":""}],"distractors":[{"text":"","romanisation":"","translation":""}]}]}';
+{"scenes":[{"situation":"","title":"","context":"","imageprompt":"","phrases":[{"text":"","romanisation":"","translation":"","usagenote":"","prompt":"","alternatives":[""],"anchor":""}],"distractors":[{"text":"","romanisation":"","translation":""}]}]}';
 $string['level_a1'] = 'A1 Beginner';
 $string['level_a2'] = 'A2 Elementary';
 $string['level_b1'] = 'B1 Intermediate';
@@ -523,6 +528,8 @@ $string['maxspeaktries_help'] = 'After this many tries on a phrase, the learner 
 $string['meaning'] = 'Meaning';
 $string['meaningin'] = 'Meaning in {$a}';
 $string['micblocked'] = 'The microphone is blocked. Allow it in your browser, or move on for now.';
+$string['micnone'] = 'No microphone was found. Plug one in or choose one in your browser settings, then try again.';
+$string['micsilent'] = 'Your microphone isn\'t sending any sound. Check it isn\'t muted and that your browser is using the right microphone. This try didn\'t count.';
 $string['modedisabled'] = 'That mode is turned off for this activity.';
 $string['modelocked'] = 'That mode opens after you finish the step before it.';
 $string['modepractice'] = 'Practice';
@@ -699,6 +706,7 @@ $string['quickadd_help'] = 'One phrase per line: Phrase | Meaning | When to use 
 $string['quickadd_placeholder'] = 'Good morning! | สวัสดีตอนเช้า
 Please come in. | เชิญเข้ามาครับ/ค่ะ';
 $string['recordagain'] = 'Record again';
+$string['recogniserunavailable'] = 'Your browser\'s speech recognition didn\'t answer. Try again, or use Google Chrome, Microsoft Edge or Safari.';
 $string['recorded'] = 'Recorded';
 $string['recording'] = 'Recording…';
 $string['recordphrase'] = 'Record';
@@ -766,7 +774,7 @@ $string['settings_speech'] = 'Speech';
 $string['settings_speech_desc'] = 'Teachers can create and cache phrase audio using the approved Google voice catalog through LMS Labs (2 credits for each clip LMS Labs creates, charged when it is made). Learner listening never generates a paid request. No paid Speech-to-Text is available: the browser\'s transcript, manual input or listen-back self-check compares recognised words, not phonemes, pronunciation or accent.';
 $string['setup_back'] = 'Back';
 $string['setup_needpictures'] = 'Scenes still without a picture: {$a}.';
-$string['setup_needplaced'] = 'Scenes with no phrase placed on the picture yet: {$a}.';
+$string['setup_needplaced'] = 'Scenes with no label checked on the picture yet: {$a}. Open each scene and move its labels into place.';
 $string['setup_needscene'] = 'Create at least one scene first.';
 $string['setup_needvoices'] = 'Phrases still without a voice: {$a}.';
 $string['setup_next'] = 'Next: {$a}';

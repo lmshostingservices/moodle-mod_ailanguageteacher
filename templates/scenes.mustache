@@ -27,7 +27,7 @@
         "voicelist": [{"name": "en-AU-Chirp3-HD-Kore", "label": "Kore (female)", "selected": true}], "voice2list": [{"name": "en-AU-Chirp3-HD-Charon", "label": "Charon (male)", "selected": true}], "hasvoice2": true, "voicematch": true,
         "missingvoices": 1, "missingvoiceids": "4", "missingvoicecredits": 5, "voicecredits": 5, "remakes": 0, "remakesline": "",
         "groups": [{"name": "Greetings", "cards": [{"id": 1, "number": 1, "title": "At reception", "image": "",
-            "noimage": true, "phrases": 1, "placed": 0, "placedok": false, "novoices": 1,
+            "noimage": true, "phrases": 1, "placed": 0, "placedok": false, "guessed": 1, "novoices": 1,
             "voices": [{"id": 4, "text": "Good morning", "hasvoice": false, "who": "Male voice"}],
             "editurl": "#", "replaceurl": "#", "deleteurl": "#", "upurl": null, "downurl": null}]}],
         "nav": {"backurl": "#", "backlabel": "Back", "nexturl": "#", "nextlabel": "Next: Check the scenes", "blocked": ""}
@@ -127,6 +127,7 @@
                 {{#check}}
                 <div class="lt-slidecard-meta {{^placedok}}is-warn{{/placedok}}">
                     {{#str}} phrasesummary, mod_ailanguageteacher, { "phrases": {{phrases}}, "placed": {{placed}} } {{/str}}
+                    {{#guessed}}<br>{{#str}} labelstocheck, mod_ailanguageteacher, {{guessed}} {{/str}}{{/guessed}}
                 </div>
                 <div class="lt-slidecard-actions">
                     <a class="lt-btn {{^placedok}}lt-btn-primary{{/placedok}}{{#placedok}}lt-btn-ghost{{/placedok}} lt-btn-sm" href="{{editurl}}">{{#str}} editphrases, mod_ailanguageteacher {{/str}}</a>

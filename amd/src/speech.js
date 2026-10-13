@@ -205,6 +205,10 @@ export const recordWav = async(opts = {}) => {
     const stream = await navigator.mediaDevices.getUserMedia({audio: {channelCount: 1, echoCancellation: true,
         noiseSuppression: true, autoGainControl: true}});
     const ctx = new AC();
+    if (ctx.state === 'suspended') {
+        // A context made after the permission prompt can start suspended, and then no sound is ever processed.
+        await ctx.resume().catch(() => null);
+    }
     const source = ctx.createMediaStreamSource(stream);
     const processor = ctx.createScriptProcessor(4096, 1, 1);
     const chunks = [];
@@ -263,37 +267,147 @@ export const recordWav = async(opts = {}) => {
 };
 
 /**
+ * Shows the microphone level while the browser recognises speech, and notes whether any sound arrived.
+ *
+ * @param {Function|null} onlevel
+ * @returns {Promise<{stop: Function, loud: Function}>}
+ */
+const levelMeter = async(onlevel) => {
+    let loud = false;
+    let stream = null;
+    let ctx = null;
+    let timer = null;
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({audio: true});
+        ctx = new AC();
+        if (ctx.state === 'suspended') {
+            await ctx.resume().catch(() => null);
+        }
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 1024;
+        ctx.createMediaStreamSource(stream).connect(analyser);
+        const data = new Float32Array(analyser.fftSize);
+        timer = window.setInterval(() => {
+            analyser.getFloatTimeDomainData(data);
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) {
+                sum += data[i] * data[i];
+            }
+            const rms = Math.sqrt(sum / data.length);
+            if (rms > 0.01) {
+                loud = true;
+            }
+            if (onlevel) {
+                onlevel(Math.min(1, rms * 8));
+            }
+        }, 60);
+    } catch (e) {
+        // The meter is only a help: recognition goes ahead without it.
+        loud = null;
+    }
+    return {
+        loud: () => loud,
+        stop: () => {
+            if (timer) {
+                window.clearInterval(timer);
+            }
+            if (stream) {
+                stream.getTracks().forEach((t) => t.stop());
+            }
+            if (ctx) {
+                ctx.close().catch(() => null);
+            }
+        },
+    };
+};
+
+/**
  * Recognises what the learner says with the browser's own speech service.
+ *
+ * Resolves the transcripts (best first). When nothing was recognised it rejects with a reason the player can explain:
+ * micsilent (the microphone sent no sound), unintelligible (sound, but no words), not-allowed (blocked),
+ * audio-capture (no microphone), or recogniserunavailable (the browser's speech service did not answer).
  *
  * @param {string} locale
  * @param {object} signal receives stop()
+ * @param {Function|null} onlevel microphone level (0..1)
  * @returns {Promise<string[]>} transcripts, best first
  */
-export const recognise = (locale, signal = {}) => new Promise((resolve, reject) => {
-    const rec = new Recognition();
-    rec.lang = locale;
-    rec.interimResults = false;
-    rec.maxAlternatives = 5;
-    rec.continuous = false;
-    const out = [];
-    rec.onresult = (e) => {
-        for (let i = 0; i < e.results.length; i++) {
-            for (let j = 0; j < e.results[i].length; j++) {
-                out.push(e.results[i][j].transcript);
+export const recognise = async(locale, signal = {}, onlevel = null) => {
+    const meter = await levelMeter(onlevel);
+    return new Promise((resolve, reject) => {
+        const rec = new Recognition();
+        rec.lang = locale;
+        // Interim results are kept so words already heard are not lost when the learner taps to finish early.
+        rec.interimResults = true;
+        rec.maxAlternatives = 5;
+        rec.continuous = false;
+        const finals = [];
+        let interim = [];
+        let sound = false;
+        let failure = null;
+        let stopped = false;
+        const timer = window.setTimeout(() => rec.stop(), 12000);
+        rec.onsoundstart = () => {
+            sound = true;
+        };
+        rec.onspeechstart = () => {
+            sound = true;
+        };
+        rec.onresult = (e) => {
+            interim = [];
+            for (let i = e.resultIndex || 0; i < e.results.length; i++) {
+                const alts = [];
+                for (let j = 0; j < e.results[i].length; j++) {
+                    alts.push(e.results[i][j].transcript);
+                }
+                if (e.results[i].isFinal) {
+                    finals.push(...alts);
+                } else {
+                    interim = alts;
+                }
             }
+        };
+        rec.onerror = (e) => {
+            failure = e.error || 'recognition';
+        };
+        rec.onend = () => {
+            window.clearTimeout(timer);
+            const loud = meter.loud();
+            meter.stop();
+            const out = (finals.length ? finals : interim).map((t) => t.trim()).filter((t) => t !== '');
+            if (out.length) {
+                resolve(out);
+            } else if (failure === 'not-allowed') {
+                reject(new Error('not-allowed'));
+            } else if (failure === 'audio-capture') {
+                reject(new Error('audio-capture'));
+            } else if (['network', 'service-not-allowed', 'language-not-supported', 'bad-grammar'].includes(failure)) {
+                reject(new Error('recogniserunavailable'));
+            } else if (stopped && !sound && !loud) {
+                // Tapped to finish before saying anything.
+                resolve([]);
+            } else if (!sound && loud === false) {
+                reject(new Error('micsilent'));
+            } else if (sound || loud) {
+                reject(new Error('unintelligible'));
+            } else {
+                resolve([]);
+            }
+        };
+        signal.stop = () => {
+            stopped = true;
+            rec.stop();
+        };
+        try {
+            rec.start();
+        } catch (e) {
+            window.clearTimeout(timer);
+            meter.stop();
+            reject(new Error('recogniserunavailable'));
         }
-    };
-    rec.onerror = (e) => {
-        if (e.error === 'no-speech' || e.error === 'aborted') {
-            resolve([]);
-        } else {
-            reject(new Error(e.error || 'recognition'));
-        }
-    };
-    rec.onend = () => resolve(out);
-    signal.stop = () => rec.stop();
-    rec.start();
-});
+    });
+};
 
 /**
  * Records an ordinary audio clip (for listening back, or a teacher's recording).

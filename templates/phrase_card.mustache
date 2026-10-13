@@ -24,8 +24,8 @@
     {
         "number": 1, "color": "#6366F1", "ink": "#4338CA", "eyebrow": "Phrase 1 of 4", "text": "Good morning!",
         "romanisation": "", "lang": "en-AU", "supportlang": "th", "translation": "สวัสดีตอนเช้า",
-        "usagenote": "Use this until about midday.", "example": "Good morning, Maria!", "exampletrans": "",
-        "hasexample": true, "speaking": true, "goal": "Words match 80% or more, 3 times", "dots": [{"done": true}, {"done": false}],
+        "usagenote": "Use this until about midday.", "speaking": true, "goal": "Words match 80% or more, 3 times",
+        "dots": [{"done": true}, {"done": false}],
         "dotslabel": "Successful tries: 1 of 3",
         "practice": true, "study": false, "canclose": false, "note": ""
     }
@@ -66,20 +66,6 @@
             <p dir="auto" lang="{{supportlang}}">{{usagenote}}</p>
         </div>
         {{/usagenote}}
-        {{#hasexample}}
-        <div class="lt-example">
-            <span class="lt-mini-label">{{#str}} example, mod_ailanguageteacher {{/str}}</span>
-            <div class="lt-example-row">
-                <button type="button" class="lt-iconbtn lt-iconbtn-sm" data-action="example" aria-label="{{#str}} listenexample, mod_ailanguageteacher {{/str}}" title="{{#str}} listenexample, mod_ailanguageteacher {{/str}}">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 010 6"/></svg>
-                </button>
-                <div>
-                    <p class="lt-example-text" dir="auto" lang="{{lang}}">{{example}}</p>
-                    {{#exampletrans}}<p class="lt-example-trans" dir="auto" lang="{{supportlang}}">{{.}}</p>{{/exampletrans}}
-                </div>
-            </div>
-        </div>
-        {{/hasexample}}
     </div>
     {{#speaking}}
     <div class="lt-speak" data-region="speak">

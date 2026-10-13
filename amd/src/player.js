@@ -44,7 +44,7 @@ const STRING_KEYS = [
     'nothingheard', 'headline_excellent', 'headline_great', 'headline_nearly', 'headline_tryagain', 'msg_moretogo',
     'msg_mastered', 'msg_keepgoing', 'msg_reset', 'spokencheck', 'wordsrecognised', 'charsrecognised', 'unintelligible',
     'speechinprogress', 'intro_item_servicespeech', 'successfultries', 'matchscore', 'speaknotavailable',
-    'micblocked', 'speechfailed_short', 'speechratelimit', 'recorded',
+    'micblocked', 'micsilent', 'micnone', 'recogniserunavailable', 'speechfailed_short', 'speechratelimit', 'recorded',
     'intro_expect', 'intro_requirements', 'intro_pass', 'intro_nopass',
     'intro_attempts', 'intro_unlimited', 'intro_time', 'intro_notime', 'intro_graded', 'intro_study_1', 'intro_study_2',
     'intro_study_3', 'intro_practice_1', 'intro_practice_2', 'intro_practice_3', 'intro_practice_4', 'intro_test_1',
@@ -343,6 +343,15 @@ class Player {
         if (window.ResizeObserver) {
             this.resizeObserver = new ResizeObserver(() => this.onResize());
             this.resizeObserver.observe(this.viewport);
+            // The scene grows when a message appears under it (for example under the microphone): the viewport,
+            // which clips to the scene's height, follows so nothing is cut off.
+            this.slideObserver = new ResizeObserver((entries) => {
+                const active = this.slides?.[this.index];
+                if (active && entries.some((e) => e.target === active.el)) {
+                    this.viewport.style.height = `${active.el.offsetHeight}px`;
+                }
+            });
+            this.slides.forEach((s) => this.slideObserver.observe(s.el));
         }
         shell.focus({preventScroll: true});
         window.setTimeout(() => {
@@ -1482,8 +1491,7 @@ class Player {
             number: slot.number, color, ink: readable(color),
             eyebrow: fmt(S.phraseof, {current: slot.number, total: slide.slots.size}),
             text: detail.text, romanisation: detail.romanisation, lang: c.locale, supportlang: c.supportlang,
-            translation: detail.translation, usagenote: detail.usagenote, example: detail.example,
-            exampletrans: detail.exampletrans, hasexample: detail.hasexample, speaking, goal,
+            translation: detail.translation, usagenote: detail.usagenote, speaking, goal,
             dots: Array.from({length: c.repetitions}, (v, i) => ({done: i < successes})),
             dotslabel: fmt(S.successfultries, {done: Math.min(successes, c.repetitions), total: c.repetitions}),
             practice, study: !practice, canclose: !practice || revisit,
@@ -1533,10 +1541,6 @@ class Player {
         };
         q('listen').addEventListener('click', () => play('normal'));
         q('slow').addEventListener('click', () => play('slow'));
-        const ex = q('example');
-        if (ex) {
-            ex.addEventListener('click', () => this.listen(detail, 'example'));
-        }
         node.querySelectorAll('[data-action="close"]').forEach((b) => b.addEventListener('click', () => this.closeLesson()));
         const mic = q('speak');
         if (mic) {
@@ -1613,6 +1617,22 @@ class Player {
     }
 
     /**
+     * The message for a microphone or recognition problem, or null when the error is something else.
+     *
+     * @param {Error} err
+     * @returns {string|null}
+     */
+    micProblem(err) {
+        const map = {nothingheard: 'nothingheard', unintelligible: 'unintelligible', micsilent: 'micsilent',
+            'audio-capture': 'micnone', recogniserunavailable: 'recogniserunavailable'};
+        const key = err && !err.errorcode ? map[err.message] : null;
+        if (!key && err && err.name === 'NotFoundError') {
+            return S.micnone;
+        }
+        return key ? S[key] : null;
+    }
+
+    /**
      * One speaking turn on the phrase card: record, score, show feedback, update mastery.
      *
      * @param {object} lesson
@@ -1653,7 +1673,8 @@ class Player {
                 args = {audio: await Speech.toBase64(rec.blob)};
             } else if (c.speakmode === 'browser') {
                 setBusy(S.tapwhendone, true);
-                const transcripts = await Speech.recognise(c.locale, lesson.signal);
+                const transcripts = await Speech.recognise(c.locale, lesson.signal,
+                    (v) => mic.style.setProperty('--level', v.toFixed(2)));
                 if (!transcripts.length) {
                     throw new Error('nothingheard');
                 }
@@ -1672,8 +1693,9 @@ class Player {
             await this.showResult(lesson, res, result);
             status.textContent = '';
         } catch (err) {
-            if (err && err.message === 'nothingheard') {
-                status.textContent = S.nothingheard;
+            const mictext = this.micProblem(err);
+            if (mictext) {
+                status.textContent = mictext;
             } else if (err && (err.name === 'NotAllowedError' || err.message === 'not-allowed')) {
                 status.textContent = S.micblocked;
                 if (lesson.moveon) {
@@ -2109,7 +2131,8 @@ class Player {
                     }
                     args = {audio: await Speech.toBase64(rec.blob)};
                 } else {
-                    const transcripts = await Speech.recognise(this.config.locale, slide.signal);
+                    const transcripts = await Speech.recognise(this.config.locale, slide.signal,
+                        (v) => mic.style.setProperty('--level', v.toFixed(2)));
                     if (!transcripts.length) {
                         throw new Error('nothingheard');
                     }
@@ -2129,10 +2152,11 @@ class Player {
                 mic.disabled = res.triesleft <= 0;
                 this.renderActions();
             } catch (err) {
-                if (err && err.message === 'nothingheard') {
-                    status.textContent = S.nothingheard;
-                } else if (err && err.message === 'unintelligible') {
-                    status.textContent = S.unintelligible;
+                const mictext = this.micProblem(err);
+                if (mictext) {
+                    status.textContent = mictext;
+                } else if (err && (err.name === 'NotAllowedError' || err.message === 'not-allowed')) {
+                    status.textContent = S.micblocked;
                 } else if (err && err.errorcode === 'speechratelimit') {
                     status.textContent = S.speechratelimit;
                 } else if (err && err.errorcode === 'speechinprogress') {
@@ -2537,6 +2561,9 @@ class Player {
         this.stopAutoplay();
         if (this.resizeObserver) {
             this.resizeObserver.disconnect();
+        }
+        if (this.slideObserver) {
+            this.slideObserver.disconnect();
         }
         this.host.replaceChildren(node);
         this.shell = node;

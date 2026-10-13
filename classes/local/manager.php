@@ -271,6 +271,54 @@ class manager {
         return $result;
     }
 
+    /** @var int A label placed for the teacher (a guess): shown in the editor to check, never to learners. */
+    public const GUESSED = 2;
+
+    /**
+     * Gives every phrase that is not on the picture yet a guessed position (placed = GUESSED), so the teacher only
+     * moves each label onto the right person. Phrases said by the same person (the same anchor, or the same name
+     * before the comma in "Jake, the man at the door") sit together; different people are spread across the picture,
+     * and "left", "right" or "middle" in the anchor are followed.
+     *
+     * @param array $phrases arrays or objects with anchor, placed, distractor, x, y
+     * @return array the same phrases, with guesses filled in
+     */
+    public static function guess_positions(array $phrases): array {
+        $groups = [];
+        foreach ($phrases as $k => $p) {
+            $p = (object)$p;
+            if (!empty($p->distractor) || !empty($p->placed)) {
+                continue;
+            }
+            $anchor = \core_text::strtolower(trim((string)($p->anchor ?? '')));
+            $who = $anchor === '' ? 'k' . $k : trim(explode(',', $anchor)[0]);
+            $groups[$who]['anchor'] = $groups[$who]['anchor'] ?? $anchor;
+            $groups[$who]['keys'][] = $k;
+        }
+        $n = count($groups);
+        $g = 0;
+        foreach ($groups as $group) {
+            $x = $n === 1 ? 50 : 18 + 64 * $g / ($n - 1);
+            if (preg_match('/\b(left)\b/', $group['anchor'])) {
+                $x = 25;
+            } else if (preg_match('/\b(right)\b/', $group['anchor'])) {
+                $x = 75;
+            } else if (preg_match('/\b(middle|centre|center)\b/', $group['anchor'])) {
+                $x = 50;
+            }
+            $count = count($group['keys']);
+            foreach ($group['keys'] as $j => $k) {
+                $y = 40 + ($j - ($count - 1) / 2) * 14;
+                $guess = ['x' => round($x + ($j % 2 ? 4 : 0), 2), 'y' => round(max(10, min(90, $y)), 2),
+                    'placed' => self::GUESSED];
+                $phrases[$k] = is_array($phrases[$k]) ? array_merge($phrases[$k], $guess)
+                    : (object)array_merge((array)$phrases[$k], $guess);
+            }
+            $g++;
+        }
+        return $phrases;
+    }
+
     /**
      * Placed, non-distractor phrases of a scene in pin order (top to bottom, so leader lines don't cross).
      *
@@ -278,7 +326,8 @@ class manager {
      * @return stdClass[]
      */
     public static function order_pins(array $phrases): array {
-        $pins = array_values(array_filter($phrases, fn($p) => empty($p->distractor) && !empty($p->placed)));
+        // Guessed labels wait for the teacher: learners only get labels a teacher has placed or checked.
+        $pins = array_values(array_filter($phrases, fn($p) => empty($p->distractor) && (int)$p->placed === 1));
         usort($pins, fn($a, $b) => ((float)$a->y <=> (float)$b->y) ?: ((float)$a->x <=> (float)$b->x));
         return $pins;
     }
@@ -857,7 +906,7 @@ class manager {
             'voicegender' => in_array($item['voicegender'] ?? '', ['f', 'm'], true) ? $item['voicegender'] : null,
             'x' => $placed ? max(0, min(100, round((float)($item['x'] ?? 0), 4))) : 0,
             'y' => $placed ? max(0, min(100, round((float)($item['y'] ?? 0), 4))) : 0,
-            'placed' => $placed ? 1 : 0,
+            'placed' => $placed ? ((int)$item['placed'] === self::GUESSED ? self::GUESSED : 1) : 0,
             'color' => preg_match('/^#[0-9a-fA-F]{6}$/', (string)($item['color'] ?? '')) ? strtoupper($item['color']) : '',
             'distractor' => empty($item['distractor']) ? 0 : 1,
         ];
@@ -873,7 +922,8 @@ class manager {
      */
     public static function editor_data(stdClass $instance, \context $context, stdClass $scene): array {
         [$url, $w, $h] = self::get_scene_image($context, (int)$scene->id);
-        $phrases = self::get_phrases([$scene->id])[$scene->id];
+        // Labels not on the picture yet are put on it for the teacher to move into place (saved only with the scene).
+        $phrases = array_values(self::guess_positions(array_values(self::get_phrases([$scene->id])[$scene->id])));
         $out = [];
         foreach ($phrases as $i => $phrase) {
             $out[] = [
