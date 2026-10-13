@@ -271,7 +271,7 @@ class manager {
         return $result;
     }
 
-    /** @var int A label placed for the teacher (a guess): shown in the editor to check, never to learners. */
+    /** @var int An automatically placed label, available to learners and still editable by the teacher. */
     public const GUESSED = 2;
 
     /**
@@ -326,8 +326,9 @@ class manager {
      * @return stdClass[]
      */
     public static function order_pins(array $phrases): array {
-        // Guessed labels wait for the teacher: learners only get labels a teacher has placed or checked.
-        $pins = array_values(array_filter($phrases, fn($p) => empty($p->distractor) && (int)$p->placed === 1));
+        // Automatic placement is usable immediately; retain its origin so teachers can still refine it.
+        $pins = array_values(array_filter($phrases, fn($p) => empty($p->distractor)
+            && in_array((int)$p->placed, [1, self::GUESSED], true)));
         usort($pins, fn($a, $b) => ((float)$a->y <=> (float)$b->y) ?: ((float)$a->x <=> (float)$b->x));
         return $pins;
     }

@@ -2,6 +2,10 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.4] - 2026-10-13
+
+- Automatically placed labels are available immediately in learner preview and learning. Moving, checking or saving them first is no longer required. Teachers can still edit them.
+
 ## [v1.4.3] - 2026-10-13
 
 ### Added

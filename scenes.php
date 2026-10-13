@@ -157,7 +157,7 @@ foreach ($scenes as $s) {
     [$url] = manager::get_scene_image($context, (int)$s->id);
     $list = $phrases[$s->id];
     $pins = array_filter($list, fn($p) => empty($p->distractor));
-    $placed = count(array_filter($pins, fn($p) => (int)$p->placed === 1));
+    $placed = count(manager::order_pins($list));
     $guessed = count(array_filter($pins, fn($p) => (int)$p->placed === manager::GUESSED));
     $voiced = [];
     foreach ($pins as $p) {
@@ -184,7 +184,7 @@ foreach ($scenes as $s) {
         'noimage' => !$url,
         'phrases' => count($pins),
         'placed' => $placed,
-        'placedok' => $placed > 0 && !$guessed,
+        'placedok' => $placed > 0,
         'guessed' => $guessed,
         'voices' => $voiced,
         'novoices' => count(array_filter($voiced, fn($v) => !$v['hasvoice'])),

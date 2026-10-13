@@ -58,14 +58,14 @@ final class guess_test extends \advanced_testcase {
     }
 
     /**
-     * Learners never get guessed labels; a saved guess stays a guess.
+     * Learners get automatic labels immediately; their origin remains available for editing.
      */
-    public function test_guesses_hidden_from_learners(): void {
+    public function test_guesses_available_to_learners(): void {
         $pins = manager::order_pins([
             (object)['id' => 1, 'placed' => manager::GUESSED, 'distractor' => 0, 'x' => 10, 'y' => 10],
             (object)['id' => 2, 'placed' => 1, 'distractor' => 0, 'x' => 20, 'y' => 20],
         ]);
-        $this->assertSame([2], array_map(fn($p) => $p->id, $pins));
+        $this->assertSame([1, 2], array_map(fn($p) => $p->id, $pins));
         $this->assertSame(manager::GUESSED, manager::clean_phrase(['text' => 'Hi', 'placed' => 2, 'x' => 30, 'y' => 40])->placed);
         $this->assertSame(1, manager::clean_phrase(['text' => 'Hi', 'placed' => 1, 'x' => 30, 'y' => 40])->placed);
         $this->assertSame(0, manager::clean_phrase(['text' => 'Hi', 'placed' => 2, 'distractor' => 1])->placed);
