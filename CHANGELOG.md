@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.5] - 2026-10-13
+
+- The editor now has two independent single-card slideshows: Scene labels and Optional distractors, with Previous/Next buttons and counters instead of a long mixed list.
+- Clearly explains that distractors are optional answer choices, not picture labels. Navigation preserves edits and recordings; clicking a picture pin opens its label card.
+- Added mobile-friendly controls, empty states and keyboard navigation. Automatic placements remain immediately available to learners without a save requirement.
+
 ## [v1.4.4] - 2026-10-13
 
 - Automatically placed labels are available immediately in learner preview and learning. Moving, checking or saving them first is no longer required. Teachers can still edit them.

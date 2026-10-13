@@ -1264,6 +1264,10 @@
     position: sticky;
     top: 70px;
 }
+.path-mod-ailanguageteacher .lt-ed-main,
+.path-mod-ailanguageteacher .lt-ed-side {
+    min-width: 0;
+}
 .path-mod-ailanguageteacher .lt-panel {
     padding: 16px;
     border-radius: 18px;
@@ -1442,6 +1446,45 @@
     max-height: 58vh;
     overflow: auto;
     padding: 2px;
+}
+.path-mod-ailanguageteacher .lt-editor-slides .lt-labellist {
+    max-height: none;
+    overflow: visible;
+}
+.path-mod-ailanguageteacher .lt-editor-slides .lt-lrow[hidden] {
+    display: none;
+}
+.path-mod-ailanguageteacher .lt-editor-slides .lt-lrow-body {
+    display: flex;
+}
+.path-mod-ailanguageteacher .lt-editor-slide-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+.path-mod-ailanguageteacher .lt-editor-slide-nav .lt-btn {
+    min-height: 44px;
+    white-space: normal;
+}
+.path-mod-ailanguageteacher .lt-editor-slide-nav .lt-mini {
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+.path-mod-ailanguageteacher .lt-editor-slide-empty {
+    padding: 16px 12px;
+    border: 1px dashed var(--lt-border-strong);
+    border-radius: 12px;
+    background: var(--lt-surface-2);
+}
+.path-mod-ailanguageteacher .lt-editor-slides .lt-lrow-head > .lt-input {
+    min-width: 0;
+}
+.path-mod-ailanguageteacher .lt-editor-slides .lt-btn {
+    white-space: normal;
+    line-height: 1.35;
 }
 .path-mod-ailanguageteacher .lt-lrow {
     border-radius: 14px;
@@ -1799,7 +1842,7 @@
 
 @media (max-width: 991px) {
     .path-mod-ailanguageteacher .lt-editor {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
     .path-mod-ailanguageteacher .lt-ed-side {
         position: static;

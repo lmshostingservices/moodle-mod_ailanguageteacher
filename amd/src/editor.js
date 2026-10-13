@@ -35,7 +35,7 @@ const KEYS = ['saved', 'saving', 'unsaved', 'guessbanner', 'guessallok', 'guessp
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
     'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'voice_confirm_free',
     'discard_confirm', 'limit_count',
-    'limit_over'];
+    'limit_over', 'editor_label_counter', 'editor_distractor_counter', 'editor_new_distractor'];
 
 let S = {};
 
@@ -100,6 +100,8 @@ class Editor {
         this.skipped = new Set();
         this.dirty = false;
         this.saving = null;
+        this.slides = {labels: {key: null, index: 0}, distractors: {key: null, index: 0}};
+        this.rows = new Map();
     }
 
     /**
@@ -126,6 +128,7 @@ class Editor {
         this.cursor = q('cursor');
         this.banner = q('banner');
         this.list = q('list');
+        this.distractorList = q('distractor-list');
         this.countEl = q('count');
         this.stateEl = q('state');
         this.root.querySelectorAll('[data-field]').forEach((f) => {
@@ -136,6 +139,41 @@ class Editor {
         });
         this.root.querySelector('[data-action="save"]').addEventListener('click', () => this.save());
         this.root.querySelector('[data-action="quick"]').addEventListener('click', () => this.quickAdd());
+        this.root.querySelectorAll('[data-slides]').forEach((section) => {
+            section.querySelectorAll('[data-slide-step]').forEach((button) => {
+                button.addEventListener('click', () => {
+                    const group = section.dataset.slides;
+                    const items = this.slideItems(group);
+                    const slide = this.slides[group];
+                    const index = slide.index + Number(button.dataset.slideStep);
+                    if (index >= 0 && index < items.length) {
+                        slide.key = items[index].key;
+                        slide.index = index;
+                        this.selected = items[index];
+                        this.drawPins();
+                        this.updateSlides();
+                        // Keep keyboard focus in this section when an endpoint disables its button.
+                        if (button.disabled) {
+                            const next = section.querySelector('[data-slide-step]:not(:disabled)') ||
+                                section.querySelector('.lt-lrow:not([hidden]) [data-field="text"]');
+                            if (next) {
+                                next.focus();
+                            }
+                        }
+                    }
+                });
+            });
+        });
+        this.root.querySelector('[data-action="add-distractor"]').addEventListener('click', () => {
+            if (this.slideItems('distractors').length >= c.maxdistractors) {
+                Notification.alert('', fmt(S.limitreached, c.maxdistractors));
+                return;
+            }
+            const phrase = {...this.blank(S.editor_new_distractor), distractor: 1};
+            this.phrases.push(phrase);
+            this.touch();
+            this.select(phrase);
+        });
         this.root.querySelector('[data-action="add"]').addEventListener('click', () => {
             if (this.pinCount() >= c.maxphrases) {
                 Notification.alert('', fmt(S.limitreached, c.maxphrases));
@@ -452,10 +490,13 @@ class Editor {
      */
     async select(phrase) {
         this.selected = phrase;
+        if (phrase) {
+            this.slides[phrase.distractor ? 'distractors' : 'labels'].key = phrase.key;
+        }
         this.drawPins();
         await this.drawList();
         if (phrase) {
-            const row = this.list.querySelector(`[data-key="${phrase.key}"]`);
+            const row = this.root.querySelector(`[data-key="${phrase.key}"]`);
             if (row) {
                 row.scrollIntoView({block: 'nearest', behavior: 'smooth'});
             }
@@ -478,22 +519,76 @@ class Editor {
     /**
      * Renders the phrase list.
      */
+    /**
+     * Phrases in a section, using the existing pin order for scene labels.
+     *
+     * @param {string} group
+     * @returns {Array}
+     */
+    slideItems(group) {
+        return group === 'distractors' ? this.phrases.filter((p) => p.distractor) :
+            [...this.ordered(), ...this.phrases.filter((p) => !p.distractor && !p.placed)];
+    }
+
+    /**
+     * Shows one retained DOM card per section. Navigation never changes scene data or saves.
+     */
+    updateSlides() {
+        this.root.querySelectorAll('[data-slides]').forEach((section) => {
+            const group = section.dataset.slides;
+            const items = this.slideItems(group);
+            const slide = this.slides[group];
+            const remembered = items.findIndex((p) => p.key === slide.key);
+            slide.index = remembered >= 0 ? remembered : Math.min(slide.index, Math.max(0, items.length - 1));
+            slide.key = items.length ? items[slide.index].key : null;
+            section.querySelectorAll('.lt-lrow').forEach((row) => {
+                row.hidden = row.dataset.key !== slide.key;
+                row.classList.toggle('is-sel', !!this.selected && row.dataset.key === this.selected.key);
+                const record = row.querySelector('[data-action="record"]');
+                record.classList.toggle('is-recording',
+                    !!this.recordingPhrase && row.dataset.key === this.recordingPhrase.key);
+                const label = record.querySelector('span');
+                if (!label.dataset.ltRecordLabel) {
+                    label.dataset.ltRecordLabel = label.textContent;
+                }
+                label.textContent = this.recording ? S.recordstop : label.dataset.ltRecordLabel;
+            });
+            section.querySelector('[data-slide-empty]').hidden = items.length > 0;
+            section.querySelector('[data-slide-counter]').textContent = fmt(
+                group === 'labels' ? S.editor_label_counter : S.editor_distractor_counter,
+                {current: items.length ? slide.index + 1 : 0, total: items.length});
+            section.querySelectorAll('[data-slide-step]').forEach((button) => {
+                button.disabled = !items.length || (Number(button.dataset.slideStep) < 0 ?
+                    slide.index === 0 : slide.index === items.length - 1);
+            });
+        });
+    }
+
+    /**
+     * Renders changed cards only; retained cards preserve input and in-progress recording controls.
+     */
     async drawList() {
         const c = this.cfg;
+        if (this.selected) {
+            this.slides[this.selected.distractor ? 'distractors' : 'labels'].key = this.selected.key;
+        }
         const pins = this.pinCount();
         this.countEl.textContent = `${pins}/${c.maxphrases}`;
         this.countEl.classList.toggle('is-full', pins >= c.maxphrases);
-        if (!this.phrases.length) {
-            this.list.replaceChildren(el('p', 'lt-mini', {text: S.emptyeditor}));
-            return;
-        }
         const token = {};
         this.drawToken = token;
-        const sorted = [...this.ordered(), ...this.phrases.filter((p) => !p.distractor && !p.placed),
-            ...this.phrases.filter((p) => p.distractor)];
+        const sorted = [...this.slideItems('labels'), ...this.slideItems('distractors')];
+        const snapshot = JSON.stringify(sorted);
         const rows = [];
         for (const phrase of sorted) {
-            rows.push(await render('editor_phrase', {
+            const signature = JSON.stringify({...phrase, number: this.number(phrase)});
+            const cached = this.rows.get(phrase.key);
+            if (cached && (cached.signature === signature || (this.recordingPhrase === phrase &&
+                    cached.distractor === phrase.distractor && cached.color === phrase.color))) {
+                rows.push(cached.row);
+                continue;
+            }
+            const row = await render('editor_phrase', {
                 ...phrase, number: this.number(phrase), selected: phrase === this.selected,
                 unplaced: !phrase.distractor && !phrase.placed, distractor: !!phrase.distractor,
                 guessed: !phrase.distractor && phrase.placed === GUESSED,
@@ -501,14 +596,39 @@ class Editor {
                 palette: c.palette.map((color) => ({color, on: color === phrase.color})),
                 targetname: c.targetname, supportname: c.supportname,
                 voiceauto: !phrase.voicegender, voicef: phrase.voicegender === 'f', voicem: phrase.voicegender === 'm',
-            }));
+            });
+            this.wireRow(row, phrase);
+            limits(row);
+            rows.push(row);
+            this.rows.set(phrase.key, {row, signature, distractor: phrase.distractor, color: phrase.color});
         }
         if (this.drawToken !== token) {
             return;
         }
-        this.list.replaceChildren(...rows);
-        rows.forEach((row, i) => this.wireRow(row, sorted[i]));
-        rows.forEach((row) => limits(row));
+        // A render may resolve after typing, deleting, toggling or another selection.
+        if (snapshot !== JSON.stringify([...this.slideItems('labels'), ...this.slideItems('distractors')])) {
+            await this.drawList();
+            return;
+        }
+        const keys = new Set(sorted.map((p) => p.key));
+        this.rows.forEach((entry, key) => {
+            if (!keys.has(key)) {
+                entry.row.remove();
+                this.rows.delete(key);
+            }
+        });
+        rows.forEach((row, i) => {
+            const list = sorted[i].distractor ? this.distractorList : this.list;
+            // Do not detach an unchanged card: focus and recording stay intact.
+            if (row.parentNode !== list) {
+                const old = this.root.querySelector(`[data-key="${sorted[i].key}"]`);
+                if (old) {
+                    old.remove();
+                }
+                list.appendChild(row);
+            }
+        });
+        this.updateSlides();
     }
 
     /**
@@ -535,9 +655,22 @@ class Editor {
                         return;
                     }
                     phrase.distractor = f.checked ? 1 : 0;
+                    this.selected = phrase;
+                    this.slides[phrase.distractor ? 'distractors' : 'labels'].key = phrase.key;
+                    if (phrase.distractor && this.placing === phrase) {
+                        this.nextToPlace();
+                    }
                     this.touch();
                     this.drawPins();
-                    this.drawList();
+                    this.drawList().then(() => {
+                        if (this.selected === phrase) {
+                            const checkbox = this.root.querySelector(
+                                `[data-key="${phrase.key}"] [data-field="distractor"]`);
+                            if (checkbox) {
+                                checkbox.focus();
+                            }
+                        }
+                    });
                 });
                 return;
             }
@@ -545,7 +678,7 @@ class Editor {
                 if (this.selected !== phrase) {
                     this.selected = phrase;
                     this.drawPins();
-                    this.list.querySelectorAll('.lt-lrow').forEach((r) => r.classList.toggle('is-sel',
+                    this.root.querySelectorAll('.lt-lrow').forEach((r) => r.classList.toggle('is-sel',
                         r.dataset.key === phrase.key));
                 }
             });
@@ -559,6 +692,15 @@ class Editor {
                     }
                 }
             });
+            // Select controls can emit change without input on some supported browsers.
+            if (f.tagName === 'SELECT') {
+                f.addEventListener('change', () => {
+                    if (phrase[field] !== f.value) {
+                        phrase[field] = f.value;
+                        this.touch();
+                    }
+                });
+            }
         });
         act('select').addEventListener('click', () => this.select(phrase));
         act('listen').addEventListener('click', () => this.listen(phrase));
@@ -683,8 +825,10 @@ class Editor {
         const label = btn.querySelector('span');
         const signal = {};
         this.recording = {stop: () => signal.stop && signal.stop()};
+        this.recordingPhrase = phrase;
         label.textContent = S.recordstop;
         btn.classList.add('is-recording');
+        this.updateSlides();
         try {
             const blob = await Speech.recordClip(signal, 10000);
             const audio = await Speech.toBase64(blob);
@@ -695,6 +839,8 @@ class Editor {
             Notification.exception(err);
         } finally {
             this.recording = null;
+            this.recordingPhrase = null;
+            btn.classList.remove('is-recording');
             this.drawList();
         }
     }
@@ -712,7 +858,12 @@ class Editor {
         }
         this.phrases = this.phrases.filter((p) => p !== phrase);
         if (this.selected === phrase) {
-            this.selected = null;
+            const group = phrase.distractor ? 'distractors' : 'labels';
+            const items = this.slideItems(group);
+            this.selected = items[Math.min(this.slides[group].index, items.length - 1)] || null;
+            if (this.selected) {
+                this.slides[group].key = this.selected.key;
+            }
         }
         if (this.placing === phrase) {
             this.nextToPlace();
@@ -738,7 +889,8 @@ class Editor {
             return;
         }
         const tag = (e.target.tagName || '').toLowerCase();
-        if (tag === 'input' || tag === 'textarea' || tag === 'select' || !this.selected || !this.selected.placed) {
+        if (tag === 'input' || tag === 'textarea' || tag === 'select' ||
+                e.target.closest('[data-slide-step]') || !this.selected || this.selected.distractor || !this.selected.placed) {
             return;
         }
         const step = e.shiftKey ? 2 : 0.5;
