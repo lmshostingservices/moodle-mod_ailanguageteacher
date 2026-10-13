@@ -35,7 +35,7 @@ final class remote {
 
     /** @var string[] Documented 5xx codes LMS Labs uses when the provider failed before anything was charged. */
     public const PROVIDER_REFUSED = ['PROVIDER_UNAVAILABLE', 'PROVIDER_FAILED', 'PROVIDER_RATE_LIMITED',
-        'INVALID_PROVIDER_RESULT', 'SPEECH_FAILED', 'IMAGE_FAILED'];
+        'INVALID_PROVIDER_RESULT', 'SPEECH_FAILED', 'IMAGE_FAILED', 'TARIFF_NOT_APPROVED', 'IMAGE_NOT_ENABLED'];
 
     /**
      * @var callable|null Replacement transport for unit tests: fn($url, $headers, $body) => [status, body, info,

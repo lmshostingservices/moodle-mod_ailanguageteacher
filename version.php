@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_ailanguageteacher';
-$plugin->version   = 2026101009;
-$plugin->release   = '1.3.9';
+$plugin->version   = 2026101100;
+$plugin->release   = '1.4.0';
 $plugin->requires  = 2024042200; // Moodle 4.4.
 $plugin->supported = [404, 503];
 $plugin->maturity  = MATURITY_STABLE;

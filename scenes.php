@@ -237,6 +237,16 @@ if ($step === setuppath::VOICES && $state['voices'] && has_capability('mod/ailan
 
 $PAGE->requires->js_call_amd('mod_ailanguageteacher/scenes', 'init', ['#lt-scenes']);
 
+// LMS Labs AI pictures (2 credits each): offered once switched on, and made only at the published approved price.
+$canpicture = $step === setuppath::PICTURES && \mod_ailanguageteacher\local\pictures::enabled()
+    && has_capability('mod/ailanguageteacher:useai', $context);
+$picturehold = '';
+if ($canpicture && ($pheld = \mod_ailanguageteacher\local\pictures::price_hold()) !== null) {
+    $picturehold = get_string($pheld ? 'pictures_pricehold' : 'pictures_priceunknown', 'mod_ailanguageteacher', [
+        'published' => $pheld,
+        'approved' => \mod_ailanguageteacher\local\pictures::CREDITS,
+    ]);
+}
 // LMS Labs still publishes another price per voice: nothing new is made until it publishes the approved one.
 $held = \mod_ailanguageteacher\local\audio::price_hold();
 $pricehold = $held === null ? '' : get_string($held ? 'voices_pricehold' : 'voices_priceunknown', 'mod_ailanguageteacher', [
@@ -247,6 +257,13 @@ echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
     'bar' => setuppath::bar($step),
     'pictures' => $step === setuppath::PICTURES,
+    'canpicture' => $canpicture,
+    'picturehold' => $picturehold,
+    'picturelive' => $canpicture && $picturehold === '',
+    'picturecredits' => \mod_ailanguageteacher\local\pictures::CREDITS,
+    'missingpictures' => count($state['nopicture']),
+    'missingpictureids' => implode(',', $state['nopicture']),
+    'missingpicturecredits' => count($state['nopicture']) * \mod_ailanguageteacher\local\pictures::CREDITS,
     'voicesstep' => $step === setuppath::VOICES,
     'check' => $step === setuppath::CHECK,
     'groups' => array_values($groups),

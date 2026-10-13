@@ -2,6 +2,18 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.0] - 2026-10-13
+
+Follows the LMS Labs contract of 13 Oct 2026 for Language Teacher pictures. Owner-approved: **2 credits per picture** (Soft Skills pictures stay at 5) and 2 credits per voice.
+
+### Added
+
+- **LMS Labs AI pictures for scenes.** In the Pictures step, "Create AI picture (2 credits)" on each scene, "New AI picture" to replace one, and "Create the missing pictures: N (2N credits)". Every price is confirmed first; pictures are made one after another with a Stop button, and Back and Next are locked meanwhile. Uploading your own picture still works.
+- The picture request is exactly `{prompt, style, maxCredits: 2}` to `POST /api/moodle/ai-language-teacher/images`. The English prompt names the country, every person or thing a phrase belongs to (so each is easy to point at), and each person's gender and an appearance that fits their name. It states the chosen style as a firm rule (style words in the scene description that clash are replaced) and keeps targets away from the top and bottom edges. It is at most 2,000 characters. No learner data is sent.
+- **No picture at a price the teacher was not shown.** Moodle reads the free `images/capabilities` route (at most once an hour, on teachers' pages) and makes no new picture while `tariff.image` is missing or not 2, saying so in the Pictures step.
+- Every request is stored with its key and exact body before it is sent and is never retried automatically: an unknown outcome keeps its key, and pressing the button again asks about the same request; a price rise (409 `PRICE_CHANGED`) and provider failures end as "not created, not charged"; a result LMS Labs no longer keeps (410) says so and is never made again on its own. A scene that already has a picture is never bought a second picture by "Create the missing pictures".
+- New setting **LMS Labs AI pictures** (off by default): switch it on once LMS Labs offers Language Teacher pictures.
+
 ## [v1.3.9] - 2026-10-12
 
 ### Fixed

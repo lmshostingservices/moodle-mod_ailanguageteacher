@@ -68,6 +68,13 @@ if ($ADMIN->fulltree) {
         get_string('lmslabsapikey_desc', $component),
         ''
     ));
+    // Off until LMS Labs publishes Language Teacher pictures in production (2 credits per picture).
+    $settings->add(new admin_setting_configcheckbox(
+        "$component/aiimages",
+        get_string('aiimages', $component),
+        get_string('aiimages_desc', $component, \mod_ailanguageteacher\local\pictures::CREDITS),
+        0
+    ));
     $settings->add(new admin_setting_configtext(
         "$component/airate",
         get_string('airate', $component),

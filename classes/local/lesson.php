@@ -184,6 +184,29 @@ class lesson {
     }
 
     /**
+     * A picture description with any words for the other picture style replaced, so it never asks for a photograph
+     * when the activity uses illustrations (or the reverse).
+     *
+     * @param string $text
+     * @param string $style photo or illustration
+     * @return string
+     */
+    public static function style_words(string $text, string $style): string {
+        if ($style === 'photo') {
+            $drawn = '(?:flat |cartoon |vector |bright, friendly flat )*(?:illustration|cartoon|drawing)';
+            $text = preg_replace('/\\b' . $drawn . '\\b/iu', 'photograph', $text);
+            return preg_replace('/\\b(?:illustrated|cartoon-?style|hand-?drawn)\\s*/iu', '', $text);
+        }
+        $kinds = '(?:ultra-?|hyper-?)?(?:photo-?realistic|realistic|photographic|cinematic)';
+        $text = preg_replace('/\\b' . $kinds . '\\s+(?:photo(?:graph)?|image|picture|shot)\\b/iu', 'illustration', $text);
+        $text = preg_replace('/\\b(?:photo(?:graph)?|DSLR shot)\\b/iu', 'illustration', $text);
+        $text = preg_replace('/\\b(?:ultra-?|hyper-?)?(?:photo-?realistic|photographic|cinematic|realistic)\\s*/iu', '', $text);
+        $text = preg_replace(['/\\b([Aa]) (illustration)\\b/u', '/,\\s*(?=[,.])/u', '/\\s{2,}/u'], ['$1n $2', '', ' '], $text);
+        $text = trim($text, " \t\n\r\0\x0B,");
+        return \core_text::strtoupper(\core_text::substr($text, 0, 1)) . \core_text::substr($text, 1);
+    }
+
+    /**
      * The full picture prompt for a scene.
      *
      * @param stdClass $instance
@@ -198,13 +221,17 @@ class lesson {
                 $anchors[] = '- ' . $phrase->anchor;
             }
         }
+        $style = $instance->imagestyle === 'photo' ? 'photo' : 'illustration';
         $description = trim((string)$scene->imageprompt) !== '' ? $scene->imageprompt : $scene->title;
-        return get_string('imageprompt_full', 'mod_ailanguageteacher', (object)[
-            'description' => $description,
+        $sm = get_string_manager();
+        // Always in English (the picture service reads English), whatever the teacher's language.
+        return $sm->get_string('imageprompt_full', 'mod_ailanguageteacher', (object)[
+            'description' => self::style_words((string)$description, $style),
             'country' => self::setting($instance),
-            'style' => get_string('imagestyle_' . $instance->imagestyle, 'mod_ailanguageteacher'),
+            'style' => $sm->get_string('imagestyle_' . $style, 'mod_ailanguageteacher', null, 'en'),
+            'stylerule' => $sm->get_string('imagestyle_rule_' . $style, 'mod_ailanguageteacher', null, 'en'),
             'anchors' => $anchors ? implode("\n", $anchors) : '-',
-        ]);
+        ], 'en');
     }
 
     /**

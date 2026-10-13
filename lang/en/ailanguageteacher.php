@@ -90,6 +90,24 @@ $string['act_unsaved'] = 'Save any changes below first: these buttons leave this
 $string['act_warn_insufficient'] = 'The balance ({$a->balance}) is below the price ({$a->price} credits). LMS Labs will refuse the unlock unless it recognises an existing purchase for this site.';
 $string['activation'] = 'AI Language Teacher activation';
 $string['addphrase'] = 'Add a phrase';
+$string['aibadimage_charged'] = 'LMS Labs sent a picture Moodle could not use, so it was not saved. It may have been charged: keep this reference for LMS Labs support. (Reference: {$a})';
+$string['aiimages'] = 'LMS Labs AI pictures';
+$string['aiimages_desc'] = 'Teachers can create a picture for each scene with LMS Labs AI, {$a} credits per picture, charged when LMS Labs creates it; a picture it could not create is not charged. Switch this on once LMS Labs offers Language Teacher pictures. Only the teacher\'s scene text is sent; no learner data is sent.';
+$string['pictures_busy'] = 'The pictures are being made. Wait until they finish.';
+$string['pictures_confirm_all'] = 'Create {$a->count} pictures with LMS Labs AI? LMS Labs charges {$a->each} credits for each picture it creates, {$a->credits} credits in all. They are made one after another; a picture LMS Labs has made is charged even if this page is closed before it arrives.';
+$string['pictures_confirm_new'] = 'Create a new picture for this scene? It replaces the current picture, and the phrases may need placing again. LMS Labs charges {$a} credits when it creates the picture.';
+$string['pictures_confirm_one'] = 'Create a picture for this scene with LMS Labs AI? LMS Labs charges {$a} credits when it creates the picture.';
+$string['pictures_createall'] = 'Create the missing pictures: {$a->count} ({$a->credits} credits)';
+$string['pictures_createone'] = 'Create AI picture ({$a} credits)';
+$string['pictures_intro_ai'] = 'Every scene needs a picture: learners find the phrases on it. LMS Labs AI creates each picture for {$a} credits, charged when LMS Labs creates it; a picture it could not create is not charged. You can also upload your own picture. After a new picture, check where each phrase is placed.';
+$string['pictures_newone'] = 'New AI picture ({$a} credits)';
+$string['pictures_notenabled'] = 'LMS Labs AI pictures are not switched on for this site.';
+$string['pictures_notretained'] = 'LMS Labs can no longer return this picture. Keep this reference and contact LMS Labs support before creating it again: they can check whether it was charged, and creating it again is a new request (2 credits). (LMS Labs reference: {$a})';
+$string['pictures_pricehold'] = 'AI pictures are waiting for LMS Labs: it still charges {$a->published} credits per picture, and the approved price is {$a->approved}. No picture is made until LMS Labs charges {$a->approved}, so you are never charged a price you were not shown. You can still upload your own pictures.';
+$string['pictures_priceunknown'] = 'AI pictures are waiting for LMS Labs: it has not published what a picture costs (the approved price is {$a->approved} credits). No picture is made until it does, so you are never charged a price you were not shown. You can still upload your own pictures.';
+$string['pictures_progress'] = 'Creating picture {$a->done} of {$a->count}…';
+$string['pictures_stop'] = 'Stop';
+$string['pictures_stopping'] = 'Stopping after this picture…';
 $string['aibadimage'] = 'The AI service did not return a usable picture.';
 $string['ailanguageteacher:addinstance'] = 'Add a new AI Language Teacher activity';
 $string['ailanguageteacher:attempt'] = 'Study, practise and take the Test';
@@ -299,12 +317,15 @@ Each of these must be easy to point at:
 {$a->anchors}
 
 Rules:
+- Style: {$a->stylerule}
 - Landscape, 16:10 (for example 1600 × 1000 pixels).
-- People and important objects clearly visible and spread across the picture, with calm, uncluttered space around them.
+- People and important objects clearly visible and spread across the picture, with calm, uncluttered space around them, and kept away from the very top and bottom edges.
 - Gestures and facial expressions make the moment obvious.
 - Anyone the scene names looks like their name and role suggest: gender, age, and an appearance that is plausible for the name.
 - No text, letters, numbers, signs, captions or speech bubbles anywhere.
 - Friendly, inclusive and culturally appropriate for {$a->country}.';
+$string['imagestyle_rule_illustration'] = 'a bright, friendly flat illustration throughout. It must look drawn, never like a photograph: flat colours, clean outlines and simple shading, with no photographic detail, lighting or depth of field.';
+$string['imagestyle_rule_photo'] = 'a realistic photograph throughout. It must look like a real photo, never like a drawing, illustration or 3D render.';
 $string['imagereplaced'] = 'Picture saved.';
 $string['imagestyle'] = 'Picture style';
 $string['imagestyle_illustration'] = 'bright, friendly flat illustration with clean shapes and soft colours';
@@ -582,7 +603,7 @@ $string['phrases'] = 'Phrases';
 $string['phrasesper'] = 'Phrases per picture (at most 2)';
 $string['phrasesummary'] = '{$a->phrases} phrases, {$a->placed} placed';
 $string['phrasetext'] = 'Phrase in {$a}';
-$string['pictures_intro'] = 'Every scene needs a picture: learners find the phrases on it. Upload your own picture for each scene. LMS Labs AI pictures for Language Teacher have been requested from LMS Labs and will appear here when they are available.';
+$string['pictures_intro'] = 'Every scene needs a picture: learners find the phrases on it. Upload your own picture for each scene. LMS Labs AI pictures (2 credits each) appear here once your site administrator switches them on in the plugin settings.';
 $string['pictures_title'] = 'A picture for every scene';
 $string['placedfeedback'] = '{$a->label} placed at {$a->number}.';
 $string['placeon'] = 'Place on: {$a}';
@@ -617,6 +638,7 @@ $string['privacy:metadata:browserspeech:audio'] = 'The learner\'s spoken answer,
 $string['privacy:metadata:core_files'] = 'Scene pictures, teacher recordings and LMS Labs phrase voices are stored as files in the activity.';
 $string['privacy:metadata:core_grades'] = 'Test grades are stored in the gradebook.';
 $string['privacy:metadata:external'] = 'LMS Labs processes teacher-requested lesson briefs and phrase text.';
+$string['privacy:metadata:external:imageprompt'] = 'For AI pictures: a picture description made from the teacher\'s scene (setting, people and the things the phrases belong to) and the picture style. No learner data is sent.';
 $string['privacy:metadata:external:siteid'] = 'The site\'s LMS Labs Site ID.';
 $string['privacy:metadata:external:titles'] = 'The titles of scenes written with the teacher\'s own AI assistant, sent with the per-scene charge.';
 $string['privacy:metadata:operation'] = 'Teacher-requested LMS Labs lesson drafts, scene charges and phrase voices, stored before they are sent.';

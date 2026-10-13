@@ -56,6 +56,97 @@ document.addEventListener('click', (e) => {
 }, true);
 
 /**
+ * AI pictures (2 credits each): "Create AI picture" on a scene and "Create the missing pictures". Every price is
+ * confirmed first; pictures are made one after another, Stop ends the run after the picture being made, and an
+ * unanswered request is asked about again with the same key by pressing the button again.
+ *
+ * @param {HTMLElement} root
+ */
+const initPictures = async(root) => {
+    const all = root.querySelector('[data-action="pictureall"]');
+    const ones = Array.from(root.querySelectorAll('[data-action="pictureone"]'));
+    if (!all && !ones.length) {
+        return;
+    }
+    const S = await loadStrings(['confirm_title', 'confirm_create', 'discard_confirm', 'pictures_confirm_one',
+        'pictures_confirm_new', 'pictures_confirm_all', 'pictures_progress', 'pictures_busy', 'pictures_stop',
+        'pictures_stopping']);
+    const confirm = (question) => new Promise((resolve) => {
+        Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
+    });
+    const make = (sceneid, replace, discard = false) => Ajax.call([{methodname: 'mod_ailanguageteacher_generate_image',
+        args: {sceneid, replace, discard}}], true, true, false, 180000)[0];
+    const buttons = [all, ...ones].filter((b) => b);
+    const run = async(ids, replace, button) => {
+        const label = button.querySelector('span');
+        const original = label.textContent;
+        buttons.forEach((b) => {
+            b.disabled = true;
+        });
+        lockNav(true, S.pictures_busy);
+        let stop = false;
+        const stopbtn = document.createElement('button');
+        stopbtn.type = 'button';
+        stopbtn.className = 'lt-btn lt-btn-ghost lt-btn-sm ms-2';
+        stopbtn.textContent = S.pictures_stop;
+        stopbtn.addEventListener('click', () => {
+            stop = true;
+            stopbtn.disabled = true;
+            stopbtn.textContent = S.pictures_stopping;
+        });
+        if (ids.length > 1) {
+            button.after(stopbtn);
+        }
+        let made = 0;
+        try {
+            for (const sceneid of ids) {
+                if (stop) {
+                    break;
+                }
+                label.textContent = fmt(S.pictures_progress, {done: made + 1, count: ids.length});
+                try {
+                    await make(sceneid, replace);
+                } catch (err) {
+                    if (err && err.errorcode === 'operationconflict' && await confirm(S.discard_confirm)) {
+                        await make(sceneid, replace, true);
+                    } else {
+                        throw err;
+                    }
+                }
+                made++;
+            }
+        } catch (err) {
+            lockNav(false);
+            stopbtn.remove();
+            buttons.forEach((b) => {
+                b.disabled = false;
+            });
+            label.textContent = original;
+            Notification.exception(err);
+            return;
+        }
+        lockNav(false);
+        window.location.reload();
+    };
+    if (all) {
+        all.addEventListener('click', async() => {
+            const ids = all.dataset.scenes.split(',').map((v) => parseInt(v, 10)).filter((v) => v > 0);
+            const each = parseInt(all.dataset.credits, 10);
+            if (ids.length && await confirm(fmt(S.pictures_confirm_all, {count: ids.length, each, credits: ids.length * each}))) {
+                await run(ids, false, all);
+            }
+        });
+    }
+    ones.forEach((btn) => btn.addEventListener('click', async() => {
+        const replace = btn.dataset.replace === '1';
+        const credits = parseInt(btn.dataset.credits, 10);
+        if (await confirm(fmt(replace ? S.pictures_confirm_new : S.pictures_confirm_one, credits))) {
+            await run([parseInt(btn.dataset.scene, 10)], replace, btn);
+        }
+    }));
+};
+
+/**
  * Initialises the page.
  *
  * @param {string} selector
@@ -65,6 +156,7 @@ export const init = async(selector) => {
     if (!root) {
         return;
     }
+    await initPictures(root);
     const all = root.querySelector('[data-action="voiceall"]');
     if (!all) {
         return;

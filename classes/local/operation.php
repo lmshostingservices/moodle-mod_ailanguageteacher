@@ -169,7 +169,8 @@ final class operation {
             }
             $reference = $reference !== '' ? substr($reference, 0, 64) : (string)$row->idemkey;
             throw new \moodle_exception(
-                $row->kind === 'tts' ? 'speechresultnotretained' : 'operationexpired',
+                $row->kind === 'tts' ? 'speechresultnotretained' : ($row->kind === 'image' ? 'pictures_notretained'
+                    : 'operationexpired'),
                 'mod_ailanguageteacher',
                 '',
                 $reference

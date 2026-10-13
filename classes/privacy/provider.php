@@ -113,6 +113,7 @@ class provider implements
             'brief' => 'privacy:metadata:operation:body',
             'text' => 'privacy:metadata:operation:body',
             'titles' => 'privacy:metadata:external:titles',
+            'imageprompt' => 'privacy:metadata:external:imageprompt',
             'siteid' => 'privacy:metadata:external:siteid',
         ], 'privacy:metadata:external');
         // Speech recognition in the learner's browser (for example Chrome sends the audio to Google). Moodle receives

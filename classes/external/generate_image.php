@@ -20,9 +20,10 @@ use core_external\external_function_parameters;
 use core_external\external_single_structure;
 use core_external\external_value;
 use moodle_exception;
+use mod_ailanguageteacher\local\pictures;
 
 /**
- * Creates a scene picture with the site's AI provider.
+ * Creates a scene picture with LMS Labs AI (2 credits per picture, confirmed by the teacher first).
  *
  * @package    mod_ailanguageteacher
  * @copyright  2026 LMS Hosting Services
@@ -37,20 +38,41 @@ class generate_image extends base {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'sceneid' => new external_value(PARAM_INT, 'Scene id'),
+            'replace' => new external_value(
+                PARAM_BOOL,
+                'Make a new picture even when the scene has one',
+                VALUE_DEFAULT,
+                false
+            ),
+            'discard' => new external_value(
+                PARAM_BOOL,
+                'The teacher confirmed an unfinished request may be abandoned',
+                VALUE_DEFAULT,
+                false
+            ),
         ]);
     }
 
     /**
-     * Generates.
+     * Creates one scene picture with LMS Labs (2 credits), after the teacher confirmed the price.
      *
      * @param int $sceneid
+     * @param bool $replace
+     * @param bool $discard
      * @return array
      */
-    public static function execute(int $sceneid): array {
-        $params = self::validate_parameters(self::execute_parameters(), ['sceneid' => $sceneid]);
-        self::load_scene($params['sceneid'], 'useai');
-        // No approved image tariff or route exists for this component.
-        throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');
+    public static function execute(int $sceneid, bool $replace = false, bool $discard = false): array {
+        global $USER;
+        $params = self::validate_parameters(
+            self::execute_parameters(),
+            ['sceneid' => $sceneid, 'replace' => $replace, 'discard' => $discard]
+        );
+        [, , $instance, $context, $scene] = self::load_scene($params['sceneid'], 'useai');
+        if (!pictures::enabled()) {
+            throw new moodle_exception('pictures_notenabled', 'mod_ailanguageteacher');
+        }
+        $result = pictures::create($instance, $context, $scene, (int)$USER->id, $params['replace'], $params['discard']);
+        return ['url' => $result['url'], 'charged' => $result['charged'] ?? -1, 'made' => $result['made']];
     }
 
     /**
@@ -61,6 +83,8 @@ class generate_image extends base {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'url' => new external_value(PARAM_URL, 'Picture URL'),
+            'charged' => new external_value(PARAM_INT, 'Credits LMS Labs reported, -1 when it did not say'),
+            'made' => new external_value(PARAM_BOOL, 'A new picture was made (false: the scene already had one)'),
         ]);
     }
 }
