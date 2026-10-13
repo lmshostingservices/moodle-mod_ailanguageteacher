@@ -2,6 +2,14 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.3] - 2026-10-13
+
+### Added
+
+- New AI pictures request detected label positions only when LMS Labs advertises support. Positions are included in the unchanged 2-credit price.
+- Matching unconfirmed labels use the detected positions and remain marked for teacher checking. Confirmed labels are never moved; missing or invalid positions preserve the existing guesses.
+- Pending image requests retain their original body and key when capabilities change.
+
 ## [v1.4.2] - 2026-10-13
 
 ### Added

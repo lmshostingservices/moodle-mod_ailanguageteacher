@@ -75,17 +75,20 @@ final class pictures {
             return ctype_digit($kept) ? (int)$kept : null;
         }
         $price = null;
+        $anchors = false;
         try {
             [$status, $body] = remote::request(self::CAPABILITIES_ROUTE, null, '', 'application/json', 8);
             $data = json_decode($body, true);
             if ($status === 200 && is_array($data) && is_int($data['tariff']['image'] ?? null)) {
                 $price = (int)$data['tariff']['image'];
+                $anchors = ($data['anchorPositions'] ?? false) === true;
             }
         } catch (\moodle_exception $e) {
             $price = null;
         }
         set_config('imageprice', $price === null ? '' : (string)$price, 'mod_ailanguageteacher');
         set_config('imagepricetime', time(), 'mod_ailanguageteacher');
+        set_config('imageanchors', $anchors ? 1 : 0, 'mod_ailanguageteacher');
         return $price;
     }
 
@@ -125,7 +128,22 @@ final class pictures {
             $prompt = lesson::image_prompt($instance, $copy, $phrases);
             $prompt = \core_text::substr($prompt, 0, self::MAX_PROMPT);
         }
-        return ['prompt' => $prompt, 'style' => $style, 'maxCredits' => self::CREDITS];
+        $body = ['prompt' => $prompt, 'style' => $style, 'maxCredits' => self::CREDITS];
+        self::published_price();
+        if (get_config('mod_ailanguageteacher', 'imageanchors')) {
+            $anchors = [];
+            foreach ($phrases as $phrase) {
+                $anchor = (string)($phrase->anchor ?? '');
+                if (empty($phrase->distractor) && trim($anchor) !== '' && \core_text::strlen($anchor) <= 120
+                        && !preg_match('/[\x00-\x1f\x7f]/', $anchor) && !in_array($anchor, $anchors, true)) {
+                    $anchors[] = $anchor;
+                }
+            }
+            if ($anchors) {
+                $body['anchors'] = array_slice($anchors, 0, 6);
+            }
+        }
+        return $body;
     }
 
     /**
@@ -154,6 +172,17 @@ final class pictures {
             return ['url' => $url, 'charged' => null, 'made' => false];
         }
         $body = self::body($instance, $scene);
+        $prior = $DB->get_record('ailanguageteacher_operation', ['ailanguageteacherid' => $instance->id,
+            'userid' => $userid, 'kind' => 'image', 'itemid' => $scene->id, 'state' => 'pending']);
+        if ($prior && !$discard) {
+            $stored = json_decode((string)$prior->body, true);
+            if (is_array($stored) && ($stored['prompt'] ?? null) === $body['prompt']
+                    && ($stored['style'] ?? null) === $body['style']
+                    && ($stored['maxCredits'] ?? null) === $body['maxCredits']) {
+                // A capability-cache refresh must not change the body of "Check again".
+                $body = $stored;
+            }
+        }
         $pending = $DB->record_exists('ailanguageteacher_operation', ['ailanguageteacherid' => $instance->id,
             'kind' => 'image', 'itemid' => $scene->id, 'state' => 'pending', 'bodyhash' => operation::hash($body)]);
         if (!$pending && ($published = self::price_hold()) !== null) {
@@ -191,6 +220,14 @@ final class pictures {
         operation::complete($op, json_encode(['charged' => $charged, 'saved' => $usable]));
         if (!$usable) {
             throw new \moodle_exception('aibadimage_charged', 'mod_ailanguageteacher', '', $op->idemkey);
+        }
+        $sent = json_decode((string)$op->body, true);
+        if (!empty($sent['anchors'])) {
+            try {
+                image_positions::apply($scene, $sent['anchors'], (string)($headers['x-anchor-positions'] ?? ''));
+            } catch (\Throwable $e) {
+                // Optional placement cannot turn a saved, paid picture into a failed request.
+            }
         }
         [$url] = manager::get_scene_image($context, (int)$scene->id);
         return ['url' => (string)$url, 'charged' => $charged, 'made' => true];
