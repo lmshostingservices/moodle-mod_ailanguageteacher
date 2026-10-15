@@ -894,6 +894,12 @@ class learning {
         if ($provider !== 'self' && $status === service::STATUS_OK) {
             [$score, $heard, $target] = matcher::best($transcripts, (string)$phrase->text, $alternatives, $chars);
             $recognised = \core_text::substr(clean_param($heard, PARAM_TEXT), 0, 255);
+            // The words shown are the phrase on the card. An accepted alternative is shown only when the learner
+            // really said it (it passes); a near miss on an alternative must not replace the phrase they were asked.
+            if ($target !== (string)$phrase->text && $score < (int)$instance->passscore) {
+                $target = (string)$phrase->text;
+                $heard = (string)(matcher::best($transcripts, $target, [], $chars)[1]);
+            }
             $check = matcher::recognised($heard, $target, $chars);
         }
         // Silence or unclear speech gets no score and does not count as a try.

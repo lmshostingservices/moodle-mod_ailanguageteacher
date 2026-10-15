@@ -392,6 +392,36 @@ final class learning_test extends \advanced_testcase {
     }
 
     /**
+     * The words checked are the phrase on the card: a near miss on an accepted alternative never replaces it; an
+     * alternative is shown only when the learner really said it.
+     */
+    public function test_check_shows_card_phrase(): void {
+        global $DB;
+        $this->make();
+        $phrase = $DB->get_record('ailanguageteacher_phrase', ['text' => 'Please come in.']);
+        $DB->set_field('ailanguageteacher_phrase', 'alternatives', 'Would you like to come inside?', ['id' => $phrase->id]);
+        $say = fn(array $heard) => learning::assess(
+            $this->instance,
+            $this->cm,
+            $this->course,
+            $this->context,
+            (int)$this->student->id,
+            'study',
+            null,
+            'p' . $phrase->id,
+            '',
+            $heard,
+            false
+        );
+        $r = $say(['turn on the scent']);
+        $this->assertSame(['Please', 'come', 'in.'], array_column($r['units'], 'text'));
+        $this->assertSame(3, $r['total']);
+        $r = $say(['would you like to come inside']);
+        $this->assertSame(6, $r['total'], 'Said the alternative: its words are shown');
+        $this->assertSame(100, $r['score']);
+    }
+
+    /**
      * Speaking credit is full at the pass score and half from 60% of it.
      */
     public function test_speak_credit(): void {

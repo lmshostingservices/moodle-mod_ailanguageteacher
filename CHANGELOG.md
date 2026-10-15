@@ -2,6 +2,12 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.4.6] - 2026-10-13
+
+### Fixed
+
+- **The spoken-answer check shows the phrase on the card.** When the learner's words were not close to anything, the check could show an accepted alternative instead (for example "Can I have some water?" for "Water, please."), which looked like the wrong phrase. The card's own phrase is now always shown, and an alternative only when the learner really said it.
+
 ## [v1.4.5] - 2026-10-13
 
 - The editor now has two independent single-card slideshows: Scene labels and Optional distractors, with Previous/Next buttons and counters instead of a long mixed list.
