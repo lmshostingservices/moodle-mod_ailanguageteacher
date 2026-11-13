@@ -110,12 +110,48 @@ final class operation {
      *
      * @param \stdClass $row
      * @param string|null $result
+     * @param float|null $credits what LMS Labs charged, when known
      */
-    public static function complete(\stdClass $row, ?string $result = null): void {
+    public static function complete(\stdClass $row, ?string $result = null, ?float $credits = null): void {
         global $DB;
         $DB->update_record('ailanguageteacher_operation', (object)[
             'id' => $row->id, 'state' => 'complete', 'result' => $result,
         ]);
+        self::report_usage($row, $result, $credits);
+    }
+
+    /**
+     * Tell Client Portal (when installed) what a delivered request cost, so the site owner can bill the client.
+     * The request's key makes sure a request is counted once.
+     *
+     * @param \stdClass $row
+     * @param string|null $result
+     * @param float|null $credits
+     */
+    protected static function report_usage(\stdClass $row, ?string $result, ?float $credits): void {
+        if (!method_exists('\\local_clientportal\\api', 'record_lmslabs_call')) {
+            return;
+        }
+        if ($credits === null && in_array($row->kind, ['import', 'image'], true)) {
+            $decoded = json_decode((string)$result, true);
+            $credits = isset($decoded['charged']) && is_numeric($decoded['charged']) ? (float)$decoded['charged'] : null;
+        }
+        if ($credits === null && $row->kind === 'lesson') {
+            $credits = \mod_ailanguageteacher\local\ai\lmslabs::TEXT_CREDITS;
+        }
+        $cm = get_coursemodule_from_instance('ailanguageteacher', $row->ailanguageteacherid, 0, false, IGNORE_MISSING);
+        if (!$credits || !$cm) {
+            return;
+        }
+        \local_clientportal\api::record_lmslabs_call(
+            (int)$row->userid,
+            (int)\context_module::instance($cm->id)->id,
+            'mod_ailanguageteacher',
+            ['success' => true],
+            (float)$credits,
+            'AI Language Teacher (' . $row->kind . ')',
+            (string)$row->idemkey
+        );
     }
 
     /**

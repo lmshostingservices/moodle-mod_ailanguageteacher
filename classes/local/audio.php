@@ -385,7 +385,9 @@ class audio {
                 'filename' => $filename,
                 'mimetype' => 'audio/mpeg',
             ], (string)$result['audio']);
-            operation::complete($op, $voice);
+            // What LMS Labs charged: its own figure, else the price agreed for this clip, else the standard price.
+            $charged = $result['charged'] ?? ($send['maxCredits'] ?? \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS);
+            operation::complete($op, $voice, (float)$charged);
         } finally {
             $lock->release();
         }

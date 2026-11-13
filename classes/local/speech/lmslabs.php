@@ -221,7 +221,9 @@ class lmslabs implements service {
             }
             throw new moodle_exception('unusableaudio', 'mod_ailanguageteacher');
         }
-        return ['audio' => $body, 'mimetype' => 'audio/mpeg', 'requestid' => ''];
+        $charged = isset($headers['x-credits-charged']) && ctype_digit((string)$headers['x-credits-charged'])
+            ? (int)$headers['x-credits-charged'] : null;
+        return ['audio' => $body, 'mimetype' => 'audio/mpeg', 'requestid' => '', 'charged' => $charged];
     }
 
     /**
