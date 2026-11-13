@@ -2,6 +2,22 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.5.0] - 2026-11-14
+
+### Added
+- **Conversations of up to 6 phrases per picture.** Teachers can choose 1 to 6 phrases per picture (was 1 or 2). From 3 phrases, a picture is a short conversation: the AI-assistant instructions ask for the lines in the order they are said, with questions followed by their answers, and the picture numbers them in that order (not by where the speakers stand). Good for exam practice.
+- **Show the first line.** A new activity setting. On pictures with two or more phrases, the first phrase is already in place in Practice and Test, marked "Given", so learners see how the conversation starts. It is not a chip, is not marked and does not count towards Practice mastery or the Test grade. It is switched on automatically when the lesson builder is set to 3 or more phrases.
+- **Hear yourself.** After each spoken answer, learners can play back their own recording and compare it with Listen. The recording stays in the browser and is never uploaded or kept.
+- **Minimum recognition confidence** (site setting, default 60%). When the browser is unsure what it heard, the learner is asked to say it again and the try doesn't count. Browsers that don't report confidence skip this check.
+
+### Changed
+- **Stricter browser speech checks.** Only the browser's first guess is scored. Before, the best of up to five guesses was used, so speech in another language, or with very unclear pronunciation, could be matched to the expected phrase and score 100%.
+- The "Phrase x of y" label counts the given first line, so it matches the number on the picture.
+
+### Notes
+- Browser speech recognition is set to the language being taught, so it turns any speech into the nearest words of that language. It checks which words were said, not pronunciation. A real pronunciation check needs an AI audio service; this has been requested from LMS Labs and is not part of this release.
+- Database: new field `ailanguageteacher.givenfirst` (default off for existing activities).
+
 ## [v1.4.7] - 2026-11-13
 
 ### Added

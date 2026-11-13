@@ -37,6 +37,9 @@ interface service {
     /** @var string Speech was detected but no words could be made out. */
     public const STATUS_UNINTELLIGIBLE = 'unintelligible';
 
+    /** @var string Words were heard, but the browser was not sure enough of them to mark: the learner says it again. */
+    public const STATUS_UNSURE = 'unsure';
+
     /**
      * Whether the service may be called on this site (contract implemented and paid calls enabled).
      *

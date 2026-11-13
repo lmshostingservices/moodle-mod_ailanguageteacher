@@ -39,7 +39,7 @@ class backup_ailanguageteacher_activity_structure_step extends backup_activity_s
             'imagestyle', 'ttsvoice', 'ttsvoice2', 'voicematch', 'showromanisation', 'allowstudy', 'allowpractice',
             'allowtest', 'sequential', 'speaking',
             'passscore', 'repetitions', 'consecutive', 'maxspeaktries', 'testlistening', 'testspeaking', 'grade',
-            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'sounds', 'mustlisten', 'barsamber',
+            'grademethod', 'maxattempts', 'timelimit', 'shufflelabels', 'givenfirst', 'sounds', 'mustlisten', 'barsamber',
             'barsgreen', 'leaderboard', 'completionstudy',
             'completionmastery', 'completionfinish', 'timecreated', 'timemodified',
         ]);

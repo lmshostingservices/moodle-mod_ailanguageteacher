@@ -41,6 +41,13 @@ if ($ADMIN->fulltree) {
         get_string('browserspeech_desc', $component),
         1
     ));
+    $settings->add(new admin_setting_configselect(
+        "$component/minconfidence",
+        get_string('minconfidence', $component),
+        get_string('minconfidence_desc', $component),
+        60,
+        [0 => get_string('minconfidence_off', $component), 40 => '40%', 50 => '50%', 60 => '60%', 70 => '70%', 80 => '80%']
+    ));
     $settings->add(new admin_setting_configtext(
         "$component/speechrate",
         get_string('speechrate', $component),

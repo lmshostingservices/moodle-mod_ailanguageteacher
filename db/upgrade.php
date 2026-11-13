@@ -91,6 +91,15 @@ function xmldb_ailanguageteacher_upgrade($oldversion) {
         unset_config('speechremakes', 'mod_ailanguageteacher');
         upgrade_mod_savepoint(true, 2026101003, 'ailanguageteacher');
     }
+    if ($oldversion < 2026111400) {
+        // Practice and Test can show each picture's first phrase in place, so learners see how a conversation starts.
+        $table = new xmldb_table('ailanguageteacher');
+        $field = new xmldb_field('givenfirst', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'shufflelabels');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026111400, 'ailanguageteacher');
+    }
     return true;
 }
 

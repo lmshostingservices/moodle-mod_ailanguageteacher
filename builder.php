@@ -83,12 +83,17 @@ if (optional_param('savechoices', 0, PARAM_BOOL)) {
             $custom[] = $name;
         }
     }
+    $phrases = max(1, min(manager::MAX_PHRASES, optional_param('phrasesper', 2, PARAM_INT)));
     $data->situations = json_encode([
         'keys' => $keys,
         'custom' => $custom,
         'scenes' => max(1, min(lesson::MAX_SCENES_PER_SITUATION, optional_param('scenesper', 3, PARAM_INT))),
-        'phrases' => max(1, min(manager::MAX_PHRASES, optional_param('phrasesper', manager::MAX_PHRASES, PARAM_INT))),
+        'phrases' => $phrases,
     ]);
+    if ($phrases >= manager::CONVERSATION_FROM) {
+        // Conversations start from the right point: show the first line.
+        $data->givenfirst = 1;
+    }
     $data->showromanisation = languages::needs_romanisation($data->targetlang) ? 1 : (int)$instance->showromanisation;
     $data->timemodified = time();
     $DB->update_record('ailanguageteacher', $data);

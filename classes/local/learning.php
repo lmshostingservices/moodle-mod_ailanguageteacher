@@ -232,6 +232,27 @@ class learning {
     }
 
     /**
+     * The phrase a picture gives: its first phrase (the first said), shown in place in Practice and Test and not marked.
+     * Only for pictures with at least two phrases, and only when the activity shows the first phrase.
+     *
+     * @param stdClass $instance
+     * @param stdClass[] $pins the picture's placed phrases
+     * @return int phrase id, or 0 when none is given
+     */
+    public static function given_id(stdClass $instance, array $pins): int {
+        if (empty($instance->givenfirst) || count($pins) < 2) {
+            return 0;
+        }
+        $first = null;
+        foreach ($pins as $p) {
+            if (!$first || [(int)$p->sortorder, (int)$p->id] < [(int)$first->sortorder, (int)$first->id]) {
+                $first = $p;
+            }
+        }
+        return (int)$first->id;
+    }
+
+    /**
      * Practice progress counts for the learner over the phrases that are currently ready.
      *
      * @param stdClass $instance
@@ -245,7 +266,12 @@ class learning {
         $mastered = 0;
         $needs = 0;
         foreach (manager::ready_scenes($instance, $context) as [$scene, $pins]) {
+            $givenid = self::given_id($instance, $pins);
             foreach ($pins as $phrase) {
+                if ((int)$phrase->id === $givenid) {
+                    // Shown in place, never practised: it does not have to be mastered.
+                    continue;
+                }
                 $total++;
                 $state = $progress[$phrase->id]->state ?? self::STATE_UNSEEN;
                 if ($state === self::STATE_MASTERED) {
@@ -488,7 +514,8 @@ class learning {
         $payload = [];
         $total = 0;
         foreach ($ready as [$scene, $pins, $distractors]) {
-            $all = array_merge($pins, $distractors);
+            $givenid = self::given_id($instance, $pins);
+            $all = array_filter(array_merge($pins, $distractors), fn($p) => (int)$p->id !== $givenid);
             $chips = [];
             $chiptoken = [];
             $details = [];
@@ -519,8 +546,18 @@ class learning {
             $answers = [];
             $listen = [];
             $speak = [];
-            foreach ($pins as $n => $phrase) {
+            foreach (array_values($pins) as $n => $phrase) {
                 $token = 'p' . random_string(12);
+                if ((int)$phrase->id === $givenid) {
+                    // The opening phrase is shown in place: it is not a question, so it is neither mapped nor marked.
+                    $pinlist[] = ['token' => $token, 'x' => (float)$phrase->x, 'y' => (float)$phrase->y, 'number' => $n + 1,
+                        'given' => [
+                            'text' => self::line($phrase->text, $context),
+                            'romanisation' => $instance->showromanisation ? self::line($phrase->romanisation, $context) : '',
+                            'color' => manager::phrase_color($phrase, $n),
+                        ]];
+                    continue;
+                }
                 $map['pins'][$token] = (int)$phrase->id;
                 $pinlist[] = ['token' => $token, 'x' => (float)$phrase->x, 'y' => (float)$phrase->y, 'number' => $n + 1];
                 $map['scenes'][$scene->id][] = (int)$phrase->id;
@@ -813,6 +850,7 @@ class learning {
      * @param string $wav recording for the site speech service
      * @param string[] $transcripts what the browser's own speech recognition heard
      * @param bool $selfcheck the learner compared their own recording (no automatic check available)
+     * @param float $confidence how sure the browser was of its first guess (0-1), or -1 when unknown
      * @return array
      */
     public static function assess(
@@ -826,7 +864,8 @@ class learning {
         string $ref,
         string $wav,
         array $transcripts,
-        bool $selfcheck
+        bool $selfcheck,
+        float $confidence = -1
     ): array {
         global $DB, $CFG;
         if ($kind !== 'study') {
@@ -886,6 +925,15 @@ class learning {
             $transcripts = array_values(array_filter(array_map('trim', $transcripts), 'strlen'));
             $status = $transcripts ? service::STATUS_OK : service::STATUS_NOSPEECH;
             $provider = 'browser';
+            if ($transcripts) {
+                // Only the recogniser's first guess is marked. Its other guesses often include the phrase itself, because
+                // a recogniser set to the language taught turns any speech into that language's nearest words.
+                $transcripts = array_slice($transcripts, 0, 1);
+                $minimum = (int)get_config('mod_ailanguageteacher', 'minconfidence');
+                if ($confidence >= 0 && $minimum > 0 && $confidence * 100 < $minimum) {
+                    $status = service::STATUS_UNSURE;
+                }
+            }
         } else if ($selfcheck && $kind !== 'test') {
             $provider = 'self';
         } else {
@@ -945,6 +993,12 @@ class learning {
             // Nothing is recorded: progress, mastery and Test tries are unchanged.
             if ($kind === 'practice') {
                 $row = self::progress_row((int)$instance->id, $userid, (int)$phrase->id);
+                if ($status === service::STATUS_UNSURE) {
+                    // An unclear try never passes, but it does count towards "move on", so no learner is ever stuck.
+                    $row->speaktries++;
+                    $row->timemodified = $now;
+                    $DB->update_record('ailanguageteacher_progress', $row);
+                }
                 $out['successes'] = (int)$row->successes;
                 $out['mastered'] = $row->state === self::STATE_MASTERED ? 1 : 0;
                 $out['canmoveon'] = $row->speaktries >= $instance->maxspeaktries ? 1 : 0;

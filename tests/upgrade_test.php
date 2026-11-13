@@ -165,7 +165,9 @@ final class upgrade_test extends \advanced_testcase {
             new \xmldb_field('barsamber', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '40', 'mustlisten'),
             new \xmldb_field('barsgreen', XMLDB_TYPE_INTEGER, '3', null, XMLDB_NOTNULL, null, '70', 'barsamber'),
         ];
-        foreach ([2026092801, 2026100800, 2026101000, 2026101001, 2026101002, 2026101003] as $from) {
+        $given = new \xmldb_field('givenfirst', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'shufflelabels');
+        foreach ([2026092801, 2026100800, 2026101000, 2026101001, 2026101002, 2026101003, 2026111300] as $from) {
+            $dbman->drop_field($table, $given);
             if ($from < 2026101001) {
                 foreach ([$bars[1], $bars[0]] as $field) {
                     $dbman->drop_field($table, $field);
@@ -176,7 +178,8 @@ final class upgrade_test extends \advanced_testcase {
             foreach ($bars as $field) {
                 $this->assertTrue($dbman->field_exists($table, $field), "Bars after an upgrade from $from");
             }
-            $this->assertEquals(2026101003, get_config('mod_ailanguageteacher', 'version'));
+            $this->assertTrue($dbman->field_exists($table, $given), "Show the first line after an upgrade from $from");
+            $this->assertEquals(2026111400, get_config('mod_ailanguageteacher', 'version'));
         }
     }
 }

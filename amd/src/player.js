@@ -54,6 +54,7 @@ const STRING_KEYS = [
     'skip', 'playall', 'stopplaying', 'confirmreset', 'resetdone', 'masteredsummary', 'avgscore', 'hintsused',
     'needspracticecount', 'stage_match_help', 'selectplace', 'nomatchsaved', 'triesleft', 'tryagainshort',
     'hint1', 'hint2', 'hint3', 'hint4', 'audiounavailable', 'studyrecorded', 'listenfirst', 'results_slide',
+    'unsure', 'hearyourself', 'hearyourself_note', 'givenline',
 ];
 
 let S = {};
@@ -377,12 +378,13 @@ class Player {
             width: data.width,
             height: data.height, ratio: data.width / data.height, n: Math.min(n, 8), compact: n > 5, study,
             hastray: !study, lang: locale,
-            pins: data.pins.map((p) => ({...p, ink: p.color ? readable(p.color) : ''})),
+            pins: data.pins.map((p) => ({...p, ink: p.color ? readable(p.color) : '',
+                given: p.given ? {...p.given, ink: readable(p.given.color)} : null})),
             chips: (data.chips || []).map((c) => ({...c, ink: readable(c.color), translation: c.translation || ''})),
         };
         const section = await render('player_scene', context);
         section.setAttribute('aria-label', fmt(S.sceneof, {current: index + 1, total: this.data.scenes.length}));
-        const slide = {data, index, el: section, slots: new Map(), chips: new Map(), answers: new Map(),
+        const slide = {data, index, el: section, slots: new Map(), fixed: [], chips: new Map(), answers: new Map(),
             details: new Map(), complete: false, stage: study ? 'done' : 'match', board: section.querySelector('.lt-board'),
             svg: section.querySelector('.lt-lines'), tray: section.querySelector('.lt-tray'),
             stageEl: section.querySelector('[data-region="stage"]'), choices: {}, speakDone: new Set()};
@@ -409,6 +411,11 @@ class Player {
             dotA.setAttribute('r', '3');
             slide.svg.append(path, dotA);
             const zone = zones[i];
+            if (pin.given && !study) {
+                // The opening phrase is shown in place: nothing to drag, say or mark.
+                slide.fixed.push({zone, pinEl: pins[i], path, dotA, color: pin.given.color});
+                return;
+            }
             const state = {token: pin.token, number: pin.number, zone, body: zone.querySelector('.lt-slot-body'),
                 pinEl: pins[i], path, dotA, chip: null, locked: false, color: null, pin};
             slide.slots.set(pin.token, state);
@@ -518,7 +525,7 @@ class Player {
         slide.svg.setAttribute('viewBox', `0 0 ${boardRect.width} ${boardRect.height}`);
         slide.svg.setAttribute('width', boardRect.width);
         slide.svg.setAttribute('height', boardRect.height);
-        slide.slots.forEach((slot) => {
+        [...slide.slots.values(), ...(slide.fixed || [])].forEach((slot) => {
             const z = slot.zone.getBoundingClientRect();
             const p = slot.pinEl.getBoundingClientRect();
             const x1 = z.right - boardRect.left + 3;
@@ -1489,7 +1496,7 @@ class Player {
             : fmt(S.goal_once, c.passscore)) : '';
         const node = await render('phrase_card', {
             number: slot.number, color, ink: readable(color),
-            eyebrow: fmt(S.phraseof, {current: slot.number, total: slide.slots.size}),
+            eyebrow: fmt(S.phraseof, {current: slot.number, total: slide.slots.size + (slide.fixed || []).length}),
             text: detail.text, romanisation: detail.romanisation, lang: c.locale, supportlang: c.supportlang,
             translation: detail.translation, usagenote: detail.usagenote, speaking, goal,
             dots: Array.from({length: c.repetitions}, (v, i) => ({done: i < successes})),
@@ -1623,13 +1630,43 @@ class Player {
      * @returns {string|null}
      */
     micProblem(err) {
-        const map = {nothingheard: 'nothingheard', unintelligible: 'unintelligible', micsilent: 'micsilent',
+        const map = {nothingheard: 'nothingheard', unintelligible: 'unintelligible', unsure: 'unsure', micsilent: 'micsilent',
             'audio-capture': 'micnone', recogniserunavailable: 'recogniserunavailable'};
         const key = err && !err.errorcode ? map[err.message] : null;
         if (!key && err && err.name === 'NotFoundError') {
             return S.micnone;
         }
         return key ? S[key] : null;
+    }
+
+    /**
+     * Adds "Hear yourself" to a spoken-answer result: the learner's own recording, kept only in the browser, to compare
+     * with the model voice (Listen).
+     *
+     * @param {object} lesson
+     * @param {HTMLElement} node the rendered result
+     */
+    async addListenBack(lesson, node) {
+        const pending = lesson.recorded;
+        lesson.recorded = null;
+        const blob = pending ? await pending.catch(() => null) : null;
+        if (!blob || !blob.size || !node.isConnected) {
+            return;
+        }
+        if (lesson.myAudioUrl) {
+            URL.revokeObjectURL(lesson.myAudioUrl);
+        }
+        lesson.myAudioUrl = URL.createObjectURL(blob);
+        const url = lesson.myAudioUrl;
+        const btn = el('button', 'lt-btn lt-btn-ghost lt-btn-sm lt-hearself', {type: 'button'});
+        btn.append(icon('play'), el('span', '', {text: S.hearyourself}));
+        btn.addEventListener('click', () => {
+            Speech.stop();
+            Speech.play({url}).catch(() => this.say(S.audiounavailable));
+        });
+        const wrap = el('div', 'lt-hearself-row');
+        wrap.append(btn, el('span', 'lt-hearself-note', {text: S.hearyourself_note}));
+        (node.querySelector('.lt-result-body') || node).appendChild(wrap);
     }
 
     /**
@@ -1679,7 +1716,8 @@ class Player {
                     throw new Error('nothingheard');
                 }
                 setBusy(S.checking, false);
-                args = {transcripts};
+                lesson.recorded = transcripts.recorded || null;
+                args = {transcripts: Array.from(transcripts), confidence: transcripts.confidence};
             } else {
                 setBusy(S.tapwhendone, true);
                 const blob = await Speech.recordClip(lesson.signal, 8000);
@@ -1760,10 +1798,12 @@ class Player {
         const pass = res.passscore;
         if (!res.counted) {
             // Silence or unclear speech: no mark, and the try does not count.
+            const headlines = {unintelligible: S.unintelligible, unsure: S.unsure};
             const node = await render('speak_result', {hasscore: false, tone: 'neutral', eyebrow: S.spokencheck,
-                headline: res.status === 'unintelligible' ? S.unintelligible : S.nothingheard, message: '',
+                headline: headlines[res.status] || S.nothingheard, message: '',
                 units: [], summary: '', showheard: false, selfcheck: false});
             host.replaceChildren(node);
+            this.addListenBack(lesson, node);
             this.say(node.textContent.trim());
             return;
         }
@@ -1802,6 +1842,7 @@ class Player {
             heard: res.recognised, showheard: checked && !!res.recognised, selfcheck: false,
         });
         host.replaceChildren(node);
+        this.addListenBack(lesson, node);
         this.say(`${headline} ${summary} ${message}`);
         if (!lesson.practice) {
             return;
@@ -2136,7 +2177,7 @@ class Player {
                     if (!transcripts.length) {
                         throw new Error('nothingheard');
                     }
-                    args = {transcripts};
+                    args = {transcripts: Array.from(transcripts), confidence: transcripts.confidence};
                 }
                 mic.classList.remove('is-listening');
                 mic.classList.add('is-checking');
@@ -2144,7 +2185,7 @@ class Player {
                 const res = await Ajax.call([{methodname: 'mod_ailanguageteacher_assess_speech', args: {
                     cmid: this.config.cmid, kind: 'test', attemptid: this.attemptid, ref: item.token, ...args}}])[0];
                 if (!res.counted) {
-                    throw new Error(res.status === 'unintelligible' ? 'unintelligible' : 'nothingheard');
+                    throw new Error(['unintelligible', 'unsure'].includes(res.status) ? res.status : 'nothingheard');
                 }
                 slide.speakDone.add(item.token);
                 status.textContent = res.triesleft > 0 ? `${S.recorded} · ${fmt(S.triesleft, res.triesleft)}` : S.recorded;

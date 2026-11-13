@@ -147,6 +147,9 @@ class mod_ailanguageteacher_mod_form extends moodleform_mod {
         $mform->addElement('header', 'experiencehdr', get_string('experience', $c));
         $mform->addElement('advcheckbox', 'shufflelabels', get_string('shufflelabels', $c));
         $mform->setDefault('shufflelabels', 1);
+        $mform->addElement('advcheckbox', 'givenfirst', get_string('givenfirst', $c), get_string('givenfirst_desc', $c));
+        $mform->addHelpButton('givenfirst', 'givenfirst', $c);
+        $mform->setDefault('givenfirst', 0);
         $mform->addElement('advcheckbox', 'sounds', get_string('sounds', $c), get_string('sounds_desc', $c));
         $mform->setDefault('sounds', $config->defaultsounds ?? 1);
         $mform->addElement('advcheckbox', 'leaderboard', get_string('leaderboard', $c), get_string('leaderboard_desc', $c));

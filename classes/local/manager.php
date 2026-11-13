@@ -35,7 +35,10 @@ class manager {
         '#F97316', '#84CC16', '#06B6D4', '#D946EF'];
 
     /** @var int Phrases on one picture: one moment, such as a greeting and its reply. More phrases need a new picture. */
-    public const MAX_PHRASES = 2;
+    public const MAX_PHRASES = 6;
+
+    /** @var int From this many phrases a picture is a short conversation, numbered in the order it is said. */
+    public const CONVERSATION_FROM = 3;
 
     /** @var int Distractors (phrases that do not belong) on one picture. */
     public const MAX_DISTRACTORS = 2;
@@ -348,6 +351,10 @@ class manager {
             $pins = self::order_pins($phrases[$scene->id]);
             if (!$pins || !self::get_scene_file($context, (int)$scene->id)) {
                 continue;
+            }
+            if (count($pins) >= self::CONVERSATION_FROM) {
+                // A conversation is numbered in the order it is said, not by where its speakers stand.
+                usort($pins, fn($a, $b) => ((int)$a->sortorder <=> (int)$b->sortorder) ?: ((int)$a->id <=> (int)$b->id));
             }
             $distractors = array_values(array_filter($phrases[$scene->id], fn($p) => !empty($p->distractor)));
             $out[] = [$scene, $pins, $distractors];

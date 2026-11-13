@@ -50,6 +50,8 @@ class assess_speech extends base {
                 []
             ),
             'selfcheck' => new external_value(PARAM_BOOL, 'Learner compared their own recording', VALUE_DEFAULT, false),
+            'confidence' => new external_value(PARAM_FLOAT, 'How sure the browser was of its first guess, 0-1, -1 unknown',
+                VALUE_DEFAULT, -1),
         ]);
     }
 
@@ -63,6 +65,7 @@ class assess_speech extends base {
      * @param string $audio
      * @param array $transcripts
      * @param bool $selfcheck
+     * @param float $confidence
      * @return array
      */
     public static function execute(
@@ -72,12 +75,13 @@ class assess_speech extends base {
         string $ref,
         string $audio = '',
         array $transcripts = [],
-        bool $selfcheck = false
+        bool $selfcheck = false,
+        float $confidence = -1
     ): array {
         global $USER;
         $params = self::validate_parameters(self::execute_parameters(), ['cmid' => $cmid, 'kind' => $kind,
             'attemptid' => $attemptid, 'ref' => $ref, 'audio' => $audio, 'transcripts' => $transcripts,
-            'selfcheck' => $selfcheck]);
+            'selfcheck' => $selfcheck, 'confidence' => $confidence]);
         [$course, $cm, $instance, $context] = self::load_cm($params['cmid'], 'attempt');
         $attempt = null;
         if ($params['kind'] !== 'study') {
@@ -99,7 +103,8 @@ class assess_speech extends base {
             $params['ref'],
             $wav,
             $transcripts,
-            $params['selfcheck']
+            $params['selfcheck'],
+            (float)$params['confidence']
         );
     }
 
@@ -111,7 +116,7 @@ class assess_speech extends base {
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
             'provider' => new external_value(PARAM_ALPHA, 'service, browser or self'),
-            'status' => new external_value(PARAM_ALPHA, 'ok, nospeech or unintelligible'),
+            'status' => new external_value(PARAM_ALPHA, 'ok, nospeech, unintelligible or unsure'),
             'counted' => new external_value(PARAM_BOOL, 'The try counted (silence and unclear speech do not)'),
             'score' => new external_value(PARAM_INT, 'How closely the recognised words matched, 0-100, -1 none'),
             'recognised' => new external_value(PARAM_TEXT, 'What was recognised'),

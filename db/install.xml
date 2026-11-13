@@ -60,6 +60,7 @@
         <FIELD NAME="maxattempts" TYPE="int" LENGTH="6" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0 = unlimited"/>
         <FIELD NAME="timelimit" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Test time limit in seconds, 0 = none"/>
         <FIELD NAME="shufflelabels" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="givenfirst" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Practice and Test show each picture's first phrase in place, unmarked"/>
         <FIELD NAME="sounds" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="mustlisten" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="In Practice, learners hear a phrase before they can say it"/>
         <FIELD NAME="barsamber" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="40" SEQUENCE="false" COMMENT="Progress bars below this percent are red, from it amber"/>

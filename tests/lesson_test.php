@@ -48,7 +48,8 @@ final class lesson_test extends \advanced_testcase {
         $this->assertStringContainsString('- At the onsen', $prompt);
         $this->assertStringNotContainsString('nonsense', $prompt);
         $this->assertStringContainsString('romaji', $prompt);
-        $this->assertStringContainsString('exactly 2 useful phrases (never more than 2)', $prompt, 'Capped at two per picture.');
+        $this->assertStringContainsString('exactly 4 useful phrases (never more than 6)', $prompt, 'Capped at six per picture.');
+        $this->assertStringContainsString('one short conversation', $prompt, 'Three or more phrases are a conversation.');
         $this->assertStringContainsString('takes place in Japan', $prompt);
         $this->assertStringContainsString('set in Japan and naming Japan', $prompt);
         $this->assertSame(['Greetings', 'At the onsen'], lesson::chosen_situations($instance));
@@ -100,11 +101,11 @@ final class lesson_test extends \advanced_testcase {
                 ['text' => 'D2'], ['text' => 'D3'], ['text' => 'D4']]],
             ['situation' => 'shops', 'title' => 'Asking', 'phrases' => [['text' => 'How much?']]],
         ]]);
-        // Twelve phrases for one moment become six pictures of two; nothing is dropped.
-        $this->assertSame(['scenes' => 7, 'phrases' => 13], $counts);
+        // Twelve phrases for one moment become two pictures of six; nothing is dropped.
+        $this->assertSame(['scenes' => 3, 'phrases' => 13], $counts);
         $this->assertSame(1, $DB->count_records('ailanguageteacher_situation'));
         $this->assertSame(1, $DB->count_records('ailanguageteacher_scene', ['title' => 'Paying']));
-        $this->assertSame(1, $DB->count_records('ailanguageteacher_scene', ['title' => 'Paying (6)']));
+        $this->assertSame(1, $DB->count_records('ailanguageteacher_scene', ['title' => 'Paying (2)']));
         foreach ($DB->get_records('ailanguageteacher_scene') as $scene) {
             $this->assertLessThanOrEqual(manager::MAX_PHRASES, $DB->count_records(
                 'ailanguageteacher_phrase',

@@ -444,7 +444,7 @@ Setting: every scene takes place in {$a->country}, with people, places, clothing
 Situations:
 {$a->situations}
 
-For each situation create {$a->scenes} scenes. A scene is one moment that a single picture can show, for example "The housekeeper arrives at the front door". Each scene has exactly {$a->phrases} useful phrases (never more than {$a->maxphrases}) that people really say in that same moment, in a natural order, for example a greeting and its reply. A phrase that belongs to a different moment, such as saying goodbye after a greeting, needs its own scene and picture. Add 1 or 2 distractors per scene: short phrases in the taught language that learners might confuse but that do not fit the moment.
+For each situation create {$a->scenes} scenes. A scene is one moment that a single picture can show, for example "The housekeeper arrives at the front door". Each scene has exactly {$a->phrases} useful phrases (never more than {$a->maxphrases}) that people really say in that same moment, in a natural order, for example a greeting and its reply. A phrase that belongs to a different moment, such as saying goodbye after a greeting, needs its own scene and picture. {$a->conversation}Add 1 or 2 distractors per scene: short phrases in the taught language that learners might confuse but that do not fit the moment.
 
 For every phrase give:
 - text: the phrase in the taught language, with the spelling and vocabulary of that variety, at most 150 characters
@@ -621,7 +621,8 @@ $string['phrase'] = 'Phrase';
 $string['phrasecount'] = '{$a} phrases';
 $string['phraseof'] = 'Phrase {$a->current} of {$a->total}';
 $string['phrases'] = 'Phrases';
-$string['phrasesper'] = 'Phrases per picture (at most 2)';
+$string['phrasesper'] = 'Phrases per picture (at most 6)';
+$string['phrasesper_help'] = 'With 1 or 2 phrases, each picture shows a short exchange. With 3 to 6 phrases, each picture becomes a short conversation in order, for example questions and answers for exam practice.';
 $string['phrasesummary'] = '{$a->phrases} phrases, {$a->placed} placed';
 $string['phrasetext'] = 'Phrase in {$a}';
 $string['pictures_intro'] = 'Every scene needs a picture: learners find the phrases on it. Upload your own picture for each scene. LMS Labs AI pictures (2 credits each) appear here once your site administrator switches them on in the plugin settings.';
@@ -1000,3 +1001,14 @@ $string['voices_confirm_note'] = 'They are made one after another and saved in M
 $string['voice_confirm_free'] = 'Create this phrase\'s voice again? It is made again after an edit, so it is free.';
 $string['voices_remakes'] = 'A voice made again after you edit a phrase or change the voice is free, up to {$a->limit} times in {$a->days} days for each voice; the price is shown before anything is made.';
 $string['voices_createall_remakes'] = 'Create missing voices: {$a} to make';
+$string['givenfirst'] = 'Show the first line';
+$string['givenfirst_desc'] = 'The first phrase of each picture is shown in place, so learners see how the conversation starts. It isn\'t marked.';
+$string['givenfirst_help'] = 'When a picture has two or more phrases, the first one is already in place in Practice and Test. Learners place and say the rest. The first line isn\'t marked and doesn\'t count towards the grade. Use it for conversations, so learners start from the right point.';
+$string['givenline'] = 'Given';
+$string['hearyourself'] = 'Hear yourself';
+$string['hearyourself_note'] = 'Your recording stays on this device. Compare it with Listen.';
+$string['minconfidence'] = 'Minimum recognition confidence';
+$string['minconfidence_desc'] = 'When the browser is less sure than this about what it heard, the learner is asked to say it again and the try doesn\'t count. This stops unclear or wrong-language speech from being matched to the expected phrase. Some browsers don\'t report confidence; then this check is skipped.';
+$string['minconfidence_off'] = 'Off';
+$string['prompt_conversation'] = 'The {$a} phrases of a scene are one short conversation between two people, in the order they are said: the first phrase opens the conversation, and questions are followed by their answers. List the phrases in that order. ';
+$string['unsure'] = 'We weren\'t sure what we heard. Say it again, clearly and a little slower. This try didn\'t count.';

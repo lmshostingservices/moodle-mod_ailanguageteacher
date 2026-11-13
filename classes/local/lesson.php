@@ -130,7 +130,7 @@ class lesson {
         $data = json_decode((string)$instance->situations, true) ?: [];
         return [
             'scenes' => max(1, min(self::MAX_SCENES_PER_SITUATION, (int)($data['scenes'] ?? 3))),
-            'phrases' => max(1, min(manager::MAX_PHRASES, (int)($data['phrases'] ?? manager::MAX_PHRASES))),
+            'phrases' => max(1, min(manager::MAX_PHRASES, (int)($data['phrases'] ?? 2))),
         ];
     }
 
@@ -159,6 +159,8 @@ class lesson {
             'style' => get_string('imagestyle_' . $instance->imagestyle, 'mod_ailanguageteacher'),
             'country' => self::setting($instance),
             'maxphrases' => manager::MAX_PHRASES,
+            'conversation' => $options['phrases'] >= manager::CONVERSATION_FROM
+                ? get_string('prompt_conversation', 'mod_ailanguageteacher', $options['phrases']) : '',
         ];
         return get_string('lessonprompt', 'mod_ailanguageteacher', $a);
     }

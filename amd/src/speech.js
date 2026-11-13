@@ -305,11 +305,38 @@ const levelMeter = async(onlevel) => {
         // The meter is only a help: recognition goes ahead without it.
         loud = null;
     }
+    // A copy of what the learner says, kept only in the browser so they can listen back and compare.
+    let recorder = null;
+    const parts = [];
+    const recorded = new Promise((resolve) => {
+        try {
+            const types = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4', 'audio/webm'];
+            const type = stream && window.MediaRecorder && types.find((t) => window.MediaRecorder.isTypeSupported(t));
+            if (!stream || !window.MediaRecorder) {
+                resolve(null);
+                return;
+            }
+            recorder = new window.MediaRecorder(stream, type ? {mimeType: type} : {});
+            recorder.ondataavailable = (e) => parts.push(e.data);
+            recorder.onstop = () => resolve(parts.length ? new Blob(parts, {type: recorder.mimeType || 'audio/webm'}) : null);
+            recorder.start();
+        } catch (e) {
+            resolve(null);
+        }
+    });
     return {
         loud: () => loud,
+        recorded: () => recorded,
         stop: () => {
             if (timer) {
                 window.clearInterval(timer);
+            }
+            if (recorder && recorder.state !== 'inactive') {
+                try {
+                    recorder.stop();
+                } catch (e) {
+                    // Nothing to keep.
+                }
             }
             if (stream) {
                 stream.getTracks().forEach((t) => t.stop());
@@ -331,7 +358,8 @@ const levelMeter = async(onlevel) => {
  * @param {string} locale
  * @param {object} signal receives stop()
  * @param {Function|null} onlevel microphone level (0..1)
- * @returns {Promise<string[]>} transcripts, best first
+ * @returns {Promise<string[]>} transcripts, best first, with .confidence (first guess, 0-1 or -1) and .recorded
+ *     (a Promise of the learner's own recording as a Blob, or null, kept only in the browser)
  */
 export const recognise = async(locale, signal = {}, onlevel = null) => {
     const meter = await levelMeter(onlevel);
@@ -344,6 +372,8 @@ export const recognise = async(locale, signal = {}, onlevel = null) => {
         rec.continuous = false;
         const finals = [];
         let interim = [];
+        // How sure the recogniser was of its first guess (0 to 1), or -1 when the browser does not say.
+        let confidence = -1;
         let sound = false;
         let failure = null;
         let stopped = false;
@@ -362,6 +392,10 @@ export const recognise = async(locale, signal = {}, onlevel = null) => {
                     alts.push(e.results[i][j].transcript);
                 }
                 if (e.results[i].isFinal) {
+                    if (!finals.length) {
+                        const c = Number(e.results[i][0] && e.results[i][0].confidence);
+                        confidence = c > 0 && c <= 1 ? c : -1;
+                    }
                     finals.push(...alts);
                 } else {
                     interim = alts;
@@ -376,6 +410,9 @@ export const recognise = async(locale, signal = {}, onlevel = null) => {
             const loud = meter.loud();
             meter.stop();
             const out = (finals.length ? finals : interim).map((t) => t.trim()).filter((t) => t !== '');
+            // Only a final first guess has a meaningful confidence; words kept from an interim result have none.
+            out.confidence = finals.length ? confidence : -1;
+            out.recorded = meter.recorded();
             if (out.length) {
                 resolve(out);
             } else if (failure === 'not-allowed') {

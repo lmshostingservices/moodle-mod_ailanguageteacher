@@ -25,7 +25,7 @@
         "id": 3, "title": "The housekeeper arrives", "context": "It is 8 am.", "contextlines": ["It is 8 am."], "image": "scene.png", "ratio": 1.6,
         "width": 1600, "height": 1000, "n": 2, "compact": false, "study": true, "hastray": false, "lang": "en-AU",
         "pins": [{"token": "p1", "number": 1, "x": 30, "y": 40, "text": "Good morning!", "romanisation": "",
-            "color": "#6366F1", "ink": "#4338CA"}],
+            "color": "#6366F1", "ink": "#4338CA", "given": null}],
         "chips": []
     }
 }}
@@ -34,7 +34,7 @@
         <div class="lt-rail" role="list">
             {{#pins}}
             <div class="lt-slot" role="listitem">
-                <div class="lt-slot-zone" tabindex="0" role="button" data-pin="{{token}}">
+                <div class="lt-slot-zone{{#given}} is-filled is-given{{/given}}" {{^given}}tabindex="0" role="button" {{/given}}data-pin="{{token}}">
                     <span class="lt-slot-num">{{number}}</span>
                     <div class="lt-slot-body">
                         {{#study}}
@@ -43,6 +43,13 @@
                             {{#romanisation}}<span class="lt-chip-rom">{{.}}</span>{{/romanisation}}
                         </div>
                         {{/study}}
+                        {{^study}}{{#given}}
+                        <div class="lt-chip lt-chip-static lt-chip-given" style="--c: {{color}}; --ink: {{ink}};">
+                            <span class="lt-chip-text" dir="auto" lang="{{lang}}">{{text}}</span>
+                            {{#romanisation}}<span class="lt-chip-rom">{{.}}</span>{{/romanisation}}
+                            <span class="lt-given-tag">{{#str}} givenline, mod_ailanguageteacher {{/str}}</span>
+                        </div>
+                        {{/given}}{{/study}}
                     </div>
                 </div>
             </div>
@@ -51,7 +58,7 @@
         <div class="lt-figure" style="--ar: {{width}} / {{height}}; --arn: {{ratio}};">
             <img class="lt-image" src="{{image}}" alt="{{title}}" draggable="false">
             {{#pins}}
-            <button type="button" class="lt-pin" data-pin="{{token}}" tabindex="-1" style="left: {{x}}%; top: {{y}}%;">{{number}}</button>
+            <button type="button" class="lt-pin{{#given}} is-filled is-given{{/given}}" data-pin="{{token}}" tabindex="-1" style="left: {{x}}%; top: {{y}}%;{{#given}} --c: {{color}};{{/given}}">{{number}}</button>
             {{/pins}}
         </div>
         <svg class="lt-lines" aria-hidden="true" focusable="false"></svg>

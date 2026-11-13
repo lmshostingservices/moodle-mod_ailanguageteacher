@@ -125,6 +125,11 @@ class start_attempt extends base {
                     'x' => new external_value(PARAM_FLOAT, 'X percent'),
                     'y' => new external_value(PARAM_FLOAT, 'Y percent'),
                     'number' => new external_value(PARAM_INT, 'Number'),
+                    'given' => new external_single_structure([
+                        'text' => new external_value(PARAM_TEXT, 'Phrase'),
+                        'romanisation' => new external_value(PARAM_TEXT, 'Romanisation'),
+                        'color' => new external_value(PARAM_TEXT, 'Colour'),
+                    ], 'The opening line, shown in place and not marked', VALUE_OPTIONAL),
                 ])),
                 'chips' => new external_multiple_structure(new external_single_structure([
                     'token' => new external_value(PARAM_ALPHANUM, 'Phrase token'),
