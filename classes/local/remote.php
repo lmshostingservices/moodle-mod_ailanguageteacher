@@ -62,6 +62,10 @@ final class remote {
         int $timeout = 45
     ): array {
         global $CFG;
+        // Work that runs on the site's own AI (Bring your own AI) is answered here, as LMS Labs would answer it.
+        if (($answer = \mod_ailanguageteacher\byok::answer($path, $body)) !== null) {
+            return $answer;
+        }
         $pair = credentials::resolve();
         $headers = ['X-Site-ID: ' . $pair['siteid'], 'X-API-Key: ' . $pair['apikey'], 'Accept: ' . $accept];
         if ($body !== null) {
@@ -139,6 +143,11 @@ final class remote {
      */
     public static function fail(int $status, string $body, array $headers = []): void {
         $outcome = self::outcome($status, $body);
+        if ($outcome === 'refused' && \mod_ailanguageteacher\byok::$answered) {
+            // The site's own AI did not deliver: say what went wrong, not an LMS Labs refusal. Nothing was charged.
+            $detail = \mod_ailanguageteacher\byok::$lasterror ?? self::error($status, $body);
+            throw new \moodle_exception('byok_failed', 'mod_ailanguageteacher', '', $detail);
+        }
         if ($outcome === 'pending') {
             $wait = max(1, min(60, (int)($headers['retry-after'] ?? 5)));
             throw new \moodle_exception('remotepending', 'mod_ailanguageteacher', '', $wait);

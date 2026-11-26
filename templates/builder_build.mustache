@@ -22,7 +22,7 @@
 
     Example context (json):
     {
-        "cmid": 1, "nexturl": "#", "canai": true, "canimport": true, "draftcredits": 5, "importcredits": 5,
+        "cmid": 1, "nexturl": "#", "canai": true, "canimport": true, "draftcredits": 5, "importcredits": 5, "ownai": false,
         "hasbalance": false, "balance": "", "prompt": "Create a lesson", "existing": 0,
         "bar": {"current": 5, "total": 9, "steps": [{"number": 5, "name": "Create the scenes", "done": false, "current": true, "dot": 0}]},
         "nav": {"backurl": "#", "backlabel": "Back", "nexturl": "#", "nextlabel": "Next: Pictures", "blocked": ""},
@@ -30,7 +30,7 @@
             "situations": "Greetings, Farewells", "options": "2 scenes each, 5 phrases per scene"}
     }
 }}
-<div id="lt-build" class="lt-wizard lt-build" data-cmid="{{cmid}}" data-nexturl="{{nexturl}}" data-importcredits="{{importcredits}}">
+<div id="lt-build" class="lt-wizard lt-build" data-cmid="{{cmid}}" data-nexturl="{{nexturl}}" data-importcredits="{{importcredits}}"{{#ownai}} data-ownai="1"{{/ownai}}>
     <div class="lt-setup-head">
         <h2 class="h3">{{#str}} setup_title, mod_ailanguageteacher {{/str}}</h2>
         {{#bar}}{{> mod_ailanguageteacher/setup_steps}}{{/bar}}
@@ -67,10 +67,10 @@
 
     <div class="lt-panel lt-buildpath" data-path="ai" hidden>
         <h3>{{#str}} path_ai_title, mod_ailanguageteacher {{/str}}</h3>
-        <p class="lt-mini">{{#str}} path_ai_help, mod_ailanguageteacher, {{draftcredits}} {{/str}}</p>
+        <p class="lt-mini">{{#ownai}}{{#str}} byok_path_ai_help, mod_ailanguageteacher {{/str}}{{/ownai}}{{^ownai}}{{#str}} path_ai_help, mod_ailanguageteacher, {{draftcredits}} {{/str}}{{/ownai}}</p>
         <button type="button" class="lt-btn lt-btn-primary" data-action="generate">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg>
-            <span>{{#str}} build_ai_go, mod_ailanguageteacher, {{draftcredits}} {{/str}}</span>
+            <span>{{#ownai}}{{#str}} byok_build_ai_go, mod_ailanguageteacher {{/str}}{{/ownai}}{{^ownai}}{{#str}} build_ai_go, mod_ailanguageteacher, {{draftcredits}} {{/str}}{{/ownai}}</span>
         </button>
         {{#hasbalance}}<p class="lt-mini mt-2">{{balance}}</p>{{/hasbalance}}
     </div>
@@ -94,7 +94,7 @@
         <label class="d-block mt-2" for="lt-lessonjson"><strong>{{#str}} build_paste, mod_ailanguageteacher {{/str}}</strong></label>
         <textarea id="lt-lessonjson" class="lt-textarea" rows="8" data-region="json" placeholder='{"scenes": [ ... ]}'></textarea>
         <button type="button" class="lt-btn lt-btn-primary mt-2" data-action="preview">{{#str}} build_preview, mod_ailanguageteacher {{/str}}</button>
-        <p class="lt-mini mt-3">{{#str}} path_assistant_note, mod_ailanguageteacher, {{importcredits}} {{/str}}</p>
+        <p class="lt-mini mt-3">{{#ownai}}{{#str}} byok_path_assistant_note, mod_ailanguageteacher {{/str}}{{/ownai}}{{^ownai}}{{#str}} path_assistant_note, mod_ailanguageteacher, {{importcredits}} {{/str}}{{/ownai}}</p>
     </div>
     {{/canai}}
     {{^canai}}<p class="lt-note">{{#str}} path_noai, mod_ailanguageteacher {{/str}}</p>{{/canai}}

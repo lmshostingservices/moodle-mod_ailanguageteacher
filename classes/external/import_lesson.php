@@ -94,7 +94,7 @@ class import_lesson extends base {
         }
         // The teacher's own AI assistant: 5 credits per scene, confirmed by LMS Labs before anything is created.
         require_capability('mod/ailanguageteacher:useai', $context);
-        if (\mod_ailanguageteacher\local\credentials::find() === null) {
+        if (\mod_ailanguageteacher\local\credentials::find() === null && !\mod_ailanguageteacher\byok::uses('text')) {
             throw new moodle_exception('ainotavailable', 'mod_ailanguageteacher');
         }
         $titles = [];

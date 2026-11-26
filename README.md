@@ -61,6 +61,19 @@ Tested on disposable sites (see CHANGELOG for the exact builds): Moodle 4.4 and 
 
 Lesson drafting and teacher-requested phrase audio require a registered, entitled LMS Labs site and enough credits. A scene costs 5 credits (LMS Labs AI or the teacher's own AI assistant), charged on delivery; a completed phrase MP3 costs 5 credits. The balance display is advisory. No paid requests are made by learners, no Speech-to-Text or image generation is offered, and ambiguous provider responses retain their existing idempotency key.
 
+### Bring your own AI
+
+With a Bring your own AI licence (a yearly LMS Labs subscription), AI Grader Central Config (`local_aiconfig`) can run this plugin's AI on the site's own AI instead of LMS Labs credits: the Moodle AI subsystem or the site's own provider keys, chosen separately for text, images, voice and vision on its *Bring your own AI* page.
+
+| Work | Runs on | What happens |
+| --- | --- | --- |
+| Scene drafts | Text | The LMS Labs lesson-draft logic (its instruction, response schema and checks of the answer) runs inside Moodle and calls the site's own AI. |
+| Scenes from the teacher's own AI assistant | Text | Created without asking LMS Labs. No credits. |
+| Scene pictures | Images (and vision) | The LMS Labs picture instruction, cut to 1600 × 1000. When vision also runs on the site's own AI, the phrase targets are found on the finished picture; otherwise the teacher checks the placement guesses. AI pictures still need *LMS Labs AI pictures* switched on. |
+| Phrase voices | Voice | Every Chirp 3 HD voice is offered for every language taught. A Google voice key uses the same voice; an OpenAI key uses the closest OpenAI voice. Slow voices play at 0.8×. |
+
+Work on the site's own AI costs no LMS Labs credits, needs no LMS Labs site ID or key, and the licence also unlocks the plugin. Teachers see the same screens, with "your own AI" in place of credit prices. Everything else stays on LMS Labs credits as before.
+
 Per-activity settings include the spoken-answer pass mark, the number of successful attempts needed and whether they must be in a row, the tries before learners may move on, sequential unlocking of stages, the Test's listening and speaking stages, grade, grading method, maximum attempts, time limit, label shuffling, sounds, leaderboard, and three completion rules: finish Study, master every phrase, finish the Test.
 
 ## Capabilities

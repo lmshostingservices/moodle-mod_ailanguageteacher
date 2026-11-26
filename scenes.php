@@ -255,8 +255,13 @@ $pricehold = $held === null ? '' : get_string($held ? 'voices_pricehold' : 'voic
     'published' => $held,
     'approved' => \mod_ailanguageteacher\local\speech\lmslabs::TTS_CREDITS,
 ]);
+// Bring your own AI: pictures and voices made on the site's own AI cost no LMS Labs credits.
+$ownpictures = \mod_ailanguageteacher\byok::uses('image');
+$ownvoices = \mod_ailanguageteacher\byok::uses('voice');
 echo $OUTPUT->header();
 echo $OUTPUT->render_from_template('mod_ailanguageteacher/scenes', [
+    'ownpictures' => $ownpictures,
+    'ownvoices' => $ownvoices,
     'bar' => setuppath::bar($step),
     'pictures' => $step === setuppath::PICTURES,
     'canpicture' => $canpicture,

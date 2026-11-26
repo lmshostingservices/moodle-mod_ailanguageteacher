@@ -22,7 +22,7 @@
     Example context (json):
     {
         "bar": {"current": 7, "total": 9, "steps": [{"number": 7, "name": "Voices", "done": false, "current": true, "dot": 0}]},
-        "pictures": false, "canpicture": false, "picturehold": "", "picturelive": false, "picturecredits": 2, "missingpictures": 0, "missingpictureids": "", "missingpicturecredits": 0, "voicesstep": true, "check": false, "hasscenes": true, "count": 1, "cmid": 1,
+        "pictures": false, "canpicture": false, "ownpictures": false, "ownvoices": false, "picturehold": "", "picturelive": false, "picturecredits": 2, "missingpictures": 0, "missingpictureids": "", "missingpicturecredits": 0, "voicesstep": true, "check": false, "hasscenes": true, "count": 1, "cmid": 1,
         "canvoice": true, "novoiceservice": false, "voiceaction": "#", "sesskey": "abc",
         "voicelist": [{"name": "en-AU-Chirp3-HD-Kore", "label": "Kore (female)", "selected": true}], "voice2list": [{"name": "en-AU-Chirp3-HD-Charon", "label": "Charon (male)", "selected": true}], "hasvoice2": true, "voicematch": true,
         "missingvoices": 1, "missingvoiceids": "4", "missingvoicecredits": 5, "voicecredits": 5, "remakes": 0, "remakesline": "",
@@ -43,12 +43,12 @@
     <div class="lt-wstep">
         <h3 class="lt-wstep-title">{{#str}} pictures_title, mod_ailanguageteacher {{/str}}</h3>
         {{^canpicture}}<p class="lt-mini mb-0">{{#str}} pictures_intro, mod_ailanguageteacher {{/str}}</p>{{/canpicture}}
-        {{#canpicture}}<p class="lt-mini">{{#str}} pictures_intro_ai, mod_ailanguageteacher, {{picturecredits}} {{/str}}</p>{{/canpicture}}
+        {{#canpicture}}<p class="lt-mini">{{#ownpictures}}{{#str}} byok_pictures_intro, mod_ailanguageteacher {{/str}}{{/ownpictures}}{{^ownpictures}}{{#str}} pictures_intro_ai, mod_ailanguageteacher, {{picturecredits}} {{/str}}{{/ownpictures}}</p>{{/canpicture}}
         {{#picturehold}}<p class="lt-note lt-pricehold" role="status">{{picturehold}}</p>{{/picturehold}}
         {{#picturelive}}{{#missingpictures}}
-        <button type="button" class="lt-btn lt-btn-primary" data-action="pictureall" data-scenes="{{missingpictureids}}" data-credits="{{picturecredits}}">
+        <button type="button" class="lt-btn lt-btn-primary" data-action="pictureall" data-scenes="{{missingpictureids}}" data-credits="{{picturecredits}}"{{#ownpictures}} data-ownai="1"{{/ownpictures}}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
-            <span>{{#str}} pictures_createall, mod_ailanguageteacher, { "count": {{missingpictures}}, "credits": {{missingpicturecredits}} } {{/str}}</span>
+            <span>{{#ownpictures}}{{#str}} byok_pictures_createall, mod_ailanguageteacher, {{missingpictures}} {{/str}}{{/ownpictures}}{{^ownpictures}}{{#str}} pictures_createall, mod_ailanguageteacher, { "count": {{missingpictures}}, "credits": {{missingpicturecredits}} } {{/str}}{{/ownpictures}}</span>
         </button>
         {{/missingpictures}}{{/picturelive}}
     </div>
@@ -58,7 +58,7 @@
     <div class="lt-wstep">
         <h3 class="lt-wstep-title">{{#str}} voices_title, mod_ailanguageteacher {{/str}}</h3>
         {{#canvoice}}
-        <p class="lt-mini">{{#str}} voices_intro, mod_ailanguageteacher {{/str}}{{#remakesline}} {{.}}{{/remakesline}}</p>
+        <p class="lt-mini">{{#ownvoices}}{{#str}} byok_voices_intro, mod_ailanguageteacher {{/str}}{{/ownvoices}}{{^ownvoices}}{{#str}} voices_intro, mod_ailanguageteacher {{/str}}{{#remakesline}} {{.}}{{/remakesline}}{{/ownvoices}}</p>
         <form method="post" action="{{voiceaction}}" class="lt-voicepick">
             <input type="hidden" name="sesskey" value="{{sesskey}}">
             <input type="hidden" name="action" value="voice">
@@ -78,9 +78,9 @@
         <p class="lt-mini">{{#str}} voices_match_help, mod_ailanguageteacher {{/str}}</p>
         {{#missingvoices}}
         {{#pricehold}}<p class="lt-note lt-pricehold mt-3" role="status">{{pricehold}}</p>{{/pricehold}}
-        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" {{#pricehold}}disabled {{/pricehold}}data-phrases="{{missingvoiceids}}" data-credits="{{voicecredits}}" data-remakes="{{remakes}}">
+        <button type="button" class="lt-btn lt-btn-primary mt-3" data-action="voiceall" {{#pricehold}}disabled {{/pricehold}}data-phrases="{{missingvoiceids}}" data-credits="{{voicecredits}}" data-remakes="{{remakes}}"{{#ownvoices}} data-ownai="1"{{/ownvoices}}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 010 7M19 5a10 10 0 010 14"/></svg>
-            <span>{{#remakes}}{{#str}} voices_createall_remakes, mod_ailanguageteacher, {{missingvoices}} {{/str}}{{/remakes}}{{^remakes}}{{#str}} voices_createall, mod_ailanguageteacher, { "count": {{missingvoices}}, "credits": {{missingvoicecredits}} } {{/str}}{{/remakes}}</span>
+            <span>{{#ownvoices}}{{#str}} byok_voices_createall, mod_ailanguageteacher, {{missingvoices}} {{/str}}{{/ownvoices}}{{^ownvoices}}{{#remakes}}{{#str}} voices_createall_remakes, mod_ailanguageteacher, {{missingvoices}} {{/str}}{{/remakes}}{{^remakes}}{{#str}} voices_createall, mod_ailanguageteacher, { "count": {{missingvoices}}, "credits": {{missingvoicecredits}} } {{/str}}{{/remakes}}{{/ownvoices}}</span>
         </button>
         {{/missingvoices}}
         {{^missingvoices}}<p class="lt-ok mb-0">{{#str}} voices_alldone, mod_ailanguageteacher {{/str}}</p>{{/missingvoices}}
@@ -112,9 +112,9 @@
                 {{#pictures}}
                 <div class="lt-slidecard-meta {{#noimage}}is-warn{{/noimage}}">{{#noimage}}{{#str}} sceneneedsimage, mod_ailanguageteacher {{/str}}{{/noimage}}{{^noimage}}{{#str}} scenehasimage, mod_ailanguageteacher {{/str}}{{/noimage}}</div>
                 {{#picturelive}}
-                <button type="button" class="lt-btn {{#noimage}}lt-btn-primary{{/noimage}}{{^noimage}}lt-btn-ghost{{/noimage}} lt-btn-sm w-100 mb-2" data-action="pictureone" data-scene="{{id}}" data-replace="{{^noimage}}1{{/noimage}}{{#noimage}}0{{/noimage}}" data-credits="{{picturecredits}}">
+                <button type="button" class="lt-btn {{#noimage}}lt-btn-primary{{/noimage}}{{^noimage}}lt-btn-ghost{{/noimage}} lt-btn-sm w-100 mb-2" data-action="pictureone" data-scene="{{id}}" data-replace="{{^noimage}}1{{/noimage}}{{#noimage}}0{{/noimage}}" data-credits="{{picturecredits}}"{{#ownpictures}} data-ownai="1"{{/ownpictures}}>
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/></svg>
-                    <span>{{#noimage}}{{#str}} pictures_createone, mod_ailanguageteacher, {{picturecredits}} {{/str}}{{/noimage}}{{^noimage}}{{#str}} pictures_newone, mod_ailanguageteacher, {{picturecredits}} {{/str}}{{/noimage}}</span>
+                    <span>{{#ownpictures}}{{#noimage}}{{#str}} byok_pictures_createone, mod_ailanguageteacher {{/str}}{{/noimage}}{{^noimage}}{{#str}} byok_pictures_newone, mod_ailanguageteacher {{/str}}{{/noimage}}{{/ownpictures}}{{^ownpictures}}{{#noimage}}{{#str}} pictures_createone, mod_ailanguageteacher, {{picturecredits}} {{/str}}{{/noimage}}{{^noimage}}{{#str}} pictures_newone, mod_ailanguageteacher, {{picturecredits}} {{/str}}{{/noimage}}{{/ownpictures}}</span>
                 </button>
                 {{/picturelive}}
                 <a class="lt-btn {{#picturelive}}lt-btn-ghost{{/picturelive}}{{^picturelive}}{{#noimage}}lt-btn-primary{{/noimage}}{{^noimage}}lt-btn-ghost{{/noimage}}{{/picturelive}} lt-btn-sm w-100" href="{{replaceurl}}">{{#noimage}}{{#str}} uploadownimage, mod_ailanguageteacher {{/str}}{{/noimage}}{{^noimage}}{{#str}} replaceownimage, mod_ailanguageteacher {{/str}}{{/noimage}}</a>

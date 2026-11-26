@@ -33,7 +33,7 @@ const GUESSED = 2;
 const KEYS = ['saved', 'saving', 'unsaved', 'guessbanner', 'guessallok', 'guesspin',
     'clicktoplace', 'placingof', 'skip', 'stop', 'newphrase', 'limitreached',
     'emptyeditor', 'recording', 'recordstop', 'placeon', 'audiounavailable', 'confirmdeletephrase', 'deletephrase',
-    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'voice_confirm_free',
+    'speechcatalogunavailable', 'confirm_title', 'confirm_create', 'voice_confirm', 'voice_confirm_free', 'byok_voice_confirm',
     'discard_confirm', 'limit_count',
     'limit_over', 'editor_label_counter', 'editor_distractor_counter', 'editor_new_distractor'];
 
@@ -729,8 +729,12 @@ class Editor {
                         args: {phraseids: [phrase.id], variant: 'normal'}}])[0];
                     maxcredits = quote.length && quote[0].credits === 0 ? 0 : this.cfg.voicecredits;
                 }
-                const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title,
-                    maxcredits === 0 ? S.voice_confirm_free : S.voice_confirm,
+                let question = maxcredits === 0 ? S.voice_confirm_free : S.voice_confirm;
+                if (this.cfg.ownvoice) {
+                    // Bring your own AI: made on the site's own voice, with no LMS Labs charge.
+                    question = S.byok_voice_confirm;
+                }
+                const go = await new Promise((resolve) => Notification.saveCancel(S.confirm_title, question,
                     S.confirm_create, () => resolve(true), () => resolve(false)));
                 if (!go) {
                     return;

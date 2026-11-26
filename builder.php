@@ -178,9 +178,11 @@ if ($step === 'build') {
         'canimport' => $canai,
         'draftcredits' => \mod_ailanguageteacher\local\ai\lmslabs::TEXT_CREDITS,
         'importcredits' => \mod_ailanguageteacher\local\ai\lmslabs::TEXT_CREDITS,
+        // Bring your own AI: scenes are written (or imported) on the site's own AI, at no LMS Labs charge.
+        'ownai' => \mod_ailanguageteacher\byok::uses('text'),
         'bar' => setuppath::bar(setuppath::CREATE),
         'nexturl' => setuppath::url((int)$cm->id, setuppath::PICTURES)->out(false),
-        'hasbalance' => $balance !== null,
+        'hasbalance' => $balance !== null && !\mod_ailanguageteacher\byok::uses('text'),
         'balance' => $balance === null ? '' : ($balance['unlimited'] ? $str('balance_unlimited')
             : $str('balance_credits', $balance['credits'])),
         'prompt' => lesson::prompt($instance),

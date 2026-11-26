@@ -2,6 +2,16 @@
 
 All notable changes to mod_ailanguageteacher are recorded here.
 
+## [v1.6.0] - 2026-11-26
+
+### Added
+- **Bring your own AI.** With an LMS Labs Bring your own AI licence, scene drafts, scenes from the teacher's own AI assistant, scene pictures and phrase voices can run on the site's own AI (Moodle AI or the site's own provider keys, set in AI Grader Central Config) instead of LMS Labs credits. The LMS Labs service's own logic for each request runs inside Moodle, so drafts, pictures and voices are checked exactly as LMS Labs checks them; it was compared with the service's code on 24,000 generated requests and AI answers with no differences. No LMS Labs site ID or key is needed for this work, and the licence also unlocks the plugin.
+- Teachers' confirmations and buttons say "your own AI" and show no credit price for work on the site's own AI. The settings page says which parts run on it.
+
+### Notes
+- Pictures on the site's own AI are cut to 1600 × 1000 around their centre, whatever size the AI draws. Phrase targets are found on the picture only when vision also runs on the site's own AI; otherwise Moodle's placement guesses stay for the teacher to check, as LMS Labs does when it cannot find them.
+- Phrase voices on an own OpenAI key use the closest OpenAI voice to the chosen Chirp 3 HD voice. Voices made earlier on LMS Labs are kept.
+
 ## [v1.5.0] - 2026-11-14
 
 ### Added

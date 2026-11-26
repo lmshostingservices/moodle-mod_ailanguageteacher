@@ -70,7 +70,7 @@ const initPictures = async(root) => {
     }
     const S = await loadStrings(['confirm_title', 'confirm_create', 'discard_confirm', 'pictures_confirm_one',
         'pictures_confirm_new', 'pictures_confirm_all', 'pictures_progress', 'pictures_busy', 'pictures_stop',
-        'pictures_stopping']);
+        'pictures_stopping', 'byok_pictures_confirm_all', 'byok_pictures_confirm_one', 'byok_pictures_confirm_new']);
     const confirm = (question) => new Promise((resolve) => {
         Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
     });
@@ -132,7 +132,10 @@ const initPictures = async(root) => {
         all.addEventListener('click', async() => {
             const ids = all.dataset.scenes.split(',').map((v) => parseInt(v, 10)).filter((v) => v > 0);
             const each = parseInt(all.dataset.credits, 10);
-            if (ids.length && await confirm(fmt(S.pictures_confirm_all, {count: ids.length, each, credits: ids.length * each}))) {
+            // Bring your own AI: made on the site's own AI, with no LMS Labs charge.
+            const question = all.dataset.ownai === '1' ? fmt(S.byok_pictures_confirm_all, ids.length)
+                : fmt(S.pictures_confirm_all, {count: ids.length, each, credits: ids.length * each});
+            if (ids.length && await confirm(question)) {
                 await run(ids, false, all);
             }
         });
@@ -140,7 +143,11 @@ const initPictures = async(root) => {
     ones.forEach((btn) => btn.addEventListener('click', async() => {
         const replace = btn.dataset.replace === '1';
         const credits = parseInt(btn.dataset.credits, 10);
-        if (await confirm(fmt(replace ? S.pictures_confirm_new : S.pictures_confirm_one, credits))) {
+        let question = fmt(replace ? S.pictures_confirm_new : S.pictures_confirm_one, credits);
+        if (btn.dataset.ownai === '1') {
+            question = replace ? S.byok_pictures_confirm_new : S.byok_pictures_confirm_one;
+        }
+        if (await confirm(question)) {
             await run([parseInt(btn.dataset.scene, 10)], replace, btn);
         }
     }));
@@ -163,7 +170,8 @@ export const init = async(selector) => {
     }
     const S = await loadStrings(['confirm_title', 'confirm_create', 'voices_confirm', 'voices_progress',
         'discard_confirm', 'voices_quoting', 'voices_confirm_head', 'voices_confirm_headone', 'voices_confirm_new',
-        'voices_confirm_newone', 'voices_confirm_free', 'voices_confirm_freeone', 'voices_confirm_note', 'voices_busy']);
+        'voices_confirm_newone', 'voices_confirm_free', 'voices_confirm_freeone', 'voices_confirm_note', 'voices_busy',
+        'byok_voices_confirm']);
     const confirm = (question) => new Promise((resolve) => {
         Notification.saveCancel(S.confirm_title, question, S.confirm_create, () => resolve(true), () => resolve(false));
     });
@@ -174,7 +182,9 @@ export const init = async(selector) => {
         const each = parseInt(all.dataset.credits, 10);
         // With free remakes, each voice's current price comes from LMS Labs first (free) and is its ceiling.
         const prices = new Map();
-        let question = fmt(S.voices_confirm, {count: ids.length, credits: ids.length * each});
+        // Bring your own AI: made on the site's own voice, with no LMS Labs charge.
+        let question = all.dataset.ownai === '1' ? fmt(S.byok_voices_confirm, ids.length)
+            : fmt(S.voices_confirm, {count: ids.length, credits: ids.length * each});
         if (all.dataset.remakes === '1' && ids.length && voice) {
             const label = all.querySelector('span');
             const before = label.textContent;
