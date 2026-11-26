@@ -97,6 +97,8 @@ $data += [
     'canrecord' => true,
     'targetname' => languages::name($instance->targetlang),
     'supportname' => languages::name($instance->supportlang),
+    // Bring your own AI: voices are made on the site's own voice, with no LMS Labs charge.
+    'ownvoice' => \mod_ailanguageteacher\byok::uses('voice'),
 ];
 
 $PAGE->requires->js_call_amd('mod_ailanguageteacher/editor', 'init', ['#lt-editor']);

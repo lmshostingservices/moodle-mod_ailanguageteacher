@@ -114,6 +114,10 @@ class audio {
      * @return int|null
      */
     public static function price_hold(): ?int {
+        if (\mod_ailanguageteacher\byok::uses('voice')) {
+            // The site's own voice: no LMS Labs price applies.
+            return null;
+        }
         $price = (string)get_config('mod_ailanguageteacher', 'speechprice');
         if ($price === '' || !ctype_digit($price)) {
             return 0;
@@ -127,6 +131,10 @@ class audio {
      * @return array|null {limit, days}, or null when LMS Labs has not said it supports remakes
      */
     public static function remakes(): ?array {
+        if (\mod_ailanguageteacher\byok::uses('voice')) {
+            // Every voice is free on the site's own voice: there is nothing to price first.
+            return null;
+        }
         $rule = json_decode((string)get_config('mod_ailanguageteacher', 'speechremakes'), true);
         return is_array($rule) && !empty($rule['on'])
             ? ['limit' => (int)($rule['limit'] ?? 0), 'days' => (int)($rule['days'] ?? 0)] : null;

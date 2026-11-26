@@ -65,7 +65,8 @@ class lmslabs implements service {
         $credentials = \mod_ailanguageteacher\local\credentials::find();
         // The key names the catalogue format, so a new format is read again, never a stale copy (1.3.3: the tariff;
         // 1.3.6: its price per voice).
-        $key = sha1('tariff2|' . (string)($credentials['siteid'] ?? ''));
+        $own = \mod_ailanguageteacher\byok::uses('voice') ? '|ownai' : '';
+        $key = sha1('tariff2|' . (string)($credentials['siteid'] ?? '') . $own);
         $cached = $cache->get($key);
         if (is_array($cached) && ($cached['time'] ?? 0) > time() - ($cached['locales'] ? self::CATALOG_TTL : self::CATALOG_RETRY)) {
             if (!$cached['locales']) {
@@ -130,7 +131,7 @@ class lmslabs implements service {
      * @return bool
      */
     public function available(): bool {
-        return \mod_ailanguageteacher\local\credentials::find() !== null;
+        return \mod_ailanguageteacher\local\credentials::find() !== null || \mod_ailanguageteacher\byok::uses('voice');
     }
 
     /**

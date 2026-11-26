@@ -146,10 +146,13 @@ export const initBuild = async(selector) => {
         return;
     }
     const S = await loadStrings(['lessoninvalid', 'generating', 'creating', 'lessonempty', 'confirm_title',
-        'confirm_create', 'draft_confirm', 'import_confirm', 'discard_confirm', 'import_done']);
+        'confirm_create', 'draft_confirm', 'import_confirm', 'discard_confirm', 'import_done', 'byok_draft_confirm',
+        'byok_import_confirm']);
     initCopy('.lt-copy');
     const cmid = parseInt(root.dataset.cmid, 10);
     const perscene = parseInt(root.dataset.importcredits, 10);
+    // Bring your own AI: scenes are written and imported on the site's own AI, with no LMS Labs charge.
+    const ownai = root.dataset.ownai === '1';
     const review = root.querySelector('[data-region="review"]');
     let another = false;
 
@@ -195,7 +198,9 @@ export const initBuild = async(selector) => {
                 return;
             }
             // The teacher's own AI assistant: charged per scene like LMS Labs AI, confirmed first. An LMS Labs draft is paid for.
-            if (!draftid && !await confirm(fmt(S.import_confirm, {count: keep.length, credits: keep.length * perscene}))) {
+            const question = ownai ? fmt(S.byok_import_confirm, keep.length)
+                : fmt(S.import_confirm, {count: keep.length, credits: keep.length * perscene});
+            if (!draftid && !await confirm(question)) {
                 return;
             }
             const original = btn.textContent;
@@ -266,7 +271,7 @@ export const initBuild = async(selector) => {
         const label = gen.querySelector('span');
         const original = label.textContent;
         gen.addEventListener('click', async() => {
-            if (!await confirm(S.draft_confirm)) {
+            if (!await confirm(ownai ? S.byok_draft_confirm : S.draft_confirm)) {
                 return;
             }
             gen.disabled = true;

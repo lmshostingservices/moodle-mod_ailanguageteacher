@@ -205,7 +205,11 @@ final class unlock {
      */
     public static function active(): bool {
         $state = self::state();
-        return $state['status'] === 'unlocked' || ($state['status'] === 'unknown' && !empty($state['wasunlocked']));
+        if ($state['status'] === 'unlocked' || ($state['status'] === 'unknown' && !empty($state['wasunlocked']))) {
+            return true;
+        }
+        // A site on its own AI holds a paid LMS Labs Bring your own AI licence, which covers this plugin.
+        return \mod_ailanguageteacher\byok::any();
     }
 
     /**

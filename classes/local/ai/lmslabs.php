@@ -62,7 +62,7 @@ class lmslabs implements provider {
      * @return bool
      */
     public function can_generate(): bool {
-        return $this->is_connected();
+        return $this->is_connected() || \mod_ailanguageteacher\byok::uses('text');
     }
 
     /**

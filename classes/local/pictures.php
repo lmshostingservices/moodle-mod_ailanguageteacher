@@ -58,7 +58,8 @@ final class pictures {
      * @return bool
      */
     public static function enabled(): bool {
-        return (bool)get_config('mod_ailanguageteacher', 'aiimages') && credentials::find() !== null;
+        return (bool)get_config('mod_ailanguageteacher', 'aiimages')
+            && (credentials::find() !== null || \mod_ailanguageteacher\byok::uses('image'));
     }
 
     /**
@@ -99,6 +100,10 @@ final class pictures {
      * @return int|null
      */
     public static function price_hold(): ?int {
+        if (\mod_ailanguageteacher\byok::uses('image')) {
+            // The site's own AI: no LMS Labs price applies.
+            return null;
+        }
         $price = self::published_price();
         if ($price === null) {
             return 0;
@@ -129,8 +134,11 @@ final class pictures {
             $prompt = \core_text::substr($prompt, 0, self::MAX_PROMPT);
         }
         $body = ['prompt' => $prompt, 'style' => $style, 'maxCredits' => self::CREDITS];
-        self::published_price();
-        if (get_config('mod_ailanguageteacher', 'imageanchors')) {
+        $ownai = \mod_ailanguageteacher\byok::uses('image');
+        if (!$ownai) {
+            self::published_price();
+        }
+        if ($ownai || get_config('mod_ailanguageteacher', 'imageanchors')) {
             $anchors = [];
             foreach ($phrases as $phrase) {
                 $anchor = (string)($phrase->anchor ?? '');
