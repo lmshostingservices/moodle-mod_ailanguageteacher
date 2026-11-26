@@ -24,8 +24,8 @@ Teachers build a lesson with a four-step wizard:
 5. **Create the scenes**, in one of two ways. Both cost 5 LMS Labs credits per scene and are confirmed first.
    - "Let LMS Labs AI write it": a short lesson scene from your choices, which you check before it is added.
    - "Use an AI assistant": copy the prompt into ChatGPT or another assistant, paste the reply back in and preview it.
-6. **Pictures:** upload a picture for each scene.
-7. **Voices:** choose the activity's LMS Labs Chirp 3 HD voice and a second voice for people of the other gender, then "Create missing voices" (5 credits per phrase clip). With "Match each phrase's voice to who says it" on, a phrase that belongs to a man or a woman in the picture ("the male taxi driver") gets a matching voice; the teacher can choose it per phrase in the scene editor. Slow listening plays the same voice slowed down.
+6. **Pictures:** upload a picture for each scene, or create one with LMS Labs AI (2 credits each, confirmed first) once a site administrator switches on *LMS Labs AI pictures*.
+7. **Voices:** choose the activity's LMS Labs Chirp 3 HD voice and a second voice for people of the other gender, then "Create missing voices" (2 credits per phrase clip). With "Match each phrase's voice to who says it" on, a phrase that belongs to a man or a woman in the picture ("the male taxi driver") gets a matching voice; the teacher can choose it per phrase in the scene editor. Slow listening plays the same voice slowed down.
 8. **Check the scenes:** place each phrase on its picture.
 9. **Finish:** see what is ready, preview as a learner, and go back to the course.
 
@@ -45,7 +45,7 @@ Tested on disposable sites (see CHANGELOG for the exact builds): Moodle 4.4 and 
 
 1. Unzip the package so the plugin sits in `mod/ailanguageteacher` (Moodle 4.4 to 5.0) or `public/mod/ailanguageteacher` (Moodle 5.1 and later).
 2. Visit *Site administration > Notifications* (or run `admin/cli/upgrade.php`) to install it.
-3. There is no Google key to enter. Teachers with AI permission may explicitly create phrase MP3 audio (5 credits per clip) from exact live LMS Labs voice capabilities. Learner listening uses stored audio or the browser's own voice and never makes a paid synthesis request. Paid Speech-to-Text is unavailable: browser recognition or a listen-back self-check compares recognised words, not phonemes, pronunciation or accent.
+3. There is no Google key to enter. Teachers with AI permission may explicitly create phrase MP3 audio (2 credits per clip) from exact live LMS Labs voice capabilities. Learner listening uses stored audio or the browser's own voice and never makes a paid synthesis request. Paid Speech-to-Text is unavailable: browser recognition or a listen-back self-check compares recognised words, not phonemes, pronunciation or accent.
 
 ## Configuration
 
@@ -59,7 +59,7 @@ Tested on disposable sites (see CHANGELOG for the exact builds): Moodle 4.4 and 
 | AI requests per teacher per hour | Local request limit; the dedicated service also enforces its own draft admission limit. |
 | Default language taught, default learners' language, sounds, leaderboard | Defaults for new activities. |
 
-Lesson drafting and teacher-requested phrase audio require a registered, entitled LMS Labs site and enough credits. A scene costs 5 credits (LMS Labs AI or the teacher's own AI assistant), charged on delivery; a completed phrase MP3 costs 5 credits. The balance display is advisory. No paid requests are made by learners, no Speech-to-Text or image generation is offered, and ambiguous provider responses retain their existing idempotency key.
+Lesson drafting and teacher-requested phrase audio require a registered, entitled LMS Labs site and enough credits. A scene costs 5 credits (LMS Labs AI or the teacher's own AI assistant), charged on delivery; a completed phrase MP3 costs 2 credits and an AI scene picture 2 credits. The balance display is advisory. No paid requests are made by learners, no Speech-to-Text is offered, and ambiguous provider responses retain their existing idempotency key.
 
 ### Bring your own AI
 
@@ -109,7 +109,7 @@ Teacher recordings of phrases, scene pictures and explicitly created phrase audi
 
 Data sent outside Moodle:
 
-- **LMS Labs speech service** (Google Cloud): a teacher's explicit audio request (5 credits) sends the phrase text, exact locale, selected live voice and speed server-to-server. No learner recording is sent. Moodle caches the completed MP3; the LMS Labs speech ledger retains no text or audio.
+- **LMS Labs speech service** (Google Cloud): a teacher's explicit audio request (2 credits) sends the phrase text, exact locale, selected live voice and speed server-to-server. No learner recording is sent. Moodle caches the completed MP3; the LMS Labs speech ledger retains no text or audio.
 - **Browser speech recognition** (when enabled). Speech recognition runs in the learner's browser. Depending on the browser, audio may go to the browser vendor's own service. This is a browser feature, not a service the plugin calls or meters.
 - **LMS Labs.** A teacher's explicit lesson request (5 credits per scene) sends a short brief, exact target locale, level and topic. The validated draft and outbound brief remain temporarily in Moodle for 24 hours; saved scenes and phrases are ordinary Moodle course content. The site ID and API key remain PHP-only. Provider retention and deployment policies must be verified separately.
 
